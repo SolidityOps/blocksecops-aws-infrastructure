@@ -1,6 +1,7 @@
+---
 name: Terraform Apply
 
-on:
+'on':
   push:
     branches: [main]
     paths:
@@ -11,10 +12,9 @@ on:
       environment:
         description: 'Environment to deploy'
         required: true
-        default: 'dev'
+        default: 'staging'
         type: choice
         options:
-          - dev
           - staging
           - production
       action:
@@ -33,7 +33,7 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
+    environment: ${{ github.event.inputs.environment || 'staging' }}
 
     permissions:
       id-token: write
@@ -49,7 +49,8 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-          role-session-name: terraform-apply-${{ github.event.inputs.environment || 'dev' }}
+          role-session-name: terraform-apply-\
+            ${{ github.event.inputs.environment || 'staging' }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -60,16 +61,19 @@ jobs:
         id: set-env
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
-            echo "action=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
+            echo "environment=${{ github.event.inputs.environment }}" \
+              >> $GITHUB_OUTPUT
+            echo "action=${{ github.event.inputs.action }}" \
+              >> $GITHUB_OUTPUT
           else
-            echo "environment=dev" >> $GITHUB_OUTPUT
+            echo "environment=staging" >> $GITHUB_OUTPUT
             echo "action=apply" >> $GITHUB_OUTPUT
           fi
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Terraform Plan
         if: steps.set-env.outputs.action == 'apply'
@@ -77,7 +81,8 @@ jobs:
         run: |
           terraform plan -detailed-exitcode -no-color -out=tfplan
           echo "exitcode=$?" >> $GITHUB_OUTPUT
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Terraform Plan (Destroy)
         if: steps.set-env.outputs.action == 'destroy'
@@ -85,37 +90,48 @@ jobs:
         run: |
           terraform plan -destroy -detailed-exitcode -no-color -out=tfplan
           echo "exitcode=$?" >> $GITHUB_OUTPUT
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Security Scan Before Apply
-        if: steps.plan.outputs.exitcode == 2 || steps.plan-destroy.outputs.exitcode == 2
+        if: steps.plan.outputs.exitcode == 2 ||
+          steps.plan-destroy.outputs.exitcode == 2
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+          directory: terraform/environments/\
+            ${{ steps.set-env.outputs.environment }}
           framework: terraform
           quiet: true
-          soft_fail: false # Fail on security issues for apply
+          soft_fail: false  # Fail on security issues for apply
 
       - name: Cost Check
-        if: steps.plan.outputs.exitcode == 2 && steps.set-env.outputs.action == 'apply'
+        if: steps.plan.outputs.exitcode == 2 &&
+          steps.set-env.outputs.action == 'apply'
         run: |
           # Install Infracost
-          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/\
+            master/scripts/install.sh | sh
 
           # Generate cost estimate
           infracost breakdown \
-            --path terraform/environments/${{ steps.set-env.outputs.environment }} \
-            --terraform-plan-path terraform/environments/${{ steps.set-env.outputs.environment }}/tfplan \
+            --path terraform/environments/\
+            ${{ steps.set-env.outputs.environment }} \
+            --terraform-plan-path terraform/environments/\
+            ${{ steps.set-env.outputs.environment }}/tfplan \
             --format json \
             --out-file infracost.json
 
           # Check if cost is within acceptable limits
           MONTHLY_COST=$(cat infracost.json | jq -r '.totalMonthlyCost')
-          if [ "${{ steps.set-env.outputs.environment }}" = "dev" ] && (( $(echo "$MONTHLY_COST > 500" | bc -l) )); then
-            echo "ERROR: Development environment cost ($MONTHLY_COST) exceeds $500/month limit"
+          if [ "${{ steps.set-env.outputs.environment }}" = "staging" ] && \
+            (( $(echo "$MONTHLY_COST > 800" | bc -l) )); then
+            echo "ERROR: Staging environment cost ($MONTHLY_COST) \
+              exceeds $800/month limit"
             exit 1
-          elif [ "${{ steps.set-env.outputs.environment }}" = "staging" ] && (( $(echo "$MONTHLY_COST > 800" | bc -l) )); then
-            echo "ERROR: Staging environment cost ($MONTHLY_COST) exceeds $800/month limit"
+          elif [ "${{ steps.set-env.outputs.environment }}" = "production" ] \
+            && (( $(echo "$MONTHLY_COST > 2000" | bc -l) )); then
+            echo "ERROR: Production environment cost ($MONTHLY_COST) \
+              exceeds $2000/month limit"
             exit 1
           fi
 
@@ -124,21 +140,29 @@ jobs:
           INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Terraform Apply
-        if: steps.set-env.outputs.action == 'apply' && (steps.plan.outputs.exitcode == 2 || github.event_name == 'workflow_dispatch')
+        if: steps.set-env.outputs.action == 'apply' &&
+          (steps.plan.outputs.exitcode == 2 ||
+          github.event_name == 'workflow_dispatch')
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Terraform Destroy
-        if: steps.set-env.outputs.action == 'destroy' && (steps.plan-destroy.outputs.exitcode == 2 || github.event_name == 'workflow_dispatch')
+        if: steps.set-env.outputs.action == 'destroy' &&
+          (steps.plan-destroy.outputs.exitcode == 2 ||
+          github.event_name == 'workflow_dispatch')
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Save Terraform State
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-state-${{ steps.set-env.outputs.environment }}-${{ github.sha }}
-          path: terraform/environments/${{ steps.set-env.outputs.environment }}/terraform.tfstate*
+          name: terraform-state-${{ steps.set-env.outputs.environment }}-\
+            ${{ github.sha }}
+          path: terraform/environments/\
+            ${{ steps.set-env.outputs.environment }}/terraform.tfstate*
           retention-days: 30
 
       - name: Get Infrastructure Outputs
@@ -147,14 +171,16 @@ jobs:
         run: |
           terraform output -json > outputs.json
           cat outputs.json
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Update kubeconfig
         if: steps.set-env.outputs.action == 'apply'
         run: |
-          CLUSTER_NAME=$(terraform output -raw cluster_id)
+          CLUSTER_NAME=$(terraform output -raw cluster_name)
           aws eks update-kubeconfig --region us-east-1 --name $CLUSTER_NAME
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Verify EKS Cluster
         if: steps.set-env.outputs.action == 'apply'
@@ -166,27 +192,34 @@ jobs:
       - name: Generate Deployment Summary
         if: steps.set-env.outputs.action == 'apply'
         run: |
-          echo "## Deployment Summary - ${{ steps.set-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Deployment Summary - \
+            ${{ steps.set-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "### Infrastructure Deployed:" >> $GITHUB_STEP_SUMMARY
 
           if [ -f outputs.json ]; then
-            CLUSTER_ENDPOINT=$(cat outputs.json | jq -r '.cluster_endpoint.value // "N/A"')
-            RDS_ENDPOINT=$(cat outputs.json | jq -r '.rds_instance_endpoint.value // "N/A"')
-            REDIS_ENDPOINT=$(cat outputs.json | jq -r '.redis_primary_endpoint.value // "N/A"')
-            DOMAIN_NAME=$(cat outputs.json | jq -r '.domain_name.value // "N/A"')
+            CLUSTER_ENDPOINT=$(cat outputs.json | \
+              jq -r '.cluster_endpoint.value // "N/A"')
+            RDS_ENDPOINT=$(cat outputs.json | \
+              jq -r '.db_instance_endpoint.value // "N/A"')
+            REDIS_ENDPOINT=$(cat outputs.json | \
+              jq -r '.elasticache_cluster_address.value // "N/A"')
 
             echo "- **EKS Cluster**: $CLUSTER_ENDPOINT" >> $GITHUB_STEP_SUMMARY
             echo "- **RDS Database**: $RDS_ENDPOINT" >> $GITHUB_STEP_SUMMARY
             echo "- **Redis Cache**: $REDIS_ENDPOINT" >> $GITHUB_STEP_SUMMARY
-            echo "- **Domain**: $DOMAIN_NAME" >> $GITHUB_STEP_SUMMARY
 
             echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
-            echo "1. Configure DNS records in Cloudflare" >> $GITHUB_STEP_SUMMARY
-            echo "2. Deploy Kubernetes services via ArgoCD" >> $GITHUB_STEP_SUMMARY
-            echo "3. Configure monitoring and alerting" >> $GITHUB_STEP_SUMMARY
-            echo "4. Test application deployments" >> $GITHUB_STEP_SUMMARY
+            echo "1. Configure DNS records in Cloudflare" \
+              >> $GITHUB_STEP_SUMMARY
+            echo "2. Deploy Kubernetes services via ArgoCD" \
+              >> $GITHUB_STEP_SUMMARY
+            echo "3. Configure monitoring and alerting" \
+              >> $GITHUB_STEP_SUMMARY
+            echo "4. Test application deployments" \
+              >> $GITHUB_STEP_SUMMARY
           fi
-        working-directory: terraform/environments/${{ steps.set-env.outputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ steps.set-env.outputs.environment }}
 
       - name: Notify Slack
         if: always()
@@ -194,7 +227,8 @@ jobs:
         with:
           status: ${{ job.status }}
           text: |
-            Terraform ${{ steps.set-env.outputs.action }} ${{ job.status }} for ${{ steps.set-env.outputs.environment }} environment
+            Terraform ${{ steps.set-env.outputs.action }} ${{ job.status }} \
+              for ${{ steps.set-env.outputs.environment }} environment
             Environment: ${{ steps.set-env.outputs.environment }}
             Action: ${{ steps.set-env.outputs.action }}
             Commit: ${{ github.sha }}
@@ -222,13 +256,15 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          ENVIRONMENT="${{ github.event.inputs.environment || 'staging' }}"
           CLUSTER_NAME="solidity-security-${ENVIRONMENT}"
           aws eks update-kubeconfig --region us-east-1 --name $CLUSTER_NAME
 
       - name: Install ArgoCD CLI
         run: |
-          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          curl -sSL -o argocd-linux-amd64 \
+            https://github.com/argoproj/argo-cd/releases/latest/download/\
+            argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
 
@@ -239,25 +275,28 @@ jobs:
 
       - name: Create Initial Namespaces
         run: |
-          kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create namespace external-secrets --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace argocd --dry-run=client -o yaml | \
+            kubectl apply -f -
+          kubectl create namespace external-secrets --dry-run=client \
+            -o yaml | kubectl apply -f -
+          kubectl create namespace monitoring --dry-run=client -o yaml | \
+            kubectl apply -f -
 
       - name: Label Namespaces
         run: |
           kubectl label namespace argocd name=argocd --overwrite
-          kubectl label namespace external-secrets name=external-secrets --overwrite
-          kubectl label namespace cert-manager name=cert-manager --overwrite
+          kubectl label namespace external-secrets \
+            name=external-secrets --overwrite
           kubectl label namespace monitoring name=monitoring --overwrite
 
       - name: Generate kubeconfig for developers
         run: |
-          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          ENVIRONMENT="${{ github.event.inputs.environment || 'staging' }}"
           CLUSTER_NAME="solidity-security-${ENVIRONMENT}"
 
           echo "## Developer Setup Instructions" >> $GITHUB_STEP_SUMMARY
           echo "### Connect to EKS Cluster:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "aws eks update-kubeconfig --region us-east-1 --name $CLUSTER_NAME" >> $GITHUB_STEP_SUMMARY
+          echo "aws eks update-kubeconfig --region us-east-1 \
+            --name $CLUSTER_NAME" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY

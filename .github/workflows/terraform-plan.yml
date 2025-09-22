@@ -1,6 +1,7 @@
+---
 name: Terraform Plan
 
-on:
+'on':
   pull_request:
     branches: [main]
     paths:
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [dev, staging, production]
+        environment: [staging, production]
 
     permissions:
       id-token: write
@@ -70,7 +71,8 @@ jobs:
         if: steps.plan.outputs.exitcode == 2
         run: |
           terraform show -no-color tfplan > plan_output.txt
-          echo "## Terraform Plan for ${{ matrix.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Terraform Plan for ${{ matrix.environment }}" \
+            >> $GITHUB_STEP_SUMMARY
           echo "### Changes detected:" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           head -50 plan_output.txt >> $GITHUB_STEP_SUMMARY
@@ -97,7 +99,8 @@ jobs:
               summary = 'Terraform plan failed. Please check the logs.';
             } else if (exitCode === '2') {
               status = '📋 Changes detected';
-              summary = 'Infrastructure changes detected. Review the plan carefully.';
+              summary = 'Infrastructure changes detected. \
+                Review the plan carefully.';
             }
 
             const comment = `
@@ -142,12 +145,14 @@ jobs:
         if: steps.plan.outputs.exitcode == 2
         run: |
           # Install Infracost
-          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/\
+            master/scripts/install.sh | sh
 
           # Generate cost estimate
           infracost breakdown \
             --path terraform/environments/${{ matrix.environment }} \
-            --terraform-plan-path terraform/environments/${{ matrix.environment }}/tfplan \
+            --terraform-plan-path terraform/environments/\
+            ${{ matrix.environment }}/tfplan \
             --format json \
             --out-file infracost-base.json
 

@@ -1,6 +1,7 @@
+---
 name: Destroy Environment
 
-on:
+'on':
   workflow_dispatch:
     inputs:
       environment:
@@ -8,8 +9,8 @@ on:
         required: true
         type: choice
         options:
-          - dev
           - staging
+          - production
       confirm_destroy:
         description: 'Type "DESTROY" to confirm'
         required: true
@@ -26,10 +27,12 @@ jobs:
       - name: Validate confirmation
         run: |
           if [ "${{ github.event.inputs.confirm_destroy }}" != "DESTROY" ]; then
-            echo "ERROR: You must type 'DESTROY' to confirm environment destruction"
+            echo "ERROR: You must type 'DESTROY' to confirm environment \
+              destruction"
             exit 1
           fi
-          echo "Confirmation validated. Proceeding with environment destruction."
+          echo "Confirmation validated. Proceeding with environment \
+            destruction."
 
   pre-destroy-backup:
     name: Pre-Destroy Backup
@@ -59,40 +62,48 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Get Current State
         run: |
           terraform show -json > current-state.json
           terraform output -json > outputs.json
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Backup RDS Database
         id: backup-rds
         run: |
-          RDS_INSTANCE_ID=$(terraform output -raw rds_instance_id 2>/dev/null || echo "")
+          RDS_INSTANCE_ID=$(terraform output -raw rds_instance_id \
+            2>/dev/null || echo "")
           if [ ! -z "$RDS_INSTANCE_ID" ]; then
-            echo "Creating final snapshot for RDS instance: $RDS_INSTANCE_ID"
+            echo "Creating final snapshot for RDS instance: \
+              $RDS_INSTANCE_ID"
             SNAPSHOT_ID="final-snapshot-$(date +%Y%m%d-%H%M%S)"
             aws rds create-db-snapshot \
               --db-instance-identifier "$RDS_INSTANCE_ID" \
               --db-snapshot-identifier "$SNAPSHOT_ID"
 
             echo "Waiting for snapshot to complete..."
-            aws rds wait db-snapshot-completed --db-snapshot-identifier "$SNAPSHOT_ID"
+            aws rds wait db-snapshot-completed \
+              --db-snapshot-identifier "$SNAPSHOT_ID"
             echo "snapshot_id=$SNAPSHOT_ID" >> $GITHUB_OUTPUT
             echo "RDS snapshot created: $SNAPSHOT_ID"
           else
             echo "No RDS instance found to backup"
           fi
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
         continue-on-error: true
 
       - name: Export Secrets Manager Secrets
         run: |
           echo "Backing up secrets (metadata only, not values)..."
           SECRET_ARNS=$(aws secretsmanager list-secrets \
-            --query "SecretList[?contains(Name, 'solidity-security-${{ github.event.inputs.environment }}')].ARN" \
+            --query "SecretList[?contains(Name, \
+              'solidity-security-${{ github.event.inputs.environment }}')]\
+              .ARN" \
             --output text)
 
           if [ ! -z "$SECRET_ARNS" ]; then
@@ -106,22 +117,31 @@ jobs:
       - name: Save Backup Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: pre-destroy-backup-${{ github.event.inputs.environment }}-${{ github.sha }}
+          name: pre-destroy-backup-${{ github.event.inputs.environment }}-\
+            ${{ github.sha }}
           path: |
-            terraform/environments/${{ github.event.inputs.environment }}/current-state.json
-            terraform/environments/${{ github.event.inputs.environment }}/outputs.json
-            terraform/environments/${{ github.event.inputs.environment }}/secrets-list.txt
+            terraform/environments/\
+              ${{ github.event.inputs.environment }}/current-state.json
+            terraform/environments/\
+              ${{ github.event.inputs.environment }}/outputs.json
+            terraform/environments/\
+              ${{ github.event.inputs.environment }}/secrets-list.txt
           retention-days: 90
 
       - name: Generate Backup Summary
         run: |
           echo "## Pre-Destroy Backup Summary" >> $GITHUB_STEP_SUMMARY
           echo "### Backup Created:" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: \
+            ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "- **RDS Snapshot**: ${{ steps.backup-rds.outputs.snapshot_id || 'None created' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Terraform State**: Backed up to artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- **Secrets Metadata**: Backed up to artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- **RDS Snapshot**: \
+            ${{ steps.backup-rds.outputs.snapshot_id || 'None created' }}" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "- **Terraform State**: Backed up to artifacts" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "- **Secrets Metadata**: Backed up to artifacts" \
+            >> $GITHUB_STEP_SUMMARY
 
   destroy-infrastructure:
     name: Destroy Infrastructure
@@ -151,35 +171,44 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Terraform Plan Destroy
         id: plan-destroy
         run: |
-          terraform plan -destroy -detailed-exitcode -no-color -out=destroy-plan
+          terraform plan -destroy -detailed-exitcode -no-color \
+            -out=destroy-plan
           echo "exitcode=$?" >> $GITHUB_OUTPUT
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Review Destroy Plan
         if: steps.plan-destroy.outputs.exitcode == 2
         run: |
-          echo "## Destroy Plan for ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Destroy Plan for \
+            ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "### Resources to be destroyed:" >> $GITHUB_STEP_SUMMARY
-          terraform show -no-color destroy-plan | head -50 >> $GITHUB_STEP_SUMMARY
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+          terraform show -no-color destroy-plan | head -50 \
+            >> $GITHUB_STEP_SUMMARY
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Terraform Destroy
         if: steps.plan-destroy.outputs.exitcode == 2
         run: terraform apply -auto-approve destroy-plan
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Verify Destruction
         run: |
           echo "Verifying resources have been destroyed..."
 
           # Check if EKS cluster still exists
-          CLUSTER_NAME="solidity-security-${{ github.event.inputs.environment }}"
-          if aws eks describe-cluster --name "$CLUSTER_NAME" >/dev/null 2>&1; then
+          CLUSTER_NAME="solidity-security-\
+            ${{ github.event.inputs.environment }}"
+          if aws eks describe-cluster --name "$CLUSTER_NAME" \
+            >/dev/null 2>&1; then
             echo "WARNING: EKS cluster $CLUSTER_NAME still exists"
           else
             echo "✓ EKS cluster destroyed"
@@ -187,7 +216,9 @@ jobs:
 
           # Check if RDS instance still exists (excluding snapshots)
           RDS_INSTANCES=$(aws rds describe-db-instances \
-            --query "DBInstances[?contains(DBInstanceIdentifier, 'solidity-security-${{ github.event.inputs.environment }}')].DBInstanceIdentifier" \
+            --query "DBInstances[?contains(DBInstanceIdentifier, \
+              'solidity-security-${{ github.event.inputs.environment }}')]\
+              .DBInstanceIdentifier" \
             --output text)
           if [ ! -z "$RDS_INSTANCES" ]; then
             echo "WARNING: RDS instances still exist: $RDS_INSTANCES"
@@ -197,7 +228,8 @@ jobs:
 
           # Check ECR repositories
           ECR_REPOS=$(aws ecr describe-repositories \
-            --query "repositories[?contains(repositoryName, 'solidity-security')].repositoryName" \
+            --query "repositories[?contains(repositoryName, \
+              'solidity-security')].repositoryName" \
             --output text 2>/dev/null || echo "")
           if [ ! -z "$ECR_REPOS" ]; then
             echo "INFO: ECR repositories preserved: $ECR_REPOS"
@@ -210,15 +242,19 @@ jobs:
           # Remove local state files
           rm -f terraform.tfstate*
           rm -f destroy-plan
-        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        working-directory: terraform/environments/\
+          ${{ github.event.inputs.environment }}
 
       - name: Generate Destruction Summary
         run: |
           echo "## Destruction Summary" >> $GITHUB_STEP_SUMMARY
           echo "### Environment Destroyed:" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Destroyed At**: $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Initiated By**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: \
+            ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Destroyed At**: $(date)" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "- **Initiated By**: ${{ github.actor }}" \
+            >> $GITHUB_STEP_SUMMARY
 
           echo "### Preserved Resources:" >> $GITHUB_STEP_SUMMARY
           echo "- ECR repositories (for image history)" >> $GITHUB_STEP_SUMMARY
@@ -226,9 +262,11 @@ jobs:
           echo "- CloudWatch logs (for audit trail)" >> $GITHUB_STEP_SUMMARY
 
           echo "### Manual Cleanup Required:" >> $GITHUB_STEP_SUMMARY
-          echo "- Remove DNS records from Cloudflare" >> $GITHUB_STEP_SUMMARY
+          echo "- Remove DNS records from Cloudflare" \
+            >> $GITHUB_STEP_SUMMARY
           echo "- Clean up any manual AWS resources" >> $GITHUB_STEP_SUMMARY
-          echo "- Review and delete old snapshots if needed" >> $GITHUB_STEP_SUMMARY
+          echo "- Review and delete old snapshots if needed" \
+            >> $GITHUB_STEP_SUMMARY
 
   notify-destruction:
     name: Notify Team
@@ -248,7 +286,8 @@ jobs:
             Initiated by: ${{ github.actor }}
             Timestamp: $(date)
 
-            Please remove DNS records from Cloudflare and review any manual cleanup required.
+            Please remove DNS records from Cloudflare and review any
+            manual cleanup required.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -259,20 +298,22 @@ jobs:
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Manual cleanup required after destroying ${{ github.event.inputs.environment }} environment`,
+              title: `Manual cleanup required after destroying \
+                ${{ github.event.inputs.environment }} environment`,
               body: `## Environment Destruction Cleanup
 
-            The ${{ github.event.inputs.environment }} environment has been destroyed.
+            The ${{ github.event.inputs.environment }} environment has \
+              been destroyed.
 
             ### Manual cleanup tasks:
 
             - [ ] Remove DNS records from Cloudflare:
-              - [ ] ${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
-              - [ ] api.${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
-              - [ ] app.${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
-              - [ ] argocd.${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
-              - [ ] grafana.${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
-              - [ ] tools.${{ github.event.inputs.environment }}.advancedblockchainsecurity.com
+              - [ ] ${{ github.event.inputs.environment }}\
+                .advancedblockchainsecurity.com
+              - [ ] api.${{ github.event.inputs.environment }}\
+                .advancedblockchainsecurity.com
+              - [ ] app.${{ github.event.inputs.environment }}\
+                .advancedblockchainsecurity.com
 
             - [ ] Review and clean up ECR images if needed
             - [ ] Review and delete old RDS snapshots if needed
