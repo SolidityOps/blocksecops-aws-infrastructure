@@ -1,0 +1,199 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-plan.yml'
+
+env:
+  TF_VERSION: 1.5.7
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, staging, production]
+
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          role-session-name: terraform-plan-${{ matrix.environment }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: terraform/
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform/environments/${{ matrix.environment }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform/environments/${{ matrix.environment }}
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -detailed-exitcode -no-color -out=tfplan
+          echo "exitcode=$?" >> $GITHUB_OUTPUT
+        working-directory: terraform/environments/${{ matrix.environment }}
+        continue-on-error: true
+
+      - name: Save Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ matrix.environment }}
+          path: terraform/environments/${{ matrix.environment }}/tfplan
+          retention-days: 5
+
+      - name: Generate Terraform Plan Summary
+        if: steps.plan.outputs.exitcode == 2
+        run: |
+          terraform show -no-color tfplan > plan_output.txt
+          echo "## Terraform Plan for ${{ matrix.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Changes detected:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          head -50 plan_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        working-directory: terraform/environments/${{ matrix.environment }}
+
+      - name: Comment Plan Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const environment = '${{ matrix.environment }}';
+            const exitCode = '${{ steps.plan.outputs.exitcode }}';
+
+            let status = '';
+            let summary = '';
+
+            if (exitCode === '0') {
+              status = '✅ No changes';
+              summary = 'No infrastructure changes detected.';
+            } else if (exitCode === '1') {
+              status = '❌ Plan failed';
+              summary = 'Terraform plan failed. Please check the logs.';
+            } else if (exitCode === '2') {
+              status = '📋 Changes detected';
+              summary = 'Infrastructure changes detected. Review the plan carefully.';
+            }
+
+            const comment = `
+            ## ${status} - Terraform Plan (${environment})
+
+            ${summary}
+
+            **Environment:** ${environment}
+            **Exit Code:** ${exitCode}
+
+            <details>
+            <summary>View Plan Details</summary>
+
+            The detailed plan output is available in the workflow artifacts.
+            </details>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Security Scan with Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/environments/${{ matrix.environment }}
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          quiet: true
+          soft_fail: true
+
+      - name: Upload Checkov Results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov-results.sarif
+
+      - name: Cost Estimation with Infracost
+        if: steps.plan.outputs.exitcode == 2
+        run: |
+          # Install Infracost
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+
+          # Generate cost estimate
+          infracost breakdown \
+            --path terraform/environments/${{ matrix.environment }} \
+            --terraform-plan-path terraform/environments/${{ matrix.environment }}/tfplan \
+            --format json \
+            --out-file infracost-base.json
+
+          # Comment with cost estimate
+          infracost comment github \
+            --path infracost-base.json \
+            --repo ${{ github.repository }} \
+            --github-token ${{ secrets.GITHUB_TOKEN }} \
+            --pull-request ${{ github.event.number }} \
+            --behavior update
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+
+  security-checks:
+    name: Security Checks
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'terraform/'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run TFSec security scanner
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform/
+          format: sarif
+          output: tfsec-results.sarif
+
+      - name: Upload TFSec results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: tfsec-results.sarif
