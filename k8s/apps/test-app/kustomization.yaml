@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
-- rbac.yaml
-- configmap.yaml
-- appproject.yaml
+
+commonLabels:
+  app: test-nginx
+  managed-by: argocd

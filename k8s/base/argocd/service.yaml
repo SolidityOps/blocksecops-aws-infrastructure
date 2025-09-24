@@ -3,8 +3,9 @@ kind: Service
 metadata:
   name: argocd-server
   labels:
-    app: argocd-server
-    component: server
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/component: server
 spec:
   type: ClusterIP
   ports:
@@ -17,4 +18,26 @@ spec:
     targetPort: 8080
     protocol: TCP
   selector:
-    app: argocd-server
+    app.kubernetes.io/name: argocd-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-repo-server
+  labels:
+    app.kubernetes.io/name: argocd-repo-server
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/component: repo-server
+spec:
+  type: ClusterIP
+  ports:
+  - name: server
+    port: 8081
+    targetPort: 8081
+    protocol: TCP
+  - name: metrics
+    port: 8084
+    targetPort: 8084
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: argocd-repo-server
