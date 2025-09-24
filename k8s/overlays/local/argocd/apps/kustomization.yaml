@@ -7,10 +7,26 @@ metadata:
     config.kubernetes.io/local-config: "true"
 
 resources:
+# Infrastructure and Platform (sync-wave 0-1)
 - service-mesh-crds.yaml
+- nginx-ingress-controller.yaml
+- cert-manager-certificates.yaml
 - istio-service-mesh.yaml
+
+# Data Layer (sync-wave 2)
+- postgresql-database.yaml
+- redis-cache.yaml
+
+# Service Mesh Observability (sync-wave 2-3)
 - jaeger-tracing.yaml
 - kiali-observability.yaml
+
+# Monitoring and Observability (sync-wave 3-4)
+- prometheus-monitoring.yaml
+- grafana-dashboards.yaml
+
+# Documentation (sync-wave 5)
+- solidity-security-docs.yaml
 
 commonLabels:
   environment: local

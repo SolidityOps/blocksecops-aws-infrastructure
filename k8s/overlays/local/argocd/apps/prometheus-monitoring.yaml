@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-monitoring-local
+  namespace: argocd-local
+  labels:
+    environment: local
+    project: solidity-security
+    component: monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SolidityOps/solidity-security-aws-infrastructure
+    targetRevision: HEAD
+    path: k8s/overlays/local/prometheus
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prometheus-local
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: monitoring.coreos.com
+    kind: ServiceMonitor
+    jsonPointers:
+    - /spec/endpoints
+  revisionHistoryLimit: 10

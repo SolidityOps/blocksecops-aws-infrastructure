@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-certificates-local
+  namespace: argocd-local
+  labels:
+    environment: local
+    project: solidity-security
+    component: certificates
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SolidityOps/solidity-security-aws-infrastructure
+    targetRevision: HEAD
+    path: k8s/overlays/local/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager-local
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: cert-manager.io
+    kind: Certificate
+    jsonPointers:
+    - /spec/renewBefore
+  - group: cert-manager.io
+    kind: ClusterIssuer
+    jsonPointers:
+    - /status
+  revisionHistoryLimit: 10
