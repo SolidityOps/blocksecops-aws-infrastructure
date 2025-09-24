@@ -5,6 +5,7 @@ namespace: grafana-local
 
 resources:
 - namespace.yaml
+- namespace-patch.yaml
 - ../../../base/grafana
 - ingress.yaml
 - issuer.yaml

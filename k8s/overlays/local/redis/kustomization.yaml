@@ -5,6 +5,7 @@ namespace: redis-local
 
 resources:
 - namespace.yaml
+- namespace-patch.yaml
 - ../../../base/redis
 
 commonLabels:

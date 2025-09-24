@@ -17,7 +17,6 @@ resources:
 - istio
 - jaeger
 - kiali
-- namespace-patches.yaml
 
 commonLabels:
   environment: local

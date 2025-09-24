@@ -5,6 +5,7 @@ namespace: postgresql-local
 
 resources:
 - namespace.yaml
+- namespace-patch.yaml
 - ../../../base/postgresql
 
 commonLabels:
