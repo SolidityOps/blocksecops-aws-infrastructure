@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis.conf: |
+    # Redis configuration for ArgoCD
+    maxmemory 256mb
+    maxmemory-policy allkeys-lru
+    save ""
+    appendonly no
+    tcp-keepalive 60
+    tcp-backlog 511
+    timeout 0
+    databases 16

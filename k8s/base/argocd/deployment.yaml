@@ -38,6 +38,8 @@ spec:
         env:
         - name: ARGOCD_SERVER_INSECURE
           value: "true"
+        - name: REDIS_SERVER
+          value: "redis.redis-local.svc.cluster.local:6379"
         resources:
           requests:
             memory: "128Mi"

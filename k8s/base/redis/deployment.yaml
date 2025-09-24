@@ -18,8 +18,13 @@ spec:
       containers:
       - name: redis
         image: redis:7.0
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
         ports:
-        - containerPort: 6379
+        - name: redis
+          containerPort: 6379
+          protocol: TCP
         resources:
           requests:
             memory: "128Mi"
@@ -27,3 +32,24 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        volumeMounts:
+        - name: config
+          mountPath: /etc/redis
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: config
+        configMap:
+          name: redis-config
+      - name: data
+        emptyDir: {}
