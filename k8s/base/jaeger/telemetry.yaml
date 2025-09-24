@@ -1,0 +1,32 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: default-tracing
+  namespace: istio-system
+spec:
+  tracing:
+  - providers:
+    - name: jaeger
+  - customTags:
+      cluster:
+        literal:
+          value: default
+      version:
+        header:
+          name: x-app-version
+          defaultValue: unknown
+      service_version:
+        header:
+          name: x-service-version
+          defaultValue: unknown
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: jaeger-sampling
+  namespace: istio-system
+spec:
+  tracing:
+  - randomSamplingPercentage: 1.0
+  - providers:
+    - name: jaeger

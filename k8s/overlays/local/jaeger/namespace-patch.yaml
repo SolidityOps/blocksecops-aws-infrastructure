@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jaeger-system
+  labels:
+    name: jaeger-system
+    environment: local
+    project: solidity-security
+    managed-by: kustomize
+    istio-injection: enabled

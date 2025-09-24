@@ -1,0 +1,23 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: default-tracing
+  namespace: istio-system
+spec:
+  tracing:
+  - customTags:
+      cluster:
+        literal:
+          value: local
+      environment:
+        literal:
+          value: local
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: jaeger-sampling
+  namespace: istio-system
+spec:
+  tracing:
+  - randomSamplingPercentage: 100.0

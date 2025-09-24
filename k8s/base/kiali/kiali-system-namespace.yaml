@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kiali-system
+  labels:
+    name: kiali-system
+    istio-injection: enabled

@@ -1,0 +1,11 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: default-deny
+  namespace: istio-system
+spec:
+  action: DENY
+  rules:
+  - when:
+    - key: source.namespace
+      notValues: ["istio-system", "jaeger-system"]

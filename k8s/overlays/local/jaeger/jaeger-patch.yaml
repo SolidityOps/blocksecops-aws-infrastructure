@@ -1,0 +1,13 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: jaeger
+  namespace: jaeger-system
+spec:
+  storage:
+    options:
+      memory:
+        max-traces: 100000
+  agent:
+    options:
+      agent.tags: cluster=local,environment=local

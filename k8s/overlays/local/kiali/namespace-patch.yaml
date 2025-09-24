@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kiali-system
+  labels:
+    name: kiali-system
+    environment: local
+    project: solidity-security
+    managed-by: kustomize
+    istio-injection: enabled

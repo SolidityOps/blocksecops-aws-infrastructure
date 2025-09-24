@@ -50,7 +50,7 @@ echo "✅ Infrastructure deployed successfully"
 echo "⏳ Waiting for deployments to be ready..."
 kubectl wait --for=condition=available --timeout=300s deployment --all -n postgresql-local || true
 kubectl wait --for=condition=available --timeout=300s deployment --all -n redis-local || true
-kubectl wait --for=condition=available --timeout=300s deployment --all -n nginx-local || true
+kubectl wait --for=condition=available --timeout=300s deployment --all -n ingress-nginx || true
 kubectl wait --for=condition=available --timeout=300s deployment --all -n cert-manager-local || true
 kubectl wait --for=condition=available --timeout=300s deployment --all -n prometheus-local || true
 kubectl wait --for=condition=available --timeout=300s deployment --all -n grafana-local || true
@@ -60,7 +60,7 @@ echo "📊 Deployment Status:"
 echo "=================="
 echo "PostgreSQL: $(kubectl get pods -n postgresql-local --no-headers 2>/dev/null | wc -l) pods"
 echo "Redis: $(kubectl get pods -n redis-local --no-headers 2>/dev/null | wc -l) pods"
-echo "NGINX Ingress: $(kubectl get pods -n nginx-local --no-headers 2>/dev/null | wc -l) pods"
+echo "NGINX Ingress: $(kubectl get pods -n ingress-nginx --no-headers 2>/dev/null | wc -l) pods"
 echo "cert-manager: $(kubectl get pods -n cert-manager-local --no-headers 2>/dev/null | wc -l) pods"
 echo "Prometheus: $(kubectl get pods -n prometheus-local --no-headers 2>/dev/null | wc -l) pods"
 echo "Grafana: $(kubectl get pods -n grafana-local --no-headers 2>/dev/null | wc -l) pods"

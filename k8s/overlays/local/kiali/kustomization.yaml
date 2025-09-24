@@ -2,29 +2,27 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 metadata:
-  name: solidity-security-local
+  name: kiali-local
   annotations:
     config.kubernetes.io/local-config: "true"
 
+namespace: kiali-system
+
 resources:
-- postgresql
-- redis
-- nginx-ingress
-- cert-manager
-- prometheus
-- grafana
-- argocd
-- istio
-- jaeger
-- kiali
-- namespace-patches.yaml
+- ../../../base/kiali
+- virtual-service.yaml
+
+patchesStrategicMerge:
+- namespace-patch.yaml
+- kiali-patch.yaml
 
 commonLabels:
   environment: local
   project: solidity-security
   managed-by: kustomize
+  component: observability
 
 commonAnnotations:
   deployment.environment: local
-  cluster.size: medium
-  cluster.resources: "16GB-RAM-6CPU"
+  observability.type: service-mesh-ui
+  service-mesh.backend: kiali

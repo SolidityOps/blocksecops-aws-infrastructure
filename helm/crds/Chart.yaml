@@ -22,3 +22,23 @@ dependencies:
     version: 5.46.7
     repository: https://argoproj.github.io/argo-helm
     condition: argocd.enabled
+  - name: base
+    version: 1.20.1
+    repository: https://istio-release.storage.googleapis.com/charts
+    condition: istio.enabled
+  - name: istiod
+    version: 1.20.1
+    repository: https://istio-release.storage.googleapis.com/charts
+    condition: istio.enabled
+  - name: gateway
+    version: 1.20.1
+    repository: https://istio-release.storage.googleapis.com/charts
+    condition: istio.enabled
+  - name: jaeger
+    version: 3.4.1
+    repository: https://jaegertracing.github.io/helm-charts
+    condition: jaeger.enabled
+  - name: kiali-server
+    version: 1.78.0
+    repository: https://kiali.org/helm-charts
+    condition: kiali.enabled

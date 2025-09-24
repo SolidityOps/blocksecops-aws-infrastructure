@@ -1,0 +1,111 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: control-plane
+  namespace: istio-system
+spec:
+  revision: default
+  values:
+    defaultRevision: default
+    global:
+      meshID: mesh1
+      network: network1
+      hub: docker.io/istio
+      tag: 1.20.1
+    pilot:
+      traceSampling: 1.0
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2048Mi
+    proxy:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 2000m
+          memory: 1024Mi
+    gateways:
+      istio-ingressgateway:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+  components:
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2048Mi
+        env:
+          - name: PILOT_TRACE_SAMPLING
+            value: "100"
+          - name: PILOT_ENABLE_METADATA_EXCHANGE
+            value: "true"
+          - name: PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION
+            value: "true"
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 2000m
+              memory: 1024Mi
+          service:
+            ports:
+              - port: 15021
+                targetPort: 15021
+                name: status-port
+                protocol: TCP
+              - port: 80
+                targetPort: 8080
+                name: http2
+                protocol: TCP
+              - port: 443
+                targetPort: 8443
+                name: https
+                protocol: TCP
+              - port: 15090
+                targetPort: 15090
+                name: http-monitoring
+                protocol: TCP
+    egressGateways:
+      - name: istio-egressgateway
+        enabled: true
+        k8s:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 2000m
+              memory: 1024Mi
+  meshConfig:
+    accessLogFile: /dev/stdout
+    defaultConfig:
+      holdApplicationUntilProxyStarts: true
+      proxyStatsMatcher:
+        inclusionRegexps:
+          - ".*_cx_.*"
+          - ".*_rq_.*"
+          - ".*_rbac_.*"
+          - ".*circuit_breakers.*"
+          - ".*upstream_rq_retry.*"
+          - ".*upstream_rq_pending.*"
+    extensionProviders:
+      - name: jaeger
+        envoyOtelAls:
+          service: jaeger-collector.jaeger-system.svc.cluster.local
+          port: 14250
+    defaultProviders:
+      tracing:
+        - jaeger

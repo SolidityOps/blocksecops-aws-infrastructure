@@ -1,0 +1,17 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: kiali
+  namespace: kiali-system
+spec:
+  external_services:
+    prometheus:
+      url: http://prometheus-server.prometheus-local.svc.cluster.local:9090
+    grafana:
+      enabled: true
+      in_cluster_url: http://grafana.grafana-local.svc.cluster.local:3000
+      url: http://grafana.local.solidity-security.dev
+    tracing:
+      enabled: true
+      in_cluster_url: http://jaeger-query.jaeger-system.svc.cluster.local:16686
+      url: http://jaeger.local.solidity-security.dev
