@@ -42,15 +42,3 @@ metadata:
     app.kubernetes.io/name: argocd-tls-certs-cm
     app.kubernetes.io/part-of: argocd
 data: {}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: argocd-secret
-  labels:
-    app.kubernetes.io/name: argocd-secret
-    app.kubernetes.io/part-of: argocd
-type: Opaque
-data:
-  admin.password: JDJhJDEwJHJSeUJzR1NISzYudWM4Zm50UHdWSXVMVkhnc0FoQVg3VGNkcnFXL1JBRFV1aDdDYUNoTGE=  # bcrypt hash of "admin"
-  admin.passwordMtime: MjAyNS0wOS0yNFQwMzowMDowMFo=  # base64 encoded timestamp
