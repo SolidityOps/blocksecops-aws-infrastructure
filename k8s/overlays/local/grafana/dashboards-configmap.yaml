@@ -38,3 +38,33 @@ data:
       allowUiUpdates: true
       options:
         path: /var/lib/grafana/dashboards/applications
+
+    - name: 'security'
+      orgId: 1
+      folder: 'Security Tools'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards/security
+
+    - name: 'intelligence'
+      orgId: 1
+      folder: 'Intelligence Engine'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards/intelligence
+
+    - name: 'database'
+      orgId: 1
+      folder: 'Database'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards/database
