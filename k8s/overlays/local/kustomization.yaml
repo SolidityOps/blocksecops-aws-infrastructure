@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: solidity-security-local
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+resources:
+- postgresql
+- redis
+- nginx-ingress
+- cert-manager
+- prometheus
+- grafana
+- argocd
+
+commonLabels:
+  environment: local
+  project: solidity-security
+  managed-by: kustomize
+
+commonAnnotations:
+  deployment.environment: local
+  cluster.size: medium
+  cluster.resources: "16GB-RAM-6CPU"

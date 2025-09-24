@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: postgresql-local
+
+resources:
+- namespace.yaml
+- ../../../base/postgresql
+
+commonLabels:
+  environment: local
+  overlay: local
+
+patchesStrategicMerge:
+- resource-patch.yaml

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prometheus-local
+
+resources:
+- namespace.yaml
+- ../../../base/prometheus
+- ingress.yaml
+- issuer.yaml
+
+commonLabels:
+  environment: local
+  overlay: local

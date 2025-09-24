@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-local
+  labels:
+    environment: local
+    service: nginx
+    project: solidity-security
