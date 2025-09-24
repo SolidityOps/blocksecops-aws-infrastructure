@@ -7,9 +7,10 @@ resources:
 - namespace.yaml
 - ../../../base/postgresql
 
+patchesStrategicMerge:
+- namespace-patch.yaml
+- resource-patch.yaml
+
 commonLabels:
   environment: local
   overlay: local
-
-patchesStrategicMerge:
-- resource-patch.yaml

@@ -8,3 +8,6 @@ resources:
 - ../../../base/argocd
 - ingress.yaml
 - issuer.yaml
+
+patchesStrategicMerge:
+- namespace-patch.yaml

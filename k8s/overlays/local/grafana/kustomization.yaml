@@ -9,6 +9,9 @@ resources:
 - ingress.yaml
 - issuer.yaml
 
+patchesStrategicMerge:
+- namespace-patch.yaml
+
 commonLabels:
   environment: local
   overlay: local
