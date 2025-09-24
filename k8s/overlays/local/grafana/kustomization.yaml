@@ -8,6 +8,11 @@ resources:
 - ../../../base/grafana
 - ingress.yaml
 - issuer.yaml
+- datasources.yaml
+- dashboards-configmap.yaml
+- application-overview-dashboard.yaml
+- istio-service-mesh-dashboard.yaml
+- peer-authentication.yaml
 
 patchesStrategicMerge:
 - namespace-patch.yaml

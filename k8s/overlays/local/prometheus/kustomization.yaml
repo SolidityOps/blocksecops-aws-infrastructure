@@ -8,9 +8,12 @@ resources:
 - ../../../base/prometheus
 - ingress.yaml
 - issuer.yaml
+- servicemonitors.yaml
+- peer-authentication.yaml
 
 patchesStrategicMerge:
 - namespace-patch.yaml
+- prometheus-config-patch.yaml
 
 commonLabels:
   environment: local

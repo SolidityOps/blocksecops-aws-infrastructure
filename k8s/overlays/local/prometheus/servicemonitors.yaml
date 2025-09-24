@@ -1,0 +1,113 @@
+---
+# ArgoCD Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-metrics
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - argocd-local
+
+---
+# Istio Control Plane Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-system
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
+    path: /stats/prometheus
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# Istio Gateway Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-ingressgateway
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
+    path: /stats/prometheus
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# Jaeger Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jaeger-metrics
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+  endpoints:
+  - port: admin-http
+    interval: 15s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# PostgreSQL Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: postgresql-metrics
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - postgresql-local
+
+---
+# Redis Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-metrics
+  namespace: prometheus-local
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - redis-local
