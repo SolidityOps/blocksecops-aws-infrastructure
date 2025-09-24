@@ -16,15 +16,4 @@ spec:
     - destination:
         host: tracing.istio-system.svc.cluster.local
         port:
-          number: 16686
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: jaeger-dr
-  namespace: istio-system
-spec:
-  host: tracing.istio-system.svc.cluster.local
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
+          number: 80

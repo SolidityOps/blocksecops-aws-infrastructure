@@ -6,14 +6,13 @@ metadata:
   annotations:
     config.kubernetes.io/local-config: "true"
 
-namespace: kiali-system
+namespace: istio-system
 
 resources:
 - ../../../base/kiali
 - virtual-service.yaml
 
 patchesStrategicMerge:
-- namespace-patch.yaml
 - kiali-patch.yaml
 
 commonLabels:

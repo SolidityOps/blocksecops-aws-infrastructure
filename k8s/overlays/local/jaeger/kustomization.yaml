@@ -6,14 +6,13 @@ metadata:
   annotations:
     config.kubernetes.io/local-config: "true"
 
-namespace: jaeger-system
+namespace: istio-system
 
 resources:
 - ../../../base/jaeger
 - virtual-service.yaml
 
 patchesStrategicMerge:
-- namespace-patch.yaml
 - jaeger-patch.yaml
 - telemetry-patch.yaml
 

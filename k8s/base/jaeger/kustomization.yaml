@@ -7,7 +7,6 @@ metadata:
     config.kubernetes.io/local-config: "true"
 
 resources:
-- jaeger-system-namespace.yaml
 - jaeger-operator.yaml
 - telemetry.yaml
 

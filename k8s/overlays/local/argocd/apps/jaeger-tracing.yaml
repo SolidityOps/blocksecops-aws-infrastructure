@@ -17,7 +17,7 @@ spec:
     path: k8s/overlays/local/jaeger
   destination:
     server: https://kubernetes.default.svc
-    namespace: jaeger-system
+    namespace: istio-system
   syncPolicy:
     automated:
       prune: true

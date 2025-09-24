@@ -17,14 +17,3 @@ spec:
         host: kiali.istio-system.svc.cluster.local
         port:
           number: 20001
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: kiali-dr
-  namespace: istio-system
-spec:
-  host: kiali.istio-system.svc.cluster.local
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL

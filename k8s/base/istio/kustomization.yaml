@@ -8,7 +8,7 @@ metadata:
 
 resources:
 - istio-system-namespace.yaml
-- istiod.yaml
+- istio-control-plane.yaml
 - gateway.yaml
 - peer-authentication.yaml
 - destination-rules.yaml

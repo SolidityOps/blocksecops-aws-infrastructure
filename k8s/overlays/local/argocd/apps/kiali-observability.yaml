@@ -17,7 +17,7 @@ spec:
     path: k8s/overlays/local/kiali
   destination:
     server: https://kubernetes.default.svc
-    namespace: kiali-system
+    namespace: istio-system
   syncPolicy:
     automated:
       prune: true
