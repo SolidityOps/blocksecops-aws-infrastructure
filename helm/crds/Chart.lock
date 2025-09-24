@@ -1,0 +1,15 @@
+dependencies:
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.13.2
+- name: kube-prometheus-stack
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 51.2.0
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.7.1
+- name: argo-cd
+  repository: https://argoproj.github.io/argo-helm
+  version: 5.46.7
+digest: sha256:a7996248d979aef3b3b662042fbd5651aa145eb9733758b171ce7914c1616882
+generated: "2025-09-23T19:37:59.360758-06:00"

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: grafana-local
+  labels:
+    environment: local
+    service: grafana
+    project: solidity-security

@@ -1,0 +1,12 @@
+cert-manager:
+  enabled: true
+  installCRDs: true
+
+prometheus:
+  enabled: true
+
+nginx-ingress:
+  enabled: true
+
+argocd:
+  enabled: true
