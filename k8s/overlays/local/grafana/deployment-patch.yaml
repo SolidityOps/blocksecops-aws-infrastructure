@@ -32,6 +32,9 @@ spec:
         - name: dashboard-database
           mountPath: /var/lib/grafana/dashboards/database/database.json
           subPath: database.json
+        - name: dashboard-infrastructure
+          mountPath: /var/lib/grafana/dashboards/infrastructure/infrastructure.json
+          subPath: infrastructure.json
       volumes:
       - name: dashboard-providers
         configMap:
@@ -57,3 +60,6 @@ spec:
       - name: dashboard-database
         configMap:
           name: grafana-dashboard-database
+      - name: dashboard-infrastructure
+        configMap:
+          name: grafana-dashboard-infrastructure

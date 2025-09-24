@@ -17,7 +17,7 @@ data:
       type: prometheus
       access: proxy
       orgId: 1
-      url: http://prometheus.prometheus-local.svc.cluster.local:9090
+      url: http://infrastructure-crds-kube-p-prometheus.default.svc.cluster.local:9090
       isDefault: true
       version: 1
       editable: false
