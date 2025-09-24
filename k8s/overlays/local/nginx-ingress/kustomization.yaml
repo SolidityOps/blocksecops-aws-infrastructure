@@ -5,8 +5,10 @@ namespace: ingress-nginx
 
 resources:
 - namespace.yaml
-- namespace-patch.yaml
 - ../../../base/nginx-ingress
+
+patchesStrategicMerge:
+- namespace-patch.yaml
 
 commonLabels:
   environment: local

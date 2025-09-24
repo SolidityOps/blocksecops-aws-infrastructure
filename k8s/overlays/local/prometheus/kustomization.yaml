@@ -5,10 +5,12 @@ namespace: prometheus-local
 
 resources:
 - namespace.yaml
-- namespace-patch.yaml
 - ../../../base/prometheus
 - ingress.yaml
 - issuer.yaml
+
+patchesStrategicMerge:
+- namespace-patch.yaml
 
 commonLabels:
   environment: local

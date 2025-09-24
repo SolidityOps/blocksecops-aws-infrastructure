@@ -5,7 +5,9 @@ namespace: argocd-local
 
 resources:
 - namespace.yaml
-- namespace-patch.yaml
 - ../../../base/argocd
 - ingress.yaml
 - issuer.yaml
+
+patchesStrategicMerge:
+- namespace-patch.yaml

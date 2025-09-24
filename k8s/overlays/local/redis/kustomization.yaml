@@ -5,8 +5,10 @@ namespace: redis-local
 
 resources:
 - namespace.yaml
-- namespace-patch.yaml
 - ../../../base/redis
+
+patchesStrategicMerge:
+- namespace-patch.yaml
 
 commonLabels:
   environment: local

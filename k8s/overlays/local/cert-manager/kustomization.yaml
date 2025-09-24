@@ -5,9 +5,11 @@ namespace: cert-manager-local
 
 resources:
 - namespace.yaml
-- namespace-patch.yaml
 - ../../../base/cert-manager
 - cluster-issuer.yaml
+
+patchesStrategicMerge:
+- namespace-patch.yaml
 
 commonLabels:
   environment: local
