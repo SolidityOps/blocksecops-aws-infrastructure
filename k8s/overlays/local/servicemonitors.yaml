@@ -1,0 +1,167 @@
+---
+# ArgoCD Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-metrics-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - argocd-local
+
+---
+# Istio Control Plane Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-system-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
+    path: /stats/prometheus
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# Istio Ingress Gateway Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-ingressgateway-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
+    path: /stats/prometheus
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# Jaeger Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jaeger-metrics-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+  endpoints:
+  - port: admin-http
+    path: /metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - istio-system
+
+---
+# PostgreSQL Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: postgresql-metrics-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - postgresql-local
+
+---
+# Redis Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-metrics-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - redis-local
+
+---
+# Nginx Ingress Controller Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nginx-ingress-controller-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+  endpoints:
+  - port: prometheus
+    path: /metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - ingress-nginx
+
+---
+# Cert-Manager Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cert-manager-local
+  namespace: default
+  labels:
+    release: infrastructure-crds
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  endpoints:
+  - port: prometheus
+    path: /metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - cert-manager-local

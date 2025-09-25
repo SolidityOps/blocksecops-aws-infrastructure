@@ -8,9 +8,20 @@ resources:
 - ../../../base/grafana
 - ingress.yaml
 - issuer.yaml
+- datasources.yaml
+- dashboards-configmap.yaml
+- application-overview-dashboard.yaml
+- istio-service-mesh-dashboard.yaml
+- api-service-dashboard.yaml
+- security-tools-dashboard.yaml
+- intelligence-engine-dashboard.yaml
+- database-dashboard.yaml
+- infrastructure-dashboard.yaml
+- peer-authentication.yaml
 
 patchesStrategicMerge:
 - namespace-patch.yaml
+- deployment-patch.yaml
 
 commonLabels:
   environment: local

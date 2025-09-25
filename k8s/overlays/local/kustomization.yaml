@@ -11,7 +11,7 @@ resources:
 - redis
 - nginx-ingress
 - cert-manager
-- prometheus
+- servicemonitors.yaml
 - grafana
 - argocd
 - istio

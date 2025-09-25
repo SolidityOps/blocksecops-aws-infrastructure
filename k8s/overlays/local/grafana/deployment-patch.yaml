@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      containers:
+      - name: grafana
+        volumeMounts:
+        - name: dashboard-providers
+          mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+          subPath: dashboards.yaml
+        - name: datasources
+          mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+          subPath: datasources.yaml
+        - name: dashboard-application-overview
+          mountPath: /var/lib/grafana/dashboards/applications/application-overview.json
+          subPath: application-overview.json
+        - name: dashboard-istio-service-mesh
+          mountPath: /var/lib/grafana/dashboards/istio/istio-service-mesh.json
+          subPath: istio-service-mesh.json
+        - name: dashboard-api-service
+          mountPath: /var/lib/grafana/dashboards/applications/api-service.json
+          subPath: api-service.json
+        - name: dashboard-security-tools
+          mountPath: /var/lib/grafana/dashboards/security/security-tools.json
+          subPath: security-tools.json
+        - name: dashboard-intelligence-engine
+          mountPath: /var/lib/grafana/dashboards/intelligence/intelligence-engine.json
+          subPath: intelligence-engine.json
+        - name: dashboard-database
+          mountPath: /var/lib/grafana/dashboards/database/database.json
+          subPath: database.json
+        - name: dashboard-infrastructure
+          mountPath: /var/lib/grafana/dashboards/infrastructure/infrastructure.json
+          subPath: infrastructure.json
+      volumes:
+      - name: dashboard-providers
+        configMap:
+          name: grafana-dashboard-providers
+      - name: datasources
+        configMap:
+          name: grafana-datasources
+      - name: dashboard-application-overview
+        configMap:
+          name: grafana-dashboard-application-overview
+      - name: dashboard-istio-service-mesh
+        configMap:
+          name: grafana-dashboard-istio-service-mesh
+      - name: dashboard-api-service
+        configMap:
+          name: grafana-dashboard-api-service
+      - name: dashboard-security-tools
+        configMap:
+          name: grafana-dashboard-security-tools
+      - name: dashboard-intelligence-engine
+        configMap:
+          name: grafana-dashboard-intelligence-engine
+      - name: dashboard-database
+        configMap:
+          name: grafana-dashboard-database
+      - name: dashboard-infrastructure
+        configMap:
+          name: grafana-dashboard-infrastructure
