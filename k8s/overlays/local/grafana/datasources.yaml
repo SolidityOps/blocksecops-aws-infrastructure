@@ -35,17 +35,19 @@ data:
       version: 1
       editable: false
       jsonData:
-        tracesToLogs:
-          datasourceUid: 'loki'
-          tags: ['job', 'instance', 'pod', 'namespace']
-          mappedTags: [
-            {
-              key: 'service.name',
-              value: 'service'
-            }
-          ]
-          mapTagNamesEnabled: false
-          spanStartTimeShift: '1h'
-          spanEndTimeShift: '1h'
-          filterByTraceID: false
-          filterBySpanID: false
+        # tracesToLogs configuration disabled - requires Loki datasource
+        # Uncomment and configure when Loki is deployed:
+        # tracesToLogs:
+        #   datasourceUid: 'loki'
+        #   tags: ['job', 'instance', 'pod', 'namespace']
+        #   mappedTags: [
+        #     {
+        #       key: 'service.name',
+        #       value: 'service'
+        #     }
+        #   ]
+        #   mapTagNamesEnabled: false
+        #   spanStartTimeShift: '1h'
+        #   spanEndTimeShift: '1h'
+        #   filterByTraceID: false
+        #   filterBySpanID: false
