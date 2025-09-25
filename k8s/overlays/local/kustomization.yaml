@@ -14,9 +14,6 @@ resources:
 - servicemonitors.yaml
 - grafana
 - argocd
-- istio
-- jaeger
-- kiali
 
 commonLabels:
   environment: local

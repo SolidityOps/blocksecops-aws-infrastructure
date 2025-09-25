@@ -8,9 +8,8 @@ metadata:
 data:
   application-overview.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Application Overview - Solidity Security",
+      "id": null,
+      "title": "Application Overview - Solidity Security",
         "tags": ["solidity-security", "applications"],
         "style": "dark",
         "timezone": "browser",
@@ -120,5 +119,4 @@ data:
         "schemaVersion": 16,
         "version": 1,
         "links": []
-      }
     }

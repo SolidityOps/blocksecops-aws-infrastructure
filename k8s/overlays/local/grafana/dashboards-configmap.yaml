@@ -9,25 +9,6 @@ data:
     apiVersion: 1
 
     providers:
-    - name: 'default'
-      orgId: 1
-      folder: ''
-      type: file
-      disableDeletion: false
-      updateIntervalSeconds: 10
-      allowUiUpdates: true
-      options:
-        path: /var/lib/grafana/dashboards/default
-
-    - name: 'istio'
-      orgId: 1
-      folder: 'Istio Service Mesh'
-      type: file
-      disableDeletion: false
-      updateIntervalSeconds: 10
-      allowUiUpdates: true
-      options:
-        path: /var/lib/grafana/dashboards/istio
 
     - name: 'applications'
       orgId: 1

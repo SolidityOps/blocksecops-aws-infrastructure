@@ -8,13 +8,12 @@ metadata:
 data:
   database.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Database Monitoring - Solidity Security",
-        "tags": ["database", "postgresql", "redis", "solidity-security"],
-        "style": "dark",
-        "timezone": "browser",
-        "panels": [
+      "id": null,
+      "title": "Database Monitoring - Solidity Security",
+      "tags": ["database", "postgresql", "redis", "solidity-security"],
+      "style": "dark",
+      "timezone": "browser",
+      "panels": [
           {
             "id": 1,
             "title": "PostgreSQL Connections",
@@ -203,14 +202,13 @@ data:
             ],
             "gridPos": {"h": 8, "w": 12, "x": 12, "y": 30}
           }
-        ],
-        "time": {"from": "now-1h", "to": "now"},
-        "timepicker": {},
-        "templating": {"list": []},
-        "annotations": {"list": []},
-        "refresh": "30s",
-        "schemaVersion": 16,
-        "version": 1,
-        "links": []
-      }
+      ],
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "templating": {"list": []},
+      "annotations": {"list": []},
+      "refresh": "30s",
+      "schemaVersion": 16,
+      "version": 1,
+      "links": []
     }

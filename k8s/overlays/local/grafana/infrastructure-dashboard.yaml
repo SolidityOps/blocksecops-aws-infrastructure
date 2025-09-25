@@ -8,13 +8,12 @@ metadata:
 data:
   infrastructure.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Kubernetes Infrastructure - Solidity Security",
-        "tags": ["kubernetes", "infrastructure", "nginx", "cert-manager"],
-        "style": "dark",
-        "timezone": "browser",
-        "panels": [
+      "id": null,
+      "title": "Kubernetes Infrastructure - Solidity Security",
+      "tags": ["kubernetes", "infrastructure", "nginx", "cert-manager"],
+      "style": "dark",
+      "timezone": "browser",
+      "panels": [
           {
             "id": 1,
             "title": "Nginx Ingress Controller - Request Rate",
@@ -166,14 +165,13 @@ data:
             ],
             "gridPos": {"h": 6, "w": 8, "x": 16, "y": 22}
           }
-        ],
-        "time": {"from": "now-1h", "to": "now"},
-        "timepicker": {},
-        "templating": {"list": []},
-        "annotations": {"list": []},
-        "refresh": "30s",
-        "schemaVersion": 16,
-        "version": 1,
-        "links": []
-      }
+      ],
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "templating": {"list": []},
+      "annotations": {"list": []},
+      "refresh": "30s",
+      "schemaVersion": 16,
+      "version": 1,
+      "links": []
     }

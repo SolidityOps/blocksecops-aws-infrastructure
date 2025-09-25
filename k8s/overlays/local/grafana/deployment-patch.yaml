@@ -5,6 +5,7 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: grafana
       containers:
       - name: grafana
         volumeMounts:
@@ -17,9 +18,6 @@ spec:
         - name: dashboard-application-overview
           mountPath: /var/lib/grafana/dashboards/applications/application-overview.json
           subPath: application-overview.json
-        - name: dashboard-istio-service-mesh
-          mountPath: /var/lib/grafana/dashboards/istio/istio-service-mesh.json
-          subPath: istio-service-mesh.json
         - name: dashboard-api-service
           mountPath: /var/lib/grafana/dashboards/applications/api-service.json
           subPath: api-service.json
@@ -45,9 +43,6 @@ spec:
       - name: dashboard-application-overview
         configMap:
           name: grafana-dashboard-application-overview
-      - name: dashboard-istio-service-mesh
-        configMap:
-          name: grafana-dashboard-istio-service-mesh
       - name: dashboard-api-service
         configMap:
           name: grafana-dashboard-api-service

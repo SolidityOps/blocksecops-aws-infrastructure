@@ -1,0 +1,24 @@
+---
+# PeerAuthentication for default namespace - permissive mode to allow gradual mTLS adoption
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+---
+# PeerAuthentication specifically for Prometheus
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: prometheus-peer-auth
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  mtls:
+    mode: PERMISSIVE

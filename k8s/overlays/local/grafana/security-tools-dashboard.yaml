@@ -8,13 +8,12 @@ metadata:
 data:
   security-tools.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Security Tools Integration - Solidity Security",
-        "tags": ["security", "tools", "integration", "solidity-security"],
-        "style": "dark",
-        "timezone": "browser",
-        "panels": [
+      "id": null,
+      "title": "Security Tools Integration - Solidity Security",
+      "tags": ["security", "tools", "integration", "solidity-security"],
+      "style": "dark",
+      "timezone": "browser",
+      "panels": [
           {
             "id": 1,
             "title": "Tool Execution Rate",
@@ -155,14 +154,13 @@ data:
             ],
             "gridPos": {"h": 6, "w": 8, "x": 16, "y": 24}
           }
-        ],
-        "time": {"from": "now-1h", "to": "now"},
-        "timepicker": {},
-        "templating": {"list": []},
-        "annotations": {"list": []},
-        "refresh": "30s",
-        "schemaVersion": 16,
-        "version": 1,
-        "links": []
-      }
+      ],
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "templating": {"list": []},
+      "annotations": {"list": []},
+      "refresh": "30s",
+      "schemaVersion": 16,
+      "version": 1,
+      "links": []
     }
