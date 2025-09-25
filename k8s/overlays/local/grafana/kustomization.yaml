@@ -11,13 +11,12 @@ resources:
 - datasources.yaml
 - dashboards-configmap.yaml
 - application-overview-dashboard.yaml
-- istio-service-mesh-dashboard.yaml
 - api-service-dashboard.yaml
 - security-tools-dashboard.yaml
 - intelligence-engine-dashboard.yaml
 - database-dashboard.yaml
 - infrastructure-dashboard.yaml
-- peer-authentication.yaml
+- rbac.yaml
 
 patchesStrategicMerge:
 - namespace-patch.yaml

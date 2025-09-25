@@ -8,13 +8,12 @@ metadata:
 data:
   intelligence-engine.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Intelligence Engine - Solidity Security",
-        "tags": ["ai", "intelligence", "analysis", "solidity-security"],
-        "style": "dark",
-        "timezone": "browser",
-        "panels": [
+      "id": null,
+      "title": "Intelligence Engine - Solidity Security",
+      "tags": ["ai", "intelligence", "analysis", "solidity-security"],
+      "style": "dark",
+      "timezone": "browser",
+      "panels": [
           {
             "id": 1,
             "title": "Analysis Request Volume",
@@ -161,14 +160,13 @@ data:
             ],
             "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
           }
-        ],
-        "time": {"from": "now-1h", "to": "now"},
-        "timepicker": {},
-        "templating": {"list": []},
-        "annotations": {"list": []},
-        "refresh": "30s",
-        "schemaVersion": 16,
-        "version": 1,
-        "links": []
-      }
+      ],
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "templating": {"list": []},
+      "annotations": {"list": []},
+      "refresh": "30s",
+      "schemaVersion": 16,
+      "version": 1,
+      "links": []
     }

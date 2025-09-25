@@ -8,9 +8,8 @@ metadata:
 data:
   istio-service-mesh.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Istio Service Mesh - Solidity Security",
+      "id": null,
+      "title": "Istio Service Mesh - Solidity Security",
         "tags": ["istio", "service-mesh", "solidity-security"],
         "style": "dark",
         "timezone": "browser",
@@ -130,5 +129,4 @@ data:
         "schemaVersion": 16,
         "version": 1,
         "links": []
-      }
     }
