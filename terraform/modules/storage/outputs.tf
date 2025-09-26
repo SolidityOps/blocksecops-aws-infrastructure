@@ -18,6 +18,14 @@ output "redis_security_group_id" {
   value       = aws_security_group.redis.id
 }
 
+# Redis AUTH token for Vault synchronization
+# This output allows the token to be retrieved and stored in Vault
+output "redis_auth_token" {
+  description = "Redis AUTH token for synchronization with Vault"
+  value       = random_password.redis_auth_token.result
+  sensitive   = true
+}
+
 # Redis AUTH tokens are now stored in HashiCorp Vault
 # Access via Vault Secrets Operator in Kubernetes
 # output "redis_auth_token_secret_arn" - deprecated in favor of Vault

@@ -27,7 +27,7 @@ variable "private_subnet_cidr" {
 variable "log_retention_days" {
   description = "VPC Flow Logs retention period for staging"
   type        = number
-  default     = 7  # Shorter retention for staging to reduce costs
+  default     = 7 # Shorter retention for staging to reduce costs
 }
 
 variable "common_tags" {
@@ -46,19 +46,19 @@ variable "common_tags" {
 variable "redis_node_type" {
   description = "ElastiCache Redis node type for staging"
   type        = string
-  default     = "cache.t3.micro"  # Cost-optimized for staging
+  default     = "cache.t3.micro" # Cost-optimized for staging
 }
 
 variable "redis_num_cache_nodes" {
   description = "Number of cache nodes in the Redis cluster for staging"
   type        = number
-  default     = 1  # Single node for staging
+  default     = 1 # Single node for staging
 }
 
 variable "backup_retention_limit" {
   description = "Number of days for which ElastiCache retains automatic cache cluster backups"
   type        = number
-  default     = 3  # Shorter retention for staging
+  default     = 3 # Shorter retention for staging
 }
 
 variable "backup_window" {

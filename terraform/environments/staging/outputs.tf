@@ -78,6 +78,12 @@ output "redis_port" {
   value       = module.storage.redis_port
 }
 
+output "redis_auth_token" {
+  description = "Redis AUTH token for staging (for Vault synchronization)"
+  value       = module.storage.redis_auth_token
+  sensitive   = true
+}
+
 # Redis AUTH tokens are now stored in HashiCorp Vault
 # Access via Vault Secrets Operator in Kubernetes
 # output "redis_auth_token_secret_arn" - deprecated in favor of Vault

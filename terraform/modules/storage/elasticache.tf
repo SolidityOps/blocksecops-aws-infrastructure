@@ -1,27 +1,23 @@
+# Redis AUTH token for initial ElastiCache setup
+# This token will be stored in Vault and managed there
+# The token should match what's stored in Vault at: {environment}/redis/auth-token
 resource "random_password" "redis_auth_token" {
   length  = var.auth_token_length
   special = true
+
+  # Keep this token stable unless explicitly changed
+  keepers = {
+    environment = var.environment
+  }
 }
 
-resource "aws_secretsmanager_secret" "redis_auth_token" {
-  name        = "${var.environment}-redis-auth-token"
-  description = "Redis AUTH token for ${var.environment} environment"
+# Redis AUTH token is now managed by HashiCorp Vault
+# The token is stored in Vault at: {environment}/redis/auth-token
+# This removes dependency on AWS Secrets Manager
 
-  tags = merge(var.tags, {
-    Name        = "${var.environment}-redis-auth-token"
-    Component   = "cache"
-    Environment = var.environment
-  })
-}
-
-resource "aws_secretsmanager_secret_version" "redis_auth_token" {
-  secret_id = aws_secretsmanager_secret.redis_auth_token.id
-  secret_string = jsonencode({
-    auth_token = random_password.redis_auth_token.result
-    host       = aws_elasticache_cluster.redis.cache_nodes[0].address
-    port       = var.redis_port
-  })
-}
+# Redis connection details are now managed by HashiCorp Vault
+# Applications access Redis credentials via Vault Secrets Operator
+# Example Vault path: {environment}/redis/auth-token
 
 resource "aws_elasticache_subnet_group" "redis" {
   name       = "${var.environment}-redis-subnet-group"
@@ -46,9 +42,9 @@ resource "aws_elasticache_cluster" "redis" {
   engine_version       = var.redis_engine_version
 
   # Security configurations
-  auth_token                 = random_password.redis_auth_token.result
-  transit_encryption_enabled = true
-  at_rest_encryption_enabled = true
+  # Note: AUTH token and encryption are only available with replication groups
+  # For single-node clusters in staging, access is controlled via security groups
+  # Production should use aws_elasticache_replication_group for full encryption support
 
   # Backup configurations
   snapshot_retention_limit = var.backup_retention_limit
