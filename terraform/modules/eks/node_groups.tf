@@ -22,8 +22,8 @@ resource "aws_eks_node_group" "main" {
     max_unavailable_percentage = var.node_group_max_unavailable_percentage
   }
 
-  ami_type               = var.node_group_ami_type
-  release_version        = var.node_group_release_version
+  ami_type        = var.node_group_ami_type
+  release_version = var.node_group_release_version
 
   remote_access {
     ec2_ssh_key               = var.node_group_ssh_key
@@ -46,8 +46,8 @@ resource "aws_eks_node_group" "main" {
   ]
 
   tags = merge(var.tags, {
-    Name = "${var.cluster_name}-${var.node_group_name}"
-    Type = "EKS-NodeGroup"
+    Name                                                 = "${var.cluster_name}-${var.node_group_name}"
+    Type                                                 = "EKS-NodeGroup"
     "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned"
   })
 
@@ -197,8 +197,8 @@ resource "aws_eks_node_group" "secondary" {
   ]
 
   tags = merge(var.tags, {
-    Name = "${var.cluster_name}-${var.node_group_name}-secondary"
-    Type = "EKS-NodeGroup-Secondary"
+    Name                                                 = "${var.cluster_name}-${var.node_group_name}-secondary"
+    Type                                                 = "EKS-NodeGroup-Secondary"
     "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned"
   })
 

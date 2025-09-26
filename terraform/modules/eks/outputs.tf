@@ -177,10 +177,10 @@ output "cluster_autoscaler_policy_arn" {
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster"
   value = templatefile("${path.module}/kubeconfig.tpl", {
-    cluster_name                      = aws_eks_cluster.main.name
-    endpoint                         = aws_eks_cluster.main.endpoint
-    certificate_authority_data       = aws_eks_cluster.main.certificate_authority[0].data
-    region                          = data.aws_region.current.name
+    cluster_name               = aws_eks_cluster.main.name
+    endpoint                   = aws_eks_cluster.main.endpoint
+    certificate_authority_data = aws_eks_cluster.main.certificate_authority[0].data
+    region                     = data.aws_region.current.name
   })
   sensitive = true
 }

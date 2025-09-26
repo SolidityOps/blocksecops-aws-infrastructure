@@ -232,7 +232,7 @@ variable "secondary_node_group_ami_type" {
 variable "secondary_node_group_labels" {
   description = "Kubernetes labels for the secondary node group"
   type        = map(string)
-  default     = {
+  default = {
     "node-type" = "spot"
   }
 }
