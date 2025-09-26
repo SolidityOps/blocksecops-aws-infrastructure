@@ -62,6 +62,42 @@ output "internet_gateway_id" {
   value       = module.networking.internet_gateway_id
 }
 
+# ElastiCache Redis Outputs
+output "redis_cluster_id" {
+  description = "ElastiCache Redis cluster ID for staging"
+  value       = module.storage.redis_cluster_id
+}
+
+output "redis_endpoint" {
+  description = "ElastiCache Redis cluster endpoint for staging"
+  value       = module.storage.redis_endpoint
+}
+
+output "redis_port" {
+  description = "ElastiCache Redis cluster port for staging"
+  value       = module.storage.redis_port
+}
+
+output "redis_auth_token" {
+  description = "Redis AUTH token for staging (for Vault synchronization)"
+  value       = module.storage.redis_auth_token
+  sensitive   = true
+}
+
+# Redis AUTH tokens are now stored in HashiCorp Vault
+# Access via Vault Secrets Operator in Kubernetes
+# output "redis_auth_token_secret_arn" - deprecated in favor of Vault
+
+# Redis AUTH tokens are now stored in HashiCorp Vault
+# Access via Vault path: staging/redis/auth-token
+# output "redis_auth_token_secret_name" - deprecated in favor of Vault
+
+# Cache Monitoring Outputs
+output "redis_dashboard_url" {
+  description = "URL of the Redis CloudWatch dashboard for staging"
+  value       = module.cache_monitoring.redis_dashboard_url
+}
+
 # Monitoring Outputs
 output "vpc_flow_logs_s3_bucket_name" {
   description = "Name of the staging VPC Flow Logs S3 bucket"

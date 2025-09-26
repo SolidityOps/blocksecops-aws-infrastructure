@@ -28,19 +28,45 @@ provider "aws" {
 module "networking" {
   source = "../../modules/networking"
 
-  environment           = "production"
-  aws_region           = var.aws_region
-  vpc_cidr             = var.vpc_cidr
-  public_subnet_cidr   = var.public_subnet_cidr
-  private_subnet_cidr  = var.private_subnet_cidr
-  common_tags          = var.common_tags
+  environment         = "production"
+  aws_region          = var.aws_region
+  vpc_cidr            = var.vpc_cidr
+  public_subnet_cidr  = var.public_subnet_cidr
+  private_subnet_cidr = var.private_subnet_cidr
+  common_tags         = var.common_tags
 }
 
-# Monitoring Module
+# Storage Module (ElastiCache Redis)
+module "storage" {
+  source = "../../modules/storage"
+
+  environment            = "production"
+  vpc_id                 = module.networking.vpc_id
+  private_subnet_ids     = [module.networking.private_subnet_id]
+  eks_security_group_id  = module.networking.eks_nodes_security_group_id
+  redis_node_type        = var.redis_node_type
+  redis_num_cache_nodes  = var.redis_num_cache_nodes
+  backup_retention_limit = var.backup_retention_limit
+  backup_window          = var.backup_window
+  maintenance_window     = var.maintenance_window
+  snapshot_window        = var.snapshot_window
+  tags                   = var.common_tags
+}
+
+# Cache Monitoring Module
+module "cache_monitoring" {
+  source = "../../modules/cache_monitoring"
+
+  environment      = "production"
+  redis_cluster_id = module.storage.redis_cluster_id
+  tags             = var.common_tags
+}
+
+# Monitoring Module (VPC Flow Logs)
 module "monitoring" {
   source = "../../modules/monitoring"
 
-  environment         = "production"
+  environment        = "production"
   aws_region         = var.aws_region
   vpc_id             = module.networking.vpc_id
   log_retention_days = var.log_retention_days

@@ -8,14 +8,6 @@ resource "aws_security_group" "eks_cluster" {
   description = "Security group for EKS cluster control plane"
   vpc_id      = aws_vpc.main.id
 
-  ingress {
-    description = "HTTPS from EKS nodes"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
-  }
-
   egress {
     description = "All outbound traffic"
     from_port   = 0
@@ -43,30 +35,6 @@ resource "aws_security_group" "eks_nodes" {
     to_port     = 65535
     protocol    = "tcp"
     self        = true
-  }
-
-  ingress {
-    description = "Pod to pod communication"
-    from_port   = 1025
-    to_port     = 65535
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_cluster.id]
-  }
-
-  ingress {
-    description = "Kubernetes API access from cluster"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_cluster.id]
-  }
-
-  ingress {
-    description = "ALB ingress controller webhooks"
-    from_port   = 9443
-    to_port     = 9443
-    protocol    = "tcp"
-    security_groups = [aws_security_group.alb.id]
   }
 
   egress {
@@ -106,14 +74,6 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    description = "All outbound traffic to EKS nodes"
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
-  }
-
   tags = merge(var.common_tags, {
     Name        = "${var.environment}-solidity-security-alb-sg"
     Environment = var.environment
@@ -132,10 +92,10 @@ resource "aws_security_group" "elasticache" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "Redis access from EKS nodes only"
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
+    description     = "Redis access from EKS nodes only"
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
 
@@ -148,7 +108,7 @@ resource "aws_security_group" "elasticache" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["127.0.0.1/32"]  # Localhost only (effectively no access)
+    cidr_blocks = ["127.0.0.1/32"] # Localhost only (effectively no access)
   }
 
   tags = merge(var.common_tags, {
@@ -156,4 +116,90 @@ resource "aws_security_group" "elasticache" {
     Environment = var.environment
     Service     = "ElastiCache"
   })
+}
+
+# Security Group Rules (defined separately to avoid circular dependencies)
+
+# EKS Cluster ingress from nodes
+resource "aws_security_group_rule" "eks_cluster_ingress_nodes" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.eks_cluster.id
+  description              = "HTTPS from EKS nodes"
+}
+
+# EKS Nodes ingress from cluster
+resource "aws_security_group_rule" "eks_nodes_ingress_cluster_pods" {
+  type                     = "ingress"
+  from_port                = 1025
+  to_port                  = 65535
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_cluster.id
+  security_group_id        = aws_security_group.eks_nodes.id
+  description              = "Pod to pod communication from cluster"
+}
+
+resource "aws_security_group_rule" "eks_nodes_ingress_cluster_api" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_cluster.id
+  security_group_id        = aws_security_group.eks_nodes.id
+  description              = "Kubernetes API access from cluster"
+}
+
+# EKS Nodes ingress from ALB for webhook
+resource "aws_security_group_rule" "eks_nodes_ingress_alb_webhook" {
+  type                     = "ingress"
+  from_port                = 9443
+  to_port                  = 9443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.eks_nodes.id
+  description              = "ALB ingress controller webhooks"
+}
+
+# ALB egress to EKS nodes - specific ports for application traffic
+resource "aws_security_group_rule" "alb_egress_eks_nodes_http" {
+  type                     = "egress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "HTTP traffic to EKS nodes"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_https" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "HTTPS traffic to EKS nodes"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_apps" {
+  type                     = "egress"
+  from_port                = 8000
+  to_port                  = 8999
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "Application traffic to EKS nodes (8000-8999)"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_nodeports" {
+  type                     = "egress"
+  from_port                = 30000
+  to_port                  = 32767
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "NodePort services traffic to EKS nodes"
 }

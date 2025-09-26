@@ -49,8 +49,8 @@ variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
   default = {
-    Project     = "SoliditySecurityPlatform"
-    ManagedBy   = "Terraform"
-    Owner       = "DevOps"
+    Project   = "SoliditySecurityPlatform"
+    ManagedBy = "Terraform"
+    Owner     = "DevOps"
   }
 }

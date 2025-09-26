@@ -109,11 +109,6 @@ output "ecr_dkr_vpc_endpoint_id" {
   value       = aws_vpc_endpoint.ecr_dkr.id
 }
 
-output "secrets_manager_vpc_endpoint_id" {
-  description = "ID of the Secrets Manager VPC endpoint"
-  value       = aws_vpc_endpoint.secrets_manager.id
-}
-
 
 # Network ACL Outputs
 # Explicit dependencies ensure proper resource creation order
