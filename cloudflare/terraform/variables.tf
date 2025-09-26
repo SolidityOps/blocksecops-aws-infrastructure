@@ -9,13 +9,13 @@ variable "domain_name" {
 variable "production_lb_ip" {
   description = "Production load balancer IP address"
   type        = string
-  default     = "1.2.3.4"  # Placeholder - will be updated after AWS ALB deployment
+  default     = "PRODUCTION_LB_IP"  # Placeholder - must be updated with actual AWS ALB IP
 }
 
 variable "staging_lb_ip" {
   description = "Staging load balancer IP address"
   type        = string
-  default     = "5.6.7.8"  # Placeholder - will be updated after AWS ALB deployment
+  default     = "STAGING_LB_IP"  # Placeholder - must be updated with actual AWS ALB IP
 }
 
 variable "cloudflare_zone_id" {

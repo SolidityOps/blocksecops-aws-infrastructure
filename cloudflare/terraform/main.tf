@@ -178,6 +178,18 @@ resource "cloudflare_record" "monitoring_staging" {
   comment = "Staging monitoring dashboard"
 }
 
+# Mail subdomain A record (required for MX record)
+resource "cloudflare_record" "mail" {
+  zone_id = data.cloudflare_zone.main.id
+  name    = "mail"
+  value   = var.production_lb_ip
+  type    = "A"
+  ttl     = 300
+  proxied = false  # Mail servers typically need direct access
+
+  comment = "Mail server endpoint"
+}
+
 # Email MX records (if needed for notifications)
 resource "cloudflare_record" "mx" {
   zone_id  = data.cloudflare_zone.main.id
@@ -188,6 +200,7 @@ resource "cloudflare_record" "mx" {
   ttl      = 3600
 
   comment = "Primary mail exchange"
+  depends_on = [cloudflare_record.mail]
 }
 
 # SPF record for email security

@@ -58,7 +58,11 @@ validate_environment() {
     fi
 
     local tf_version
-    tf_version=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | tr -d 'v')
+    if command -v jq &> /dev/null; then
+        tf_version=$(terraform version -json 2>/dev/null | jq -r '.terraform_version' 2>/dev/null || echo "unknown")
+    else
+        tf_version=$(terraform version 2>/dev/null | head -1 | awk '{print $2}' | tr -d 'v' || echo "unknown")
+    fi
     log_info "Terraform version: ${tf_version}"
 
     # Check for required environment variables
