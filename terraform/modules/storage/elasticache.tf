@@ -30,26 +30,36 @@ resource "aws_elasticache_subnet_group" "redis" {
   })
 }
 
-resource "aws_elasticache_cluster" "redis" {
-  cluster_id           = "${var.environment}-redis"
-  engine               = "redis"
-  node_type            = var.redis_node_type
-  num_cache_nodes      = var.redis_num_cache_nodes
-  parameter_group_name = aws_elasticache_parameter_group.redis.name
-  port                 = var.redis_port
-  subnet_group_name    = aws_elasticache_subnet_group.redis.name
-  security_group_ids   = [aws_security_group.redis.id]
-  engine_version       = var.redis_engine_version
+resource "aws_elasticache_replication_group" "redis" {
+  replication_group_id         = "${var.environment}-redis"
+  description                  = "Redis replication group for ${var.environment} environment"
 
-  # Security configurations
-  # Note: AUTH token and encryption are only available with replication groups
-  # For single-node clusters in staging, access is controlled via security groups
-  # Production should use aws_elasticache_replication_group for full encryption support
+  # Node configuration
+  node_type                    = var.redis_node_type
+  port                         = var.redis_port
+  parameter_group_name         = aws_elasticache_parameter_group.redis.name
+  subnet_group_name            = aws_elasticache_subnet_group.redis.name
+  security_group_ids           = [aws_security_group.redis.id]
+  engine_version               = var.redis_engine_version
+
+  # Cluster configuration - single node for staging, can be scaled for production
+  num_cache_clusters           = var.redis_num_cache_nodes
+
+  # Security configurations - now available with replication groups
+  auth_token                   = random_password.redis_auth_token.result
+  transit_encryption_enabled   = true
+  at_rest_encryption_enabled   = true
+
+  # Enable automatic failover for production reliability
+  automatic_failover_enabled   = var.redis_num_cache_nodes > 1
 
   # Backup configurations
-  snapshot_retention_limit = var.backup_retention_limit
-  snapshot_window          = var.snapshot_window
-  maintenance_window       = var.maintenance_window
+  snapshot_retention_limit     = var.backup_retention_limit
+  snapshot_window              = var.snapshot_window
+  maintenance_window           = var.maintenance_window
+
+  # Apply immediately for development environments
+  apply_immediately            = var.environment == "staging"
 
   # Logging configuration
   log_delivery_configuration {
@@ -60,7 +70,7 @@ resource "aws_elasticache_cluster" "redis" {
   }
 
   tags = merge(var.tags, {
-    Name        = "${var.environment}-redis-cluster"
+    Name        = "${var.environment}-redis-replication-group"
     Component   = "cache"
     Environment = var.environment
   })

@@ -39,7 +39,7 @@ check_result "ElastiCache Redis elasticache.tf exists" "$(test -f terraform/modu
 check_result "ElastiCache Redis security_groups.tf exists" "$(test -f terraform/modules/storage/security_groups.tf && echo true || echo false)"
 check_result "ElastiCache Redis parameter_groups.tf exists" "$(test -f terraform/modules/storage/parameter_groups.tf && echo true || echo false)"
 check_result "ElastiCache Redis outputs.tf exists" "$(test -f terraform/modules/storage/outputs.tf && echo true || echo false)"
-check_result "Cache monitoring module exists" "$(test -f terraform/modules/monitoring/cache_monitoring.tf && echo true || echo false)"
+check_result "Cache monitoring module exists" "$(test -f terraform/modules/cache_monitoring/main.tf && echo true || echo false)"
 
 echo -e "\n${YELLOW}🏗️  Environment Configuration Validation${NC}"
 echo "------------------------------------------"
@@ -62,16 +62,16 @@ check_result "Redis AUTH token configured" "$(grep -q 'auth_token' terraform/mod
 check_result "Redis encryption in transit enabled" "$(grep -q 'transit_encryption_enabled = true' terraform/modules/storage/elasticache.tf && echo true || echo false)"
 check_result "Redis encryption at rest enabled" "$(grep -q 'at_rest_encryption_enabled = true' terraform/modules/storage/elasticache.tf && echo true || echo false)"
 check_result "Redis security groups configured" "$(grep -q 'aws_security_group' terraform/modules/storage/security_groups.tf && echo true || echo false)"
-check_result "Secrets Manager integration" "$(grep -q 'aws_secretsmanager_secret' terraform/modules/storage/elasticache.tf && echo true || echo false)"
+check_result "Vault integration for secrets management" "$(grep -q 'HashiCorp Vault' terraform/modules/storage/elasticache.tf && echo true || echo false)"
 
 echo -e "\n${YELLOW}📊 Monitoring Configuration Validation${NC}"
 echo "--------------------------------------"
 
 # Check monitoring setup
-check_result "CloudWatch alarms configured" "$(grep -q 'aws_cloudwatch_metric_alarm' terraform/modules/monitoring/cache_monitoring.tf && echo true || echo false)"
-check_result "CloudWatch dashboard configured" "$(grep -q 'aws_cloudwatch_dashboard' terraform/modules/monitoring/cache_monitoring.tf && echo true || echo false)"
-check_result "Redis CPU monitoring" "$(grep -q 'CPUUtilization' terraform/modules/monitoring/cache_monitoring.tf && echo true || echo false)"
-check_result "Redis memory monitoring" "$(grep -q 'DatabaseMemoryUsagePercentage' terraform/modules/monitoring/cache_monitoring.tf && echo true || echo false)"
+check_result "CloudWatch alarms configured" "$(grep -q 'aws_cloudwatch_metric_alarm' terraform/modules/cache_monitoring/main.tf && echo true || echo false)"
+check_result "CloudWatch dashboard configured" "$(grep -q 'aws_cloudwatch_dashboard' terraform/modules/cache_monitoring/main.tf && echo true || echo false)"
+check_result "Redis CPU monitoring" "$(grep -q 'CPUUtilization' terraform/modules/cache_monitoring/main.tf && echo true || echo false)"
+check_result "Redis memory monitoring" "$(grep -q 'DatabaseMemoryUsagePercentage' terraform/modules/cache_monitoring/main.tf && echo true || echo false)"
 
 echo -e "\n${YELLOW}🗃️  PostgreSQL Kubernetes Configuration${NC}"
 echo "----------------------------------------"

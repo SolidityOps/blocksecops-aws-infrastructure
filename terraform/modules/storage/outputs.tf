@@ -1,16 +1,16 @@
 output "redis_cluster_id" {
-  description = "ElastiCache Redis cluster ID"
-  value       = aws_elasticache_cluster.redis.cluster_id
+  description = "ElastiCache Redis replication group ID"
+  value       = aws_elasticache_replication_group.redis.replication_group_id
 }
 
 output "redis_endpoint" {
-  description = "ElastiCache Redis cluster endpoint"
-  value       = aws_elasticache_cluster.redis.cache_nodes[0].address
+  description = "ElastiCache Redis primary endpoint"
+  value       = aws_elasticache_replication_group.redis.configuration_endpoint_address != null ? aws_elasticache_replication_group.redis.configuration_endpoint_address : aws_elasticache_replication_group.redis.primary_endpoint_address
 }
 
 output "redis_port" {
   description = "ElastiCache Redis cluster port"
-  value       = aws_elasticache_cluster.redis.port
+  value       = aws_elasticache_replication_group.redis.port
 }
 
 output "redis_security_group_id" {

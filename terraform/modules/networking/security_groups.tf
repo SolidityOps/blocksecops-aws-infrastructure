@@ -74,14 +74,6 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    description = "All outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = merge(var.common_tags, {
     Name        = "${var.environment}-solidity-security-alb-sg"
     Environment = var.environment
@@ -171,13 +163,43 @@ resource "aws_security_group_rule" "eks_nodes_ingress_alb_webhook" {
   description              = "ALB ingress controller webhooks"
 }
 
-# ALB egress to EKS nodes
-resource "aws_security_group_rule" "alb_egress_eks_nodes" {
+# ALB egress to EKS nodes - specific ports for application traffic
+resource "aws_security_group_rule" "alb_egress_eks_nodes_http" {
   type                     = "egress"
-  from_port                = 0
-  to_port                  = 65535
+  from_port                = 80
+  to_port                  = 80
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.eks_nodes.id
   security_group_id        = aws_security_group.alb.id
-  description              = "Traffic to EKS nodes"
+  description              = "HTTP traffic to EKS nodes"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_https" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "HTTPS traffic to EKS nodes"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_apps" {
+  type                     = "egress"
+  from_port                = 8000
+  to_port                  = 8999
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "Application traffic to EKS nodes (8000-8999)"
+}
+
+resource "aws_security_group_rule" "alb_egress_eks_nodes_nodeports" {
+  type                     = "egress"
+  from_port                = 30000
+  to_port                  = 32767
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb.id
+  description              = "NodePort services traffic to EKS nodes"
 }
