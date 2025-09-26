@@ -1,5 +1,6 @@
-# Security Groups for EKS, RDS, and ElastiCache
+# Security Groups for EKS and ElastiCache
 # Configured with least-privilege access principles
+# PostgreSQL runs in Kubernetes with NetworkPolicies for security
 
 # EKS Cluster Security Group
 resource "aws_security_group" "eks_cluster" {
@@ -120,38 +121,9 @@ resource "aws_security_group" "alb" {
   })
 }
 
-# RDS Security Group
-resource "aws_security_group" "rds" {
-  name        = "${var.environment}-solidity-security-rds-sg"
-  description = "Security group for RDS PostgreSQL database"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description = "PostgreSQL access from EKS nodes only"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
-  }
-
-  # RDS instances do not require outbound internet connectivity
-  # They only need to respond to incoming database connections
-  # No egress rules are defined for maximum security
-  # (Terraform requires at least one rule, so we use a restrictive placeholder)
-  egress {
-    description = "No outbound connectivity required for database"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["127.0.0.1/32"]  # Localhost only (effectively no access)
-  }
-
-  tags = merge(var.common_tags, {
-    Name        = "${var.environment}-solidity-security-rds-sg"
-    Environment = var.environment
-    Service     = "RDS"
-  })
-}
+# PostgreSQL runs as StatefulSets in Kubernetes
+# Database access is controlled via Kubernetes NetworkPolicies
+# No AWS security groups needed for database tier
 
 # ElastiCache Security Group
 resource "aws_security_group" "elasticache" {
