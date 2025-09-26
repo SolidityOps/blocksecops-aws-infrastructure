@@ -1,0 +1,162 @@
+# Production Environment DNS Records
+# Domain: advancedblockchainsecurity.com
+# Environment: production
+
+dns_records:
+  - name: "@"  # Root domain
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Production root domain"
+
+  - name: "www"
+    type: "CNAME"
+    content: "advancedblockchainsecurity.com"
+    ttl: 300
+    proxied: true
+    comment: "WWW redirect to root domain"
+
+  - name: "api"
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Production API endpoint for backend services"
+
+  - name: "dashboard"
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Production dashboard interface"
+
+  - name: "vault"
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: false  # Direct access needed for Vault UI
+    comment: "Production HashiCorp Vault UI"
+
+  - name: "argocd"
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Production ArgoCD GitOps interface"
+
+  - name: "monitoring"
+    type: "A"
+    content: "PRODUCTION_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Production monitoring dashboard (Grafana)"
+
+  # Email MX records
+  - name: "@"
+    type: "MX"
+    content: "mail.advancedblockchainsecurity.com"
+    priority: 10
+    ttl: 3600
+    comment: "Primary mail exchange"
+
+  # Email security records
+  - name: "@"
+    type: "TXT"
+    content: "v=spf1 include:_spf.google.com ~all"
+    ttl: 3600
+    comment: "SPF record for email security"
+
+  - name: "_dmarc"
+    type: "TXT"
+    content: "v=DMARC1; p=quarantine; rua=mailto:dmarc@advancedblockchainsecurity.com"
+    ttl: 3600
+    comment: "DMARC policy for email security"
+
+  # Domain verification records (for various services)
+  - name: "_verification"
+    type: "TXT"
+    content: "google-site-verification=PLACEHOLDER"
+    ttl: 300
+    comment: "Google Search Console verification"
+
+# SSL Certificate domains for production
+ssl_domains:
+  - "advancedblockchainsecurity.com"
+  - "www.advancedblockchainsecurity.com"
+  - "api.advancedblockchainsecurity.com"
+  - "dashboard.advancedblockchainsecurity.com"
+  - "vault.advancedblockchainsecurity.com"
+  - "argocd.advancedblockchainsecurity.com"
+  - "monitoring.advancedblockchainsecurity.com"
+
+# Environment configuration
+environment:
+  name: "production"
+  description: "Production environment for live services"
+  security_level: "high"
+  cache_level: "aggressive"
+  ssl_mode: "strict"
+  min_tls_version: "1.2"
+  always_use_https: true
+
+# Service routing configuration
+services:
+  api:
+    subdomain: "api"
+    path_rules:
+      - path: "/api/v1/*"
+        backend: "api-service"
+      - path: "/api/v1/auth/*"
+        backend: "auth-service"
+      - path: "/api/v1/analysis/*"
+        backend: "analysis-service"
+      - path: "/api/v1/contracts/*"
+        backend: "contract-parser-service"
+      - path: "/api/v1/tools/*"
+        backend: "tool-integration-service"
+
+  dashboard:
+    subdomain: "dashboard"
+    path_rules:
+      - path: "/*"
+        backend: "dashboard-frontend"
+      - path: "/assets/*"
+        backend: "static-assets"
+      - path: "/api/*"
+        backend: "dashboard-api"
+
+  vault:
+    subdomain: "vault"
+    path_rules:
+      - path: "/ui/*"
+        backend: "vault-ui"
+      - path: "/v1/*"
+        backend: "vault-api"
+
+  argocd:
+    subdomain: "argocd"
+    path_rules:
+      - path: "/*"
+        backend: "argocd-server"
+
+  monitoring:
+    subdomain: "monitoring"
+    path_rules:
+      - path: "/grafana/*"
+        backend: "grafana"
+      - path: "/prometheus/*"
+        backend: "prometheus"
+      - path: "/alertmanager/*"
+        backend: "alertmanager"
+
+# Security headers configuration
+security_headers:
+  - name: "X-Frame-Options"
+    value: "SAMEORIGIN"
+  - name: "X-Content-Type-Options"
+    value: "nosniff"
+  - name: "Referrer-Policy"
+    value: "strict-origin-when-cross-origin"
+  - name: "Permissions-Policy"
+    value: "camera=(), microphone=(), geolocation=()"

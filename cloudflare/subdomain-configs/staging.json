@@ -1,0 +1,100 @@
+{
+  "subdomain_config": {
+    "environment": "staging",
+    "base_domain": "advancedblockchainsecurity.com",
+    "load_balancer_ip": "STAGING_LB_IP",
+    "subdomains": {
+      "staging": {
+        "full_domain": "staging.advancedblockchainsecurity.com",
+        "description": "Main staging environment",
+        "services": ["dashboard", "api", "static-assets"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300
+      },
+      "api-staging": {
+        "full_domain": "api-staging.advancedblockchainsecurity.com",
+        "description": "Staging API endpoints",
+        "services": ["api-service", "auth-service", "analysis-service"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 60
+      },
+      "dashboard-staging": {
+        "full_domain": "dashboard-staging.advancedblockchainsecurity.com",
+        "description": "Staging dashboard interface",
+        "services": ["dashboard-frontend", "ui-core"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 3600
+      },
+      "vault-staging": {
+        "full_domain": "vault-staging.advancedblockchainsecurity.com",
+        "description": "Staging Vault UI",
+        "services": ["vault-ui", "vault-api"],
+        "ssl_required": true,
+        "cloudflare_proxy": false,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "ip_whitelist": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+        }
+      },
+      "argocd-staging": {
+        "full_domain": "argocd-staging.advancedblockchainsecurity.com",
+        "description": "Staging ArgoCD interface",
+        "services": ["argocd-server"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "require_authentication": true
+        }
+      },
+      "monitoring-staging": {
+        "full_domain": "monitoring-staging.advancedblockchainsecurity.com",
+        "description": "Staging monitoring dashboards",
+        "services": ["grafana", "prometheus"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "require_authentication": true
+        }
+      }
+    },
+    "ssl_configuration": {
+      "certificate_authority": "letsencrypt",
+      "auto_renewal": true,
+      "certificate_domains": [
+        "staging.advancedblockchainsecurity.com",
+        "api-staging.advancedblockchainsecurity.com",
+        "dashboard-staging.advancedblockchainsecurity.com",
+        "vault-staging.advancedblockchainsecurity.com",
+        "argocd-staging.advancedblockchainsecurity.com",
+        "monitoring-staging.advancedblockchainsecurity.com"
+      ]
+    },
+    "ingress_configuration": {
+      "controller": "aws-load-balancer-controller",
+      "annotations": {
+        "kubernetes.io/ingress.class": "alb",
+        "alb.ingress.kubernetes.io/scheme": "internet-facing",
+        "alb.ingress.kubernetes.io/target-type": "ip",
+        "alb.ingress.kubernetes.io/ssl-redirect": "443",
+        "cert-manager.io/cluster-issuer": "letsencrypt-staging"
+      }
+    },
+    "security_settings": {
+      "waf_enabled": true,
+      "ddos_protection": true,
+      "rate_limiting": {
+        "requests_per_minute": 1000,
+        "requests_per_hour": 10000
+      },
+      "geo_blocking": {
+        "enabled": false,
+        "blocked_countries": []
+      }
+    }
+  }
+}
