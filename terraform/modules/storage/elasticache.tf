@@ -11,12 +11,9 @@ resource "random_password" "redis_auth_token" {
   }
 }
 
-# Redis AUTH token is now managed by HashiCorp Vault
-# The token is stored in Vault at: {environment}/redis/auth-token
-# This removes dependency on AWS Secrets Manager
-
-# Redis connection details are now managed by HashiCorp Vault
-# Applications access Redis credentials via Vault Secrets Operator
+# Redis credentials (AUTH token and connection details) are managed by HashiCorp Vault.
+# The token is stored at: {environment}/redis/auth-token.
+# Applications access Redis credentials via the Vault Secrets Operator, removing the dependency on AWS Secrets Manager.
 # Example Vault path: {environment}/redis/auth-token
 
 resource "aws_elasticache_subnet_group" "redis" {
