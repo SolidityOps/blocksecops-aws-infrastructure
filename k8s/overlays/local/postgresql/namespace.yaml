@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: postgresql-local
-  labels:
-    environment: local
-    service: postgresql
-    project: solidity-security
