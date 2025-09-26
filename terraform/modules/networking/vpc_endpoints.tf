@@ -52,21 +52,8 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   })
 }
 
-# Secrets Manager Interface Endpoint
-resource "aws_vpc_endpoint" "secrets_manager" {
-  vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${var.aws_region}.secretsmanager"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [aws_subnet.private.id]
-  security_group_ids  = [aws_security_group.vpc_endpoints.id]
-  private_dns_enabled = true
-
-  tags = merge(var.common_tags, {
-    Name        = "${var.environment}-solidity-security-secrets-manager-endpoint"
-    Environment = var.environment
-    Service     = "SecretsManager"
-  })
-}
+# Secrets Manager VPC Endpoint removed - using HashiCorp Vault instead
+# Vault runs in Kubernetes and doesn't require AWS VPC endpoints
 
 
 # Security Group for VPC Endpoints

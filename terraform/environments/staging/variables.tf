@@ -41,3 +41,40 @@ variable "common_tags" {
     CostCenter  = "Development"
   }
 }
+
+# ElastiCache Redis Configuration
+variable "redis_node_type" {
+  description = "ElastiCache Redis node type for staging"
+  type        = string
+  default     = "cache.t3.micro"  # Cost-optimized for staging
+}
+
+variable "redis_num_cache_nodes" {
+  description = "Number of cache nodes in the Redis cluster for staging"
+  type        = number
+  default     = 1  # Single node for staging
+}
+
+variable "backup_retention_limit" {
+  description = "Number of days for which ElastiCache retains automatic cache cluster backups"
+  type        = number
+  default     = 3  # Shorter retention for staging
+}
+
+variable "backup_window" {
+  description = "Daily time range for automated backups (UTC)"
+  type        = string
+  default     = "03:00-05:00"
+}
+
+variable "maintenance_window" {
+  description = "Weekly time range for system maintenance (UTC)"
+  type        = string
+  default     = "sun:05:00-sun:07:00"
+}
+
+variable "snapshot_window" {
+  description = "Daily time range for ElastiCache snapshots (UTC)"
+  type        = string
+  default     = "02:00-03:00"
+}
