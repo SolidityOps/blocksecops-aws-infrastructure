@@ -26,14 +26,7 @@ output "redis_auth_token" {
   sensitive   = true
 }
 
-# Redis AUTH tokens are now stored in HashiCorp Vault
-# Access via Vault Secrets Operator in Kubernetes
-# output "redis_auth_token_secret_arn" - deprecated in favor of Vault
-
-# Redis AUTH tokens are now stored in HashiCorp Vault
-# Access via Vault path: {environment}/redis/auth-token
-# output "redis_auth_token_secret_name" - deprecated in favor of Vault
-
+# Redis AUTH tokens are now stored in HashiCorp Vault. Deprecated outputs for secret ARNs/names have been removed.
 output "redis_subnet_group_name" {
   description = "ElastiCache subnet group name"
   value       = aws_elasticache_subnet_group.redis.name
