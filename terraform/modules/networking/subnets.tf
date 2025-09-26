@@ -21,7 +21,7 @@ resource "aws_subnet" "public" {
   })
 }
 
-# Private subnet for EKS nodes, RDS, and ElastiCache
+# Private subnet for EKS nodes and ElastiCache (PostgreSQL runs in Kubernetes)
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_cidr

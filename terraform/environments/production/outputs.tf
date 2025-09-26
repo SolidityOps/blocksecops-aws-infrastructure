@@ -43,10 +43,8 @@ output "alb_security_group_id" {
   value       = module.networking.alb_security_group_id
 }
 
-output "rds_security_group_id" {
-  description = "ID of the production RDS security group"
-  value       = module.networking.rds_security_group_id
-}
+# PostgreSQL runs in Kubernetes with NetworkPolicies
+# No RDS security group needed for production
 
 output "elasticache_security_group_id" {
   description = "ID of the production ElastiCache security group"

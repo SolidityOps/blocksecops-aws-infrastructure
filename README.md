@@ -7,12 +7,12 @@ This repository contains Terraform code for deploying the AWS infrastructure for
 ### Network Design
 - **VPC**: /16 CIDR block with single availability zone deployment
 - **Public Subnet**: Contains Application Load Balancer and NAT Gateway
-- **Private Subnet**: Contains EKS nodes, RDS database, and ElastiCache cluster
+- **Private Subnet**: Contains EKS nodes and ElastiCache cluster
 - **Security Groups**: Least-privilege access controls for all services
 
 ### Infrastructure Components
 - **VPC & Networking**: Secure network foundation with NAT gateway and VPC endpoints
-- **Security Groups**: Service-specific security groups for EKS, RDS, ElastiCache, and ALB
+- **Security Groups**: Service-specific security groups for EKS, ElastiCache, and ALB
 - **VPC Endpoints**: Cost optimization through S3, ECR, and Secrets Manager endpoints
 - **Monitoring**: VPC Flow Logs for network security analysis
 
@@ -28,6 +28,8 @@ terraform/
 │   └── production/            # Production environment configuration
 └── shared/                    # Shared infrastructure components
 ```
+
+> **Note**: PostgreSQL database infrastructure is deployed as StatefulSets in Kubernetes rather than RDS, providing significant cost savings (~$1200+/month) and better integration with the containerized architecture. PostgreSQL manifests are managed in the `solidity-security-monitoring` repository.
 
 ## Environment Configuration
 
@@ -51,14 +53,14 @@ terraform/
 
 ### Access Controls
 - **EKS**: Cluster and node security groups with pod-to-pod communication
-- **RDS**: Database access restricted to EKS nodes only
+- **PostgreSQL**: Database runs as StatefulSets in Kubernetes with NetworkPolicies
 - **ElastiCache**: Redis access restricted to application services
 - **ALB**: Internet-facing with HTTPS/HTTP ingress
 
 ## Cost Optimization
 
 ### Single-AZ Deployment
-- **RDS**: Single-AZ deployment (~50% cost savings vs Multi-AZ)
+- **PostgreSQL**: StatefulSets in Kubernetes (~$1200+/month savings vs RDS)
 - **NAT Gateway**: Single gateway instead of per-AZ deployment
 - **EKS**: Simplified node management in single AZ
 
@@ -103,7 +105,7 @@ terraform apply
 ### Security Group Rules
 - **ALB**: Ports 80/443 from internet
 - **EKS Nodes**: Pod communication, ALB health checks
-- **RDS**: Port 5432 from EKS nodes only
+- **PostgreSQL**: Access controlled via Kubernetes NetworkPolicies
 - **ElastiCache**: Port 6379 from EKS nodes only
 
 ## Monitoring and Logging
@@ -119,7 +121,7 @@ terraform apply
 ### Multi-AZ Migration
 When ready to scale beyond MVP:
 1. Add additional subnets in other AZs
-2. Enable RDS Multi-AZ deployment
+2. Scale PostgreSQL with multiple replicas in Kubernetes
 3. Deploy additional NAT gateways for redundancy
 4. Update EKS node groups for multi-AZ distribution
 
