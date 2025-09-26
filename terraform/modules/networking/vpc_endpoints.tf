@@ -68,37 +68,6 @@ resource "aws_vpc_endpoint" "secrets_manager" {
   })
 }
 
-# CloudWatch Logs Interface Endpoint
-resource "aws_vpc_endpoint" "logs" {
-  vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${var.aws_region}.logs"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [aws_subnet.private.id]
-  security_group_ids  = [aws_security_group.vpc_endpoints.id]
-  private_dns_enabled = true
-
-  tags = merge(var.common_tags, {
-    Name        = "${var.environment}-solidity-security-logs-endpoint"
-    Environment = var.environment
-    Service     = "CloudWatchLogs"
-  })
-}
-
-# CloudWatch Monitoring Interface Endpoint
-resource "aws_vpc_endpoint" "monitoring" {
-  vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${var.aws_region}.monitoring"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [aws_subnet.private.id]
-  security_group_ids  = [aws_security_group.vpc_endpoints.id]
-  private_dns_enabled = true
-
-  tags = merge(var.common_tags, {
-    Name        = "${var.environment}-solidity-security-monitoring-endpoint"
-    Environment = var.environment
-    Service     = "CloudWatch"
-  })
-}
 
 # Security Group for VPC Endpoints
 resource "aws_security_group" "vpc_endpoints" {

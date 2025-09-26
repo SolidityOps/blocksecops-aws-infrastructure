@@ -65,7 +65,7 @@ output "internet_gateway_id" {
 }
 
 # Monitoring Outputs
-output "vpc_flow_logs_log_group_name" {
-  description = "Name of the production VPC Flow Logs CloudWatch log group"
-  value       = module.monitoring.vpc_flow_logs_log_group_name
+output "vpc_flow_logs_s3_bucket_name" {
+  description = "Name of the production VPC Flow Logs S3 bucket"
+  value       = module.monitoring.vpc_flow_logs_s3_bucket_name
 }

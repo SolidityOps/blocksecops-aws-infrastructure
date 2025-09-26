@@ -13,7 +13,7 @@ This repository contains Terraform code for deploying the AWS infrastructure for
 ### Infrastructure Components
 - **VPC & Networking**: Secure network foundation with NAT gateway and VPC endpoints
 - **Security Groups**: Service-specific security groups for EKS, RDS, ElastiCache, and ALB
-- **VPC Endpoints**: Cost optimization through S3, ECR, Secrets Manager, and CloudWatch endpoints
+- **VPC Endpoints**: Cost optimization through S3, ECR, and Secrets Manager endpoints
 - **Monitoring**: VPC Flow Logs for network security analysis
 
 ## Directory Structure
@@ -63,7 +63,7 @@ terraform/
 - **EKS**: Simplified node management in single AZ
 
 ### VPC Endpoints
-- S3, ECR, Secrets Manager, CloudWatch endpoints
+- S3, ECR, Secrets Manager endpoints
 - Reduces NAT gateway data transfer costs
 - Improves security by keeping traffic within AWS network
 
@@ -110,7 +110,7 @@ terraform apply
 
 ### VPC Flow Logs
 - Captures all network traffic metadata
-- Stored in CloudWatch Logs
+- Stored in S3 for cost-effective long-term retention
 - Configurable retention periods per environment
 - Used for security analysis and troubleshooting
 
@@ -131,6 +131,6 @@ When ready to scale beyond MVP:
 ## Support
 
 For infrastructure issues or questions:
-- Review CloudWatch Logs for VPC Flow Logs
+- Review S3 bucket for VPC Flow Logs analysis
 - Check Terraform state for resource configuration
 - Use AWS Console for real-time resource monitoring

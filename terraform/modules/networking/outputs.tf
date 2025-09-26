@@ -116,15 +116,6 @@ output "secrets_manager_vpc_endpoint_id" {
   value       = aws_vpc_endpoint.secrets_manager.id
 }
 
-output "logs_vpc_endpoint_id" {
-  description = "ID of the CloudWatch Logs VPC endpoint"
-  value       = aws_vpc_endpoint.logs.id
-}
-
-output "monitoring_vpc_endpoint_id" {
-  description = "ID of the CloudWatch Monitoring VPC endpoint"
-  value       = aws_vpc_endpoint.monitoring.id
-}
 
 # Network ACL Outputs
 # Explicit dependencies ensure proper resource creation order

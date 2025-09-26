@@ -1,56 +1,9 @@
 # VPC Flow Logs Configuration for Network Monitoring and Security Analysis
+# Using S3 storage instead of CloudWatch for cost optimization
 
-# IAM role for VPC Flow Logs
-resource "aws_iam_role" "vpc_flow_logs" {
-  name = "${var.environment}-solidity-security-vpc-flow-logs-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "vpc-flow-logs.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  tags = merge(var.common_tags, {
-    Name        = "${var.environment}-solidity-security-vpc-flow-logs-role"
-    Environment = var.environment
-    Service     = "VPC-FlowLogs"
-  })
-}
-
-# IAM policy for VPC Flow Logs
-resource "aws_iam_role_policy" "vpc_flow_logs" {
-  name = "${var.environment}-solidity-security-vpc-flow-logs-policy"
-  role = aws_iam_role.vpc_flow_logs.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams"
-        ]
-        Resource = "arn:aws:logs:${var.aws_region}:*:*"
-      }
-    ]
-  })
-}
-
-# CloudWatch Log Group for VPC Flow Logs
-resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  name              = "/aws/vpc/flowlogs/${var.environment}-solidity-security"
-  retention_in_days = var.log_retention_days
+# S3 bucket for VPC Flow Logs
+resource "aws_s3_bucket" "vpc_flow_logs" {
+  bucket = "${var.environment}-solidity-security-vpc-flow-logs-${random_id.bucket_suffix.hex}"
 
   tags = merge(var.common_tags, {
     Name        = "${var.environment}-solidity-security-vpc-flow-logs"
@@ -59,12 +12,64 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   })
 }
 
-# VPC Flow Logs
+# Random ID for unique S3 bucket naming
+resource "random_id" "bucket_suffix" {
+  byte_length = 8
+}
+
+# S3 bucket versioning
+resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
+  bucket = aws_s3_bucket.vpc_flow_logs.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# S3 bucket encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
+  bucket = aws_s3_bucket.vpc_flow_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# S3 bucket lifecycle configuration
+resource "aws_s3_bucket_lifecycle_configuration" "vpc_flow_logs" {
+  bucket = aws_s3_bucket.vpc_flow_logs.id
+
+  rule {
+    id     = "vpc_flow_logs_lifecycle"
+    status = "Enabled"
+
+    expiration {
+      days = var.log_retention_days
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+}
+
+# S3 bucket public access block
+resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
+  bucket = aws_s3_bucket.vpc_flow_logs.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# VPC Flow Logs to S3
 resource "aws_flow_log" "vpc" {
-  iam_role_arn    = aws_iam_role.vpc_flow_logs.arn
-  log_destination = aws_cloudwatch_log_group.vpc_flow_logs.arn
-  traffic_type    = "ALL"
-  vpc_id          = var.vpc_id
+  log_destination      = aws_s3_bucket.vpc_flow_logs.arn
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = var.vpc_id
 
   tags = merge(var.common_tags, {
     Name        = "${var.environment}-solidity-security-vpc-flow-logs"
