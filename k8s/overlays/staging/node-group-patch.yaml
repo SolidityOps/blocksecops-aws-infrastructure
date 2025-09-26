@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-group-config
+  namespace: kube-system
+data:
+  node.group.name: "staging-main"
+  node.group.instance.types: "t3.medium,t3.large"
+  node.group.capacity.type: "ON_DEMAND"
+  node.group.disk.size: "20"
+  node.group.desired.size: "2"
+  node.group.max.size: "4"
+  node.group.min.size: "1"
+  node.group.ami.type: "AL2_x86_64"
+  node.group.environment: "staging"
+  node.group.labels: "environment=staging,node-type=general"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-autoscaler
+  namespace: cluster-autoscaler
+spec:
+  template:
+    metadata:
+      labels:
+        environment: staging
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+        environment: staging
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+        - effect: NoSchedule
+          key: environment
+          value: staging
+          operator: Equal

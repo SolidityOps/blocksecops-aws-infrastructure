@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: kube-system
+data:
+  prometheus.scrape: "true"
+  prometheus.port: "8085"
+  prometheus.path: "/metrics"
+  cloudwatch.namespace: "EKS/Cluster"
+  cloudwatch.region: "us-west-2"
+---
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: cluster-autoscaler-metrics
+  namespace: cluster-autoscaler
+  labels:
+    app.kubernetes.io/name: cluster-autoscaler
+    app.kubernetes.io/component: autoscaling
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cluster-autoscaler
+  endpoints:
+  - port: http
+    interval: 30s
+    path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cluster-autoscaler-alerts
+  namespace: cluster-autoscaler
+  labels:
+    app.kubernetes.io/name: cluster-autoscaler
+    app.kubernetes.io/component: autoscaling
+spec:
+  groups:
+  - name: cluster-autoscaler.rules
+    rules:
+    - alert: ClusterAutoscalerUnschedulablePods
+      expr: cluster_autoscaler_unschedulable_pods_count > 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Cluster autoscaler has unschedulable pods"
+        description: "Cluster autoscaler has {{ $value }} unschedulable pods for more than 5 minutes"
+
+    - alert: ClusterAutoscalerScaleUpFailure
+      expr: increase(cluster_autoscaler_failed_scale_ups_total[5m]) > 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Cluster autoscaler failed to scale up"
+        description: "Cluster autoscaler has failed to scale up {{ $value }} times in the last 5 minutes"
+
+    - alert: ClusterAutoscalerNodesNotReady
+      expr: cluster_autoscaler_nodes_count{state="notReady"} > 0
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Cluster has nodes that are not ready"
+        description: "Cluster has {{ $value }} nodes in NotReady state for more than 10 minutes"
