@@ -1,0 +1,105 @@
+# Staging Environment DNS Records
+# Domain: advancedblockchainsecurity.com
+# Environment: staging
+
+dns_records:
+  - name: "staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Staging environment main endpoint"
+
+  - name: "api-staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Staging API endpoint for backend services"
+
+  - name: "dashboard-staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Staging dashboard interface"
+
+  - name: "vault-staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: false  # Direct access needed for Vault UI
+    comment: "Staging HashiCorp Vault UI"
+
+  - name: "argocd-staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Staging ArgoCD GitOps interface"
+
+  - name: "monitoring-staging"
+    type: "A"
+    content: "STAGING_LB_IP"  # To be replaced with actual AWS ALB IP
+    ttl: 300
+    proxied: true
+    comment: "Staging monitoring dashboard (Grafana)"
+
+# SSL Certificate domains for staging
+ssl_domains:
+  - "staging.advancedblockchainsecurity.com"
+  - "api-staging.advancedblockchainsecurity.com"
+  - "dashboard-staging.advancedblockchainsecurity.com"
+  - "vault-staging.advancedblockchainsecurity.com"
+  - "argocd-staging.advancedblockchainsecurity.com"
+  - "monitoring-staging.advancedblockchainsecurity.com"
+
+# Environment configuration
+environment:
+  name: "staging"
+  description: "Staging environment for development and testing"
+  security_level: "medium"
+  cache_level: "aggressive"
+  ssl_mode: "strict"
+
+# Service routing configuration
+services:
+  api:
+    subdomain: "api-staging"
+    path_rules:
+      - path: "/api/v1/*"
+        backend: "api-service"
+      - path: "/api/v1/auth/*"
+        backend: "auth-service"
+      - path: "/api/v1/analysis/*"
+        backend: "analysis-service"
+
+  dashboard:
+    subdomain: "dashboard-staging"
+    path_rules:
+      - path: "/*"
+        backend: "dashboard-frontend"
+      - path: "/assets/*"
+        backend: "static-assets"
+
+  vault:
+    subdomain: "vault-staging"
+    path_rules:
+      - path: "/ui/*"
+        backend: "vault-ui"
+      - path: "/v1/*"
+        backend: "vault-api"
+
+  argocd:
+    subdomain: "argocd-staging"
+    path_rules:
+      - path: "/*"
+        backend: "argocd-server"
+
+  monitoring:
+    subdomain: "monitoring-staging"
+    path_rules:
+      - path: "/grafana/*"
+        backend: "grafana"
+      - path: "/prometheus/*"
+        backend: "prometheus"

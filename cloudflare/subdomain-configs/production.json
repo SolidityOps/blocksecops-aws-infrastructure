@@ -1,0 +1,144 @@
+{
+  "subdomain_config": {
+    "environment": "production",
+    "base_domain": "advancedblockchainsecurity.com",
+    "load_balancer_ip": "PRODUCTION_LB_IP",
+    "subdomains": {
+      "root": {
+        "full_domain": "advancedblockchainsecurity.com",
+        "description": "Main production domain",
+        "services": ["dashboard", "api", "static-assets"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 3600
+      },
+      "www": {
+        "full_domain": "www.advancedblockchainsecurity.com",
+        "description": "WWW redirect to root",
+        "redirect_to": "advancedblockchainsecurity.com",
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 86400
+      },
+      "api": {
+        "full_domain": "api.advancedblockchainsecurity.com",
+        "description": "Production API endpoints",
+        "services": [
+          "api-service",
+          "auth-service",
+          "analysis-service",
+          "contract-parser-service",
+          "tool-integration-service",
+          "data-service",
+          "notification-service"
+        ],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300
+      },
+      "dashboard": {
+        "full_domain": "dashboard.advancedblockchainsecurity.com",
+        "description": "Production dashboard interface",
+        "services": ["dashboard-frontend", "ui-core", "findings-service"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 3600
+      },
+      "vault": {
+        "full_domain": "vault.advancedblockchainsecurity.com",
+        "description": "Production Vault UI",
+        "services": ["vault-ui", "vault-api"],
+        "ssl_required": true,
+        "cloudflare_proxy": false,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "ip_whitelist": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"],
+          "require_authentication": true,
+          "mfa_required": true
+        }
+      },
+      "argocd": {
+        "full_domain": "argocd.advancedblockchainsecurity.com",
+        "description": "Production ArgoCD interface",
+        "services": ["argocd-server"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "require_authentication": true,
+          "mfa_required": true,
+          "role_based_access": true
+        }
+      },
+      "monitoring": {
+        "full_domain": "monitoring.advancedblockchainsecurity.com",
+        "description": "Production monitoring dashboards",
+        "services": ["grafana", "prometheus", "alertmanager"],
+        "ssl_required": true,
+        "cloudflare_proxy": true,
+        "cache_ttl": 300,
+        "access_restrictions": {
+          "require_authentication": true,
+          "role_based_access": true
+        }
+      }
+    },
+    "ssl_configuration": {
+      "certificate_authority": "letsencrypt",
+      "auto_renewal": true,
+      "certificate_domains": [
+        "advancedblockchainsecurity.com",
+        "www.advancedblockchainsecurity.com",
+        "api.advancedblockchainsecurity.com",
+        "dashboard.advancedblockchainsecurity.com",
+        "vault.advancedblockchainsecurity.com",
+        "argocd.advancedblockchainsecurity.com",
+        "monitoring.advancedblockchainsecurity.com"
+      ]
+    },
+    "ingress_configuration": {
+      "controller": "aws-load-balancer-controller",
+      "annotations": {
+        "kubernetes.io/ingress.class": "alb",
+        "alb.ingress.kubernetes.io/scheme": "internet-facing",
+        "alb.ingress.kubernetes.io/target-type": "ip",
+        "alb.ingress.kubernetes.io/ssl-redirect": "443",
+        "alb.ingress.kubernetes.io/ssl-policy": "ELBSecurityPolicy-TLS-1-2-2017-01",
+        "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+      }
+    },
+    "security_settings": {
+      "waf_enabled": true,
+      "ddos_protection": true,
+      "rate_limiting": {
+        "requests_per_minute": 500,
+        "requests_per_hour": 5000
+      },
+      "geo_blocking": {
+        "enabled": true,
+        "blocked_countries": ["CN", "RU", "KP"]
+      },
+      "security_headers": {
+        "hsts_max_age": 31536000,
+        "content_type_options": "nosniff",
+        "frame_options": "SAMEORIGIN",
+        "xss_protection": "1; mode=block"
+      }
+    },
+    "performance_settings": {
+      "caching": {
+        "browser_cache_ttl": 14400,
+        "edge_cache_ttl": 7200
+      },
+      "compression": {
+        "brotli": true,
+        "gzip": true
+      },
+      "minification": {
+        "html": true,
+        "css": true,
+        "js": true
+      }
+    }
+  }
+}
