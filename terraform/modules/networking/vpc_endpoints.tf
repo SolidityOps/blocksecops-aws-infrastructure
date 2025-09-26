@@ -1,5 +1,10 @@
 # VPC Endpoints for AWS Services
 # Reduces internet egress costs and improves security
+#
+# NOTE: Single-AZ MVP Design Decision
+# All interface endpoints use a single private subnet for cost optimization
+# in the MVP phase. Production upgrade path includes multi-AZ deployment
+# with VPC endpoints distributed across multiple subnets for high availability.
 
 # S3 Gateway Endpoint
 resource "aws_vpc_endpoint" "s3" {

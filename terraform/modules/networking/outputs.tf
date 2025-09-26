@@ -127,12 +127,15 @@ output "monitoring_vpc_endpoint_id" {
 }
 
 # Network ACL Outputs
+# Explicit dependencies ensure proper resource creation order
 output "public_network_acl_id" {
   description = "ID of the public subnet Network ACL"
   value       = aws_network_acl.public.id
+  depends_on  = [aws_network_acl.public]
 }
 
 output "private_network_acl_id" {
   description = "ID of the private subnet Network ACL"
   value       = aws_network_acl.private.id
+  depends_on  = [aws_network_acl.private]
 }

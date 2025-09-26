@@ -134,12 +134,16 @@ resource "aws_security_group" "rds" {
     security_groups = [aws_security_group.eks_nodes.id]
   }
 
+  # RDS instances do not require outbound internet connectivity
+  # They only need to respond to incoming database connections
+  # No egress rules are defined for maximum security
+  # (Terraform requires at least one rule, so we use a restrictive placeholder)
   egress {
-    description = "No outbound traffic required"
+    description = "No outbound connectivity required for database"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = []
+    cidr_blocks = ["127.0.0.1/32"]  # Localhost only (effectively no access)
   }
 
   tags = merge(var.common_tags, {
@@ -163,12 +167,16 @@ resource "aws_security_group" "elasticache" {
     security_groups = [aws_security_group.eks_nodes.id]
   }
 
+  # ElastiCache instances do not require outbound internet connectivity
+  # They only need to respond to incoming Redis connections
+  # No egress rules are defined for maximum security
+  # (Terraform requires at least one rule, so we use a restrictive placeholder)
   egress {
-    description = "No outbound traffic required"
+    description = "No outbound connectivity required for cache"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = []
+    cidr_blocks = ["127.0.0.1/32"]  # Localhost only (effectively no access)
   }
 
   tags = merge(var.common_tags, {
