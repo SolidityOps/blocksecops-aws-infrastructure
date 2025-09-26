@@ -41,17 +41,6 @@ variable "public_access_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "enabled_cluster_log_types" {
-  description = "List of control plane logging types to enable"
-  type        = list(string)
-  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-}
-
-variable "cloudwatch_log_retention_days" {
-  description = "Number of days to retain CloudWatch logs"
-  type        = number
-  default     = 7
-}
 
 variable "kms_key_arn" {
   description = "ARN of the KMS key for envelope encryption"
@@ -237,18 +226,6 @@ variable "secondary_node_group_labels" {
   }
 }
 
-# CloudWatch Monitoring Configuration
-variable "enable_container_insights" {
-  description = "Enable CloudWatch Container Insights for the cluster"
-  type        = bool
-  default     = true
-}
-
-variable "sns_topic_arn" {
-  description = "SNS topic ARN for CloudWatch alarms"
-  type        = string
-  default     = ""
-}
 
 # Common tags
 variable "tags" {

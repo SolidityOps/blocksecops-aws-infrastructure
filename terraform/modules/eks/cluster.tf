@@ -15,7 +15,6 @@ resource "aws_eks_cluster" "main" {
     security_group_ids      = [aws_security_group.cluster.id]
   }
 
-  enabled_cluster_log_types = var.enabled_cluster_log_types
 
   encryption_config {
     provider {
@@ -27,7 +26,6 @@ resource "aws_eks_cluster" "main" {
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceController,
-    aws_cloudwatch_log_group.cluster,
   ]
 
   tags = merge(var.tags, {
@@ -145,16 +143,6 @@ resource "aws_security_group_rule" "node_ingress_cluster_others" {
   type                     = "ingress"
 }
 
-# CloudWatch Log Group for EKS
-resource "aws_cloudwatch_log_group" "cluster" {
-  name              = "/aws/eks/${var.cluster_name}/cluster"
-  retention_in_days = var.cloudwatch_log_retention_days
-
-  tags = merge(var.tags, {
-    Name = "${var.cluster_name}-cluster-logs"
-    Type = "EKS-CloudWatch-LogGroup"
-  })
-}
 
 # OIDC Identity Provider for the EKS cluster
 data "tls_certificate" "cluster" {

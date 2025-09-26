@@ -62,16 +62,6 @@ output "cluster_primary_security_group_id" {
   value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
 }
 
-# CloudWatch Log Group
-output "cloudwatch_log_group_name" {
-  description = "Name of the CloudWatch log group for cluster logs"
-  value       = aws_cloudwatch_log_group.cluster.name
-}
-
-output "cloudwatch_log_group_arn" {
-  description = "ARN of the CloudWatch log group for cluster logs"
-  value       = aws_cloudwatch_log_group.cluster.arn
-}
 
 # Node Group Outputs
 output "node_group_arn" {
@@ -200,34 +190,3 @@ output "aws_region" {
   value       = data.aws_region.current.name
 }
 
-# CloudWatch Outputs
-output "cloudwatch_log_group_node_group_name" {
-  description = "Name of the CloudWatch log group for node group logs"
-  value       = aws_cloudwatch_log_group.node_group.name
-}
-
-output "cloudwatch_log_group_cluster_autoscaler_name" {
-  description = "Name of the CloudWatch log group for cluster autoscaler logs"
-  value       = aws_cloudwatch_log_group.cluster_autoscaler.name
-}
-
-output "cloudwatch_dashboard_name" {
-  description = "Name of the CloudWatch dashboard for EKS monitoring"
-  value       = aws_cloudwatch_dashboard.eks_cluster.dashboard_name
-}
-
-output "cloudwatch_dashboard_url" {
-  description = "URL of the CloudWatch dashboard for EKS monitoring"
-  value       = "https://${data.aws_region.current.name}.console.aws.amazon.com/cloudwatch/home?region=${data.aws_region.current.name}#dashboards:name=${aws_cloudwatch_dashboard.eks_cluster.dashboard_name}"
-}
-
-# Container Insights Outputs (conditional)
-output "container_insights_log_groups" {
-  description = "List of Container Insights log group names"
-  value = var.enable_container_insights ? [
-    aws_cloudwatch_log_group.container_insights_application[0].name,
-    aws_cloudwatch_log_group.container_insights_dataplane[0].name,
-    aws_cloudwatch_log_group.container_insights_host[0].name,
-    aws_cloudwatch_log_group.container_insights_performance[0].name
-  ] : []
-}
