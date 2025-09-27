@@ -17,20 +17,6 @@ This repository contains Terraform code for deploying the AWS infrastructure for
 - **VPC Endpoints**: Cost optimization through S3 and ECR endpoints
 - **Monitoring**: VPC Flow Logs and ElastiCache monitoring with CloudWatch
 
-## Directory Structure
-
-```
-terraform/
-├── modules/
-│   ├── networking/            # VPC, subnets, security groups, VPC endpoints
-│   ├── storage/              # ElastiCache Redis configuration
-│   └── monitoring/           # VPC Flow Logs and cache monitoring
-├── environments/
-│   ├── staging/               # Staging environment configuration
-│   └── production/            # Production environment configuration
-└── shared/                    # Shared infrastructure components
-```
-
 > **Note**: PostgreSQL database infrastructure is deployed as StatefulSets in Kubernetes rather than RDS, providing significant cost savings (~$1200+/month) and better integration with the containerized architecture. PostgreSQL manifests are managed in the `solidity-security-monitoring` repository.
 
 ## Environment Configuration
