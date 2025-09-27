@@ -25,17 +25,23 @@ resource "aws_eks_node_group" "main" {
   ami_type        = var.node_group_ami_type
   release_version = var.node_group_release_version
 
-  remote_access {
-    ec2_ssh_key               = var.node_group_ssh_key
-    source_security_group_ids = var.node_group_ssh_security_groups
+  dynamic "remote_access" {
+    for_each = var.node_group_ssh_key != "" ? [1] : []
+    content {
+      ec2_ssh_key               = var.node_group_ssh_key
+      source_security_group_ids = var.node_group_ssh_security_groups
+    }
   }
 
   labels = var.node_group_labels
 
-  taint {
-    key    = var.node_group_taint_key
-    value  = var.node_group_taint_value
-    effect = var.node_group_taint_effect
+  dynamic "taint" {
+    for_each = var.node_group_taint_key != "" ? [1] : []
+    content {
+      key    = var.node_group_taint_key
+      value  = var.node_group_taint_value
+      effect = var.node_group_taint_effect
+    }
   }
 
   depends_on = [

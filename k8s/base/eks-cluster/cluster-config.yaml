@@ -28,7 +28,7 @@ metadata:
     app.kubernetes.io/name: cluster-autoscaler
     app.kubernetes.io/component: autoscaling
   annotations:
-    eks.amazonaws.com/role-arn: ""  # To be patched by overlays
+    eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME"  # To be patched by overlays
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

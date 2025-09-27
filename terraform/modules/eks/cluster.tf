@@ -16,11 +16,14 @@ resource "aws_eks_cluster" "main" {
   }
 
 
-  encryption_config {
-    provider {
-      key_arn = var.kms_key_arn
+  dynamic "encryption_config" {
+    for_each = var.kms_key_arn != "" ? [1] : []
+    content {
+      provider {
+        key_arn = var.kms_key_arn
+      }
+      resources = ["secrets"]
     }
-    resources = ["secrets"]
   }
 
   depends_on = [
