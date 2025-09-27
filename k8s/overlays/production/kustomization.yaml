@@ -16,7 +16,7 @@ commonLabels:
   app.kubernetes.io/part-of: solidity-security-platform
   app.kubernetes.io/managed-by: kustomize
 
-patches:
+patchesStrategicMerge:
   - cluster-patch.yaml
   - node-group-patch.yaml
 
