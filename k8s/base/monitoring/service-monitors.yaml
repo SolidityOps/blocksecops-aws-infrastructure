@@ -1,0 +1,133 @@
+# ServiceMonitor for AWS Load Balancer Controller
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: aws-load-balancer-controller
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: aws-load-balancer-controller
+    app.kubernetes.io/component: controller
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aws-load-balancer-controller
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  endpoints:
+  - port: metrics-server
+    interval: 30s
+    path: /metrics
+---
+# ServiceMonitor for cert-manager
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cert-manager
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: controller
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  namespaceSelector:
+    matchNames:
+    - cert-manager
+  endpoints:
+  - port: http-metrics
+    interval: 30s
+    path: /metrics
+---
+# ServiceMonitor for external-secrets
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-secrets
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: external-secrets
+    app.kubernetes.io/component: operator
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets
+  namespaceSelector:
+    matchNames:
+    - external-secrets-system
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+---
+# PrometheusRule for infrastructure component alerts
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: infrastructure-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: infrastructure-monitoring
+    app.kubernetes.io/component: alerts
+spec:
+  groups:
+  - name: aws-load-balancer-controller
+    rules:
+    - alert: AWSLoadBalancerControllerDown
+      expr: up{job="aws-load-balancer-controller"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "AWS Load Balancer Controller is down"
+        description: "AWS Load Balancer Controller has been down for more than 5 minutes."
+
+    - alert: AWSLoadBalancerControllerHighMemory
+      expr: container_memory_usage_bytes{pod=~"aws-load-balancer-controller-.*"} / container_spec_memory_limit_bytes > 0.8
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "AWS Load Balancer Controller high memory usage"
+        description: "AWS Load Balancer Controller memory usage is above 80% for more than 10 minutes."
+
+  - name: cert-manager
+    rules:
+    - alert: CertManagerDown
+      expr: up{job="cert-manager"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "cert-manager is down"
+        description: "cert-manager has been down for more than 5 minutes."
+
+    - alert: CertManagerCertificateExpiringSoon
+      expr: certmanager_certificate_expiration_timestamp_seconds - time() < 86400 * 7
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        summary: "Certificate expiring soon"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} is expiring in less than 7 days."
+
+  - name: external-secrets
+    rules:
+    - alert: ExternalSecretsDown
+      expr: up{job="external-secrets"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "External Secrets Operator is down"
+        description: "External Secrets Operator has been down for more than 5 minutes."
+
+    - alert: ExternalSecretSyncFailure
+      expr: increase(externalsecrets_sync_calls_error[5m]) > 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "External Secret sync failure"
+        description: "External Secret {{ $labels.name }} in namespace {{ $labels.namespace }} failed to sync."

@@ -16,6 +16,7 @@ This repository contains Terraform code for deploying the AWS infrastructure for
 - **Security Groups**: Service-specific security groups for EKS, ElastiCache, and ALB
 - **VPC Endpoints**: Cost optimization through S3 and ECR endpoints
 - **Monitoring**: VPC Flow Logs and ElastiCache monitoring with CloudWatch
+- **Kubernetes Components**: AWS Load Balancer Controller, cert-manager, External Secrets Operator, and monitoring
 
 > **Note**: PostgreSQL database infrastructure is deployed as StatefulSets in Kubernetes rather than RDS, providing significant cost savings (~$1200+/month) and better integration with the containerized architecture. PostgreSQL manifests are managed in the `solidity-security-monitoring` repository.
 
@@ -147,6 +148,44 @@ Redis clusters are accessible from EKS nodes using:
 - Monitor cache hit rates, CPU, memory, and connections
 - Set up alerts for performance thresholds
 
+## Kubernetes Infrastructure Components
+
+### AWS Load Balancer Controller
+- Manages Application Load Balancers for ingress traffic
+- IRSA (IAM Roles for Service Accounts) integration for AWS permissions
+- Automatic ALB provisioning based on Ingress resources
+- Environment-specific configurations for staging and production
+
+### Certificate Management (cert-manager)
+- Automated SSL/TLS certificate provisioning via Let's Encrypt
+- DNS-01 challenge validation using Cloudflare integration
+- Automatic certificate renewal and lifecycle management
+- Separate staging and production ClusterIssuers
+
+### Secrets Management (External Secrets Operator)
+- Integration with AWS Secrets Manager for secure secret storage
+- IRSA integration for secure AWS API access
+- Automatic secret synchronization from AWS to Kubernetes
+- ClusterSecretStore for cross-namespace secret access
+
+### Monitoring
+- ServiceMonitors for Prometheus integration
+- PrometheusRules with infrastructure component health alerts
+- Certificate expiration monitoring and alerting
+- Resource usage and performance monitoring
+
+### Deployment
+```bash
+# Deploy to staging
+kubectl apply -k k8s/overlays/staging
+
+# Deploy to production
+kubectl apply -k k8s/overlays/production
+
+# Validate configuration
+./validate-task-1.6.sh
+```
+
 ## Support
 
 For infrastructure issues or questions:
@@ -154,3 +193,4 @@ For infrastructure issues or questions:
 - Check Terraform state for resource configuration
 - Use AWS Console for real-time resource monitoring
 - Review ElastiCache CloudWatch dashboards for cache performance
+- Validate Kubernetes components using the provided validation scripts

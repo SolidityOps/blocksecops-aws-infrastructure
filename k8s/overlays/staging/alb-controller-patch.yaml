@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-load-balancer-controller
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+        - name: controller
+          args:
+            - --cluster-name=solidity-security-staging
+            - --ingress-class=alb
+            - --aws-vpc-id=vpc-staging-placeholder
+            - --aws-region=us-east-1
+            - --feature-gates=SubnetsClusterTagging=true
+            - --enable-logging
+            - --log-level=info
+          env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: CLUSTER_NAME
+              value: "solidity-security-staging"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aws-load-balancer-controller
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::STAGING_ACCOUNT_ID:role/AmazonEKSLoadBalancerControllerRole-staging"

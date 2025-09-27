@@ -7,6 +7,10 @@ metadata:
 resources:
   - ../../base/eks-cluster
   - ../../base/node-groups
+  - ../../base/aws-load-balancer-controller
+  - ../../base/cert-manager
+  - ../../base/external-secrets
+  - ../../base/monitoring
 
 namePrefix: production-
 
@@ -19,6 +23,9 @@ commonLabels:
 patchesStrategicMerge:
   - cluster-patch.yaml
   - node-group-patch.yaml
+  - alb-controller-patch.yaml
+  - cert-manager-patch.yaml
+  - external-secrets-patch.yaml
 
 configMapGenerator:
   - name: cluster-production-config
