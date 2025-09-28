@@ -1,11 +1,11 @@
 # Note: This namespace template will be used with environment-specific overlays
-# The actual namespace name will be cert-manager-staging or cert-manager-production
+# The actual namespace name will be vault-staging or vault-production
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cert-manager-PLACEHOLDER_OVERLAY
+  name: vault-PLACEHOLDER_OVERLAY
   labels:
-    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/name: vault
     app.kubernetes.io/part-of: solidity-security-platform
     app.kubernetes.io/environment: PLACEHOLDER_OVERLAY
-    cert-manager.io/disable-validation: "true"
+    vault.hashicorp.com/agent-inject: "true"

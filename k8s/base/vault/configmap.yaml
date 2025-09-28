@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: vault-PLACEHOLDER_OVERLAY
+  labels:
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/component: server
+data:
+  vault.hcl: |
+    ui = true
+    disable_mlock = true
+
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      tls_disable = true
+    }
+
+    storage "raft" {
+      path = "/vault/data"
+      node_id = "vault-server"
+
+      retry_join {
+        leader_api_addr = "http://vault-0.vault-internal:8200"
+      }
+      retry_join {
+        leader_api_addr = "http://vault-1.vault-internal:8200"
+      }
+      retry_join {
+        leader_api_addr = "http://vault-2.vault-internal:8200"
+      }
+    }
+
+    service_registration "kubernetes" {}
+
+    # API settings
+    api_addr = "http://POD_IP:8200"
+    cluster_addr = "http://POD_IP:8201"
+
+    # Logging
+    log_level = "INFO"
+    log_format = "json"
+
+    # Community Edition - Manual unseal required
+    # Operators will need to unseal Vault manually after startup

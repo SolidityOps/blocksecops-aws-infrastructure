@@ -1,0 +1,55 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: vault-production
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+namespace: vault-production
+
+resources:
+  - ../../../base/vault
+
+# Replace placeholders with production values
+replacements:
+  - source:
+      kind: Namespace
+      name: vault-production
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: '*'
+        fieldPaths:
+          - metadata.name
+          - metadata.namespace
+        options:
+          delimiter: 'PLACEHOLDER_OVERLAY'
+          index: 1
+
+# Production-specific configuration
+patches:
+  - target:
+      kind: StatefulSet
+      name: vault
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "2000m"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "2Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "1000m"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "1Gi"
+
+labels:
+  - pairs:
+      environment: production
+      app.kubernetes.io/instance: production

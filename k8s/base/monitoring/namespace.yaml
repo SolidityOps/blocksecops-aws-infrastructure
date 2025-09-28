@@ -1,10 +1,10 @@
 # Note: This namespace template will be used with environment-specific overlays
-# The actual namespace name will be external-secrets-staging or external-secrets-production
+# The actual namespace name will be monitoring-staging or monitoring-production
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: external-secrets-PLACEHOLDER_OVERLAY
+  name: monitoring-PLACEHOLDER_OVERLAY
   labels:
-    app.kubernetes.io/name: external-secrets
+    app.kubernetes.io/name: monitoring
     app.kubernetes.io/part-of: solidity-security-platform
     app.kubernetes.io/environment: PLACEHOLDER_OVERLAY
