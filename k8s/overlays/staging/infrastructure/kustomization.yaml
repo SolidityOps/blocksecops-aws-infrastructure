@@ -23,11 +23,11 @@ patches:
       kind: Deployment
       name: aws-load-balancer-controller
       namespace: kube-system
-  - path: cert-manager-patch.yaml
+  - path: cert-manager-staging-patch.yaml
     target:
       kind: ClusterIssuer
       name: letsencrypt-staging
-  - path: cert-manager-patch.yaml
+  - path: cert-manager-production-patch.yaml
     target:
       kind: ClusterIssuer
       name: letsencrypt-production
@@ -36,17 +36,16 @@ patches:
       kind: ServiceAccount
       name: external-secrets
       namespace: external-secrets
-  - path: external-secrets-store-patch.yaml
+  - path: external-secrets-vault-patch.yaml
     target:
       kind: ClusterSecretStore
       name: vault-backend
-  - path: external-secrets-store-patch.yaml
+  - path: external-secrets-aws-patch.yaml
     target:
       kind: ClusterSecretStore
       name: aws-secrets-manager
 
-namespace: staging-infrastructure
-
-commonLabels:
-  environment: staging
-  app.kubernetes.io/instance: staging
+labels:
+  - pairs:
+      environment: staging
+      app.kubernetes.io/instance: staging

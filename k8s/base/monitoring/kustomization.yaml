@@ -11,7 +11,8 @@ namespace: monitoring
 resources:
   - service-monitors.yaml
 
-commonLabels:
-  app.kubernetes.io/name: monitoring
-  app.kubernetes.io/part-of: solidity-security-platform
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - pairs:
+      app.kubernetes.io/name: monitoring
+      app.kubernetes.io/part-of: solidity-security-platform
+      app.kubernetes.io/managed-by: kustomize

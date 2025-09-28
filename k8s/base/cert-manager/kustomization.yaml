@@ -17,10 +17,11 @@ resources:
   - cluster-issuer.yaml
   - cloudflare-secret.yaml
 
-commonLabels:
-  app.kubernetes.io/name: cert-manager
-  app.kubernetes.io/part-of: solidity-security-platform
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - pairs:
+      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/part-of: solidity-security-platform
+      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: quay.io/jetstack/cert-manager-controller

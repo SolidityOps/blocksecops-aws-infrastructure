@@ -14,10 +14,11 @@ resources:
   - cluster-secret-store.yaml
   - rbac.yaml
 
-commonLabels:
-  app.kubernetes.io/name: external-secrets
-  app.kubernetes.io/part-of: solidity-security-platform
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - pairs:
+      app.kubernetes.io/name: external-secrets
+      app.kubernetes.io/part-of: solidity-security-platform
+      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: ghcr.io/external-secrets/external-secrets

@@ -23,7 +23,7 @@ spec:
         fsGroup: 65534
       containers:
         - name: controller
-          image: amazon/aws-alb-ingress-controller:v2.7.2
+          image: public.ecr.aws/eks/aws-load-balancer-controller:v2.7.2
           args:
             - --cluster-name=PLACEHOLDER_CLUSTER_NAME
             - --ingress-class=alb

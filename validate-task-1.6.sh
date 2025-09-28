@@ -181,9 +181,11 @@ function validate_environment_overlays() {
             check_file_exists "$env_dir/kustomization.yaml" "$env kustomization" || validation_failed=1
             check_file_exists "$env_dir/alb-controller-patch.yaml" "$env ALB Controller patch" || validation_failed=1
             check_file_exists "$env_dir/alb-controller-deployment-patch.yaml" "$env ALB Controller deployment patch" || validation_failed=1
-            check_file_exists "$env_dir/cert-manager-patch.yaml" "$env cert-manager patch" || validation_failed=1
+            check_file_exists "$env_dir/cert-manager-staging-patch.yaml" "$env cert-manager staging patch" || validation_failed=1
+            check_file_exists "$env_dir/cert-manager-production-patch.yaml" "$env cert-manager production patch" || validation_failed=1
             check_file_exists "$env_dir/external-secrets-patch.yaml" "$env External Secrets patch" || validation_failed=1
-            check_file_exists "$env_dir/external-secrets-store-patch.yaml" "$env External Secrets store patch" || validation_failed=1
+            check_file_exists "$env_dir/external-secrets-vault-patch.yaml" "$env External Secrets vault patch" || validation_failed=1
+            check_file_exists "$env_dir/external-secrets-aws-patch.yaml" "$env External Secrets AWS patch" || validation_failed=1
             validate_kustomization "$env_dir/kustomization.yaml" "$env infrastructure" || validation_failed=1
         else
             validation_failed=1
