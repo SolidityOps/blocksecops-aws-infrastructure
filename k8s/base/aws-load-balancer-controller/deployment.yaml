@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-load-balancer-controller
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: aws-load-balancer-controller
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aws-load-balancer-controller
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aws-load-balancer-controller
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: aws-load-balancer-controller
+      securityContext:
+        fsGroup: 65534
+      containers:
+        - name: controller
+          image: public.ecr.aws/eks/aws-load-balancer-controller:v2.7.2
+          args:
+            - --cluster-name=PLACEHOLDER_CLUSTER_NAME
+            - --ingress-class=alb
+            - --feature-gates=wafv2=true,waf=true,elbv2=true
+            - --aws-vpc-id=PLACEHOLDER_VPC_ID
+            - --aws-region=PLACEHOLDER_AWS_REGION
+            - --enable-shield=false
+            - --enable-waf=false
+            - --enable-wafv2=false
+            - --log-level=info
+          env:
+            - name: AWS_REGION
+              value: PLACEHOLDER_AWS_REGION
+            - name: AWS_DEFAULT_REGION
+              value: PLACEHOLDER_AWS_REGION
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: webhook-server
+              containerPort: 9443
+              protocol: TCP
+            - name: metrics-server
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /healthz
+              port: 61779
+              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - name: cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+      volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: aws-load-balancer-webhook-tls
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - aws-load-balancer-controller
+                topologyKey: kubernetes.io/hostname
