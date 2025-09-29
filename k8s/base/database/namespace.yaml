@@ -1,0 +1,11 @@
+# Note: This namespace template will be used with environment-specific overlays
+# The actual namespace name will be database-staging or database-production
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database-PLACEHOLDER_OVERLAY
+  labels:
+    app.kubernetes.io/name: database
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/environment: PLACEHOLDER_OVERLAY
+    app.kubernetes.io/component: database
