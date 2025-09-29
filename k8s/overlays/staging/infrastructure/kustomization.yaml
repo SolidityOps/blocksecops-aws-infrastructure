@@ -11,6 +11,8 @@ resources:
   - ../../../base/cert-manager
   - ../../../base/external-secrets
   - ../../../base/monitoring
+  - ../../../base/database
+  - namespace-patches.yaml
 
 patches:
   - path: alb-controller-patch.yaml
@@ -35,7 +37,7 @@ patches:
     target:
       kind: ServiceAccount
       name: external-secrets
-      namespace: external-secrets
+      namespace: external-secrets-staging
   - path: external-secrets-vault-patch.yaml
     target:
       kind: ClusterSecretStore

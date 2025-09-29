@@ -6,9 +6,10 @@ metadata:
   annotations:
     config.kubernetes.io/local-config: "true"
 
-namespace: monitoring
+namespace: monitoring-PLACEHOLDER_OVERLAY
 
 resources:
+  - namespace.yaml
   - service-monitors.yaml
 
 labels:

@@ -1,0 +1,32 @@
+# Namespace patches for production environment
+# These patches set the correct namespace names following [service]-[overlay] convention
+
+# vault namespace patch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault-production
+---
+# cert-manager namespace patch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager-production
+---
+# external-secrets namespace patch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-secrets-production
+---
+# monitoring namespace patch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-production
+---
+# database namespace patch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database-production
