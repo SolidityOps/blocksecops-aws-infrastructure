@@ -1,0 +1,28 @@
+# Basic RBAC for PostgreSQL
+# PostgreSQL doesn't need cluster-wide permissions, but this provides
+# a template for future extensions
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: postgresql
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgresql
+subjects:
+- kind: ServiceAccount
+  name: postgresql
+roleRef:
+  kind: Role
+  name: postgresql
+  apiGroup: rbac.authorization.k8s.io

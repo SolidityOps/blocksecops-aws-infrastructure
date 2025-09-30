@@ -1,0 +1,9 @@
+# Note: PVC patch is handled in statefulset-patch.yaml
+# This file serves as documentation for staging PVC configuration
+
+# Staging PVC Configuration:
+# - Storage size: 5Gi (smaller than production)
+# - Storage class: gp3 (same as production)
+# - Access mode: ReadWriteOnce
+
+# The actual patch is applied via volumeClaimTemplates in statefulset-patch.yaml

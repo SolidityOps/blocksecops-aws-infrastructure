@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: postgresql-limit-range
+  annotations:
+    description: "MVP-optimized limits for cost efficiency"
+spec:
+  limits:
+  # Default limits for containers - MVP optimized
+  - default:
+      cpu: "500m"      # Reduced from 1000m for MVP cost optimization
+      memory: "1Gi"    # Reduced from 2Gi for MVP cost optimization
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Container
+
+  # Limits for PVCs - MVP storage constraints
+  - max:
+      storage: "50Gi"  # Reduced from 100Gi for MVP single-AZ deployment
+    min:
+      storage: "1Gi"
+    type: PersistentVolumeClaim
+
+  # Limits for pods - MVP constraints
+  - max:
+      cpu: "1000m"     # Reduced from 2000m to prevent cost overruns
+      memory: "2Gi"    # Reduced from 4Gi for MVP cost control
+    min:
+      cpu: "50m"
+      memory: "64Mi"
+    type: Pod
