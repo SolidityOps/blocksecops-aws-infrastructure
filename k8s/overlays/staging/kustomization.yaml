@@ -16,3 +16,6 @@ resources:
   - cluster-autoscaler/
   - metrics-server/
   - ebs-csi-driver/
+  - aws-load-balancer-controller/
+  - cert-manager/
+  - external-secrets/

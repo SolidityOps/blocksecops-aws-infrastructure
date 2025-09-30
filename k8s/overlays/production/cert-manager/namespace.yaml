@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager-production
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: certificate-management
+    environment: production
+    team: devops
+    cert-manager.io/disable-validation: "true"
