@@ -8,21 +8,27 @@ spec:
     spec:
       containers:
       - name: cluster-autoscaler
+        env:
+        - name: CLUSTER_NAME
+          value: "solidity-security-eks-production"
         command:
-        - ./cluster-autoscaler
-        - --v=2
-        - --stderrthreshold=info
-        - --cloud-provider=aws
-        - --skip-nodes-with-local-storage=false
-        - --expander=least-waste
-        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/solidity-security-eks-production
-        - --balance-similar-node-groups
-        - --skip-nodes-with-system-pods=false
-        - --scale-down-delay-after-add=10m
-        - --scale-down-unneeded-time=10m
-        - --scale-down-utilization-threshold=0.5
-        - --max-node-provision-time=15m
-        - --max-nodes-total=100
+        - sh
+        - -c
+        - |
+          ./cluster-autoscaler \
+            --v=2 \
+            --stderrthreshold=info \
+            --cloud-provider=aws \
+            --skip-nodes-with-local-storage=false \
+            --expander=least-waste \
+            --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/$CLUSTER_NAME \
+            --balance-similar-node-groups \
+            --skip-nodes-with-system-pods=false \
+            --scale-down-delay-after-add=10m \
+            --scale-down-unneeded-time=10m \
+            --scale-down-utilization-threshold=0.5 \
+            --max-node-provision-time=15m \
+            --max-nodes-total=100
         resources:
           requests:
             cpu: 100m
