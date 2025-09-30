@@ -21,7 +21,7 @@ data:
     }
 
     # Cluster configuration for HA
-    cluster_addr = "https://POD_IP:8201"
+    cluster_addr = "http://POD_IP:8201"
     api_addr = "http://POD_IP:8200"
 
     # Disable mlock for containers

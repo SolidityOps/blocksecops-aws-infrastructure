@@ -17,6 +17,7 @@ resources:
   - namespace.yaml
   - pdb.yaml
   - backup-cronjob.yaml
+  - backup-configmap.yaml
   - externalsecret.yaml
   - vault-policy.yaml
   - servicemonitor.yaml
