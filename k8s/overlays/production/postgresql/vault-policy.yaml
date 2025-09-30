@@ -1,0 +1,49 @@
+# Vault Policy for PostgreSQL Production Access
+# This should be applied to Vault, not Kubernetes
+# Included here for documentation and deployment reference
+
+# vault policy write postgresql-production - <<EOF
+# path "secret/data/database/postgresql/production" {
+#   capabilities = ["read"]
+# }
+#
+# path "secret/metadata/database/postgresql/production" {
+#   capabilities = ["read"]
+# }
+# EOF
+
+# Kubernetes Role for Vault Authentication
+# vault write auth/kubernetes/role/postgresql-production \
+#   bound_service_account_names=postgresql \
+#   bound_service_account_namespaces=postgresql-prod \
+#   policies=postgresql-production \
+#   ttl=24h
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-policy-reference
+data:
+  policy.hcl: |
+    # PostgreSQL Production Vault Policy
+    path "secret/data/database/postgresql/production" {
+      capabilities = ["read"]
+    }
+
+    path "secret/metadata/database/postgresql/production" {
+      capabilities = ["read"]
+    }
+
+  setup-commands.sh: |
+    #!/bin/bash
+    # Run these commands in Vault to set up the policy and role
+
+    # Create the policy
+    vault policy write postgresql-production /tmp/policy.hcl
+
+    # Create the Kubernetes role
+    vault write auth/kubernetes/role/postgresql-production \
+      bound_service_account_names=postgresql \
+      bound_service_account_namespaces=postgresql-prod \
+      policies=postgresql-production \
+      ttl=24h

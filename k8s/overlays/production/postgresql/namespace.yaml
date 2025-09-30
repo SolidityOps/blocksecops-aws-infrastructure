@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgresql-prod
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: production-postgresql
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: solidity-security-platform
+    environment: production
+    team: devops
+  annotations:
+    backup.velero.io/backup-volumes: "postgresql-data"
