@@ -1,53 +1,61 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: cert-manager-controller
+  name: cert-manager:leaderelection
+  namespace: kube-system
   labels:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
+    environment: staging
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cert-manager-controller
+  kind: Role
+  name: cert-manager:leaderelection
 subjects:
-- name: cert-manager
-  namespace: cert-manager-staging
+- apiGroup: ""
   kind: ServiceAccount
+  name: cert-manager
+  namespace: cert-manager-staging
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: cert-manager-cainjector
+  name: cert-manager-cainjector:leaderelection
+  namespace: kube-system
   labels:
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
+    environment: staging
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cert-manager-cainjector
+  kind: Role
+  name: cert-manager-cainjector:leaderelection
 subjects:
-- name: cert-manager-cainjector
-  namespace: cert-manager
+- apiGroup: ""
   kind: ServiceAccount
+  name: cert-manager-cainjector
+  namespace: cert-manager-staging
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: cert-manager-webhook:subjectaccessreviews
+  name: cert-manager-webhook:dynamic-serving
+  namespace: cert-manager-staging
   labels:
     app.kubernetes.io/name: webhook
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
+    environment: staging
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cert-manager-webhook:subjectaccessreviews
+  kind: Role
+  name: cert-manager-webhook:dynamic-serving
 subjects:
 - apiGroup: ""
   kind: ServiceAccount
   name: cert-manager-webhook
-  namespace: cert-manager
+  namespace: cert-manager-staging

@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: external-secrets
-  namespace: external-secrets-system
+  namespace: external-secrets-production
   labels:
     app.kubernetes.io/name: external-secrets
     app.kubernetes.io/component: controller
@@ -22,7 +22,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: external-secrets-cert-controller
-  namespace: external-secrets-system
+  namespace: external-secrets-production
   labels:
     app.kubernetes.io/name: external-secrets-cert-controller
     app.kubernetes.io/component: cert-controller

@@ -12,7 +12,6 @@ labels:
     app.kubernetes.io/managed-by: kustomize
 
 resources:
-  - namespace.yaml
   - deployment.yaml
   - cainjector-deployment.yaml
   - webhook-deployment.yaml

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-secrets
-  namespace: external-secrets-system
+  namespace: external-secrets-production
 spec:
   replicas: 2
   template:
@@ -32,7 +32,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-secrets-webhook
-  namespace: external-secrets-system
+  namespace: external-secrets-production
 spec:
   replicas: 2
   template:
@@ -52,7 +52,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-secrets-cert-controller
-  namespace: external-secrets-system
+  namespace: external-secrets-production
 spec:
   replicas: 2
   template:

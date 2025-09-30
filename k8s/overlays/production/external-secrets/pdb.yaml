@@ -2,7 +2,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: external-secrets-pdb
-  namespace: external-secrets-system
+  namespace: external-secrets-production
   labels:
     app.kubernetes.io/name: external-secrets
     app.kubernetes.io/component: controller
@@ -18,7 +18,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: external-secrets-webhook-pdb
-  namespace: external-secrets-system
+  namespace: external-secrets-production
   labels:
     app.kubernetes.io/name: external-secrets-webhook
     app.kubernetes.io/component: webhook
@@ -34,7 +34,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: external-secrets-cert-controller-pdb
-  namespace: external-secrets-system
+  namespace: external-secrets-production
   labels:
     app.kubernetes.io/name: external-secrets-cert-controller
     app.kubernetes.io/component: cert-controller
