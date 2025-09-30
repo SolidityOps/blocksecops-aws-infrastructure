@@ -156,17 +156,8 @@ resource "aws_security_group" "postgresql" {
   vpc_id      = aws_vpc.main.id
   description = "Security group for PostgreSQL database access"
 
-  # PostgreSQL access from EKS nodes and application services
-  dynamic "ingress" {
-    for_each = var.create_eks_security_groups ? [aws_security_group.eks_nodes[0].id] : []
-    content {
-      from_port       = 5432
-      to_port         = 5432
-      protocol        = "tcp"
-      security_groups = [ingress.value]
-      description     = "PostgreSQL access from EKS nodes"
-    }
-  }
+  # PostgreSQL access from EKS nodes via private subnet CIDR (more independent approach)
+  # This avoids dependency on EKS security groups while still allowing access
 
   # PostgreSQL access from private subnets (for administrative access)
   ingress {
@@ -198,14 +189,8 @@ resource "aws_security_group" "elasticache" {
   vpc_id      = aws_vpc.main.id
   description = "Security group for ElastiCache Redis access"
 
-  # Redis access from EKS nodes and application services
-  ingress {
-    from_port       = 6379
-    to_port         = 6379
-    protocol        = "tcp"
-    security_groups = var.create_eks_security_groups ? [aws_security_group.eks_nodes[0].id] : []
-    description     = "Redis access from EKS nodes"
-  }
+  # Redis access from EKS nodes via private subnet CIDR (more independent approach)
+  # This avoids dependency on EKS security groups while still allowing access
 
   # Redis access from private subnets
   ingress {
