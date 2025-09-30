@@ -18,11 +18,14 @@ iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCE
 iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
 
 # Save iptables rules
-service iptables save
+iptables-save > /etc/sysconfig/iptables
 
-# Start iptables service
-chkconfig iptables on
-service iptables start
+# Install iptables-services package for Amazon Linux 2
+yum install -y iptables-services
+
+# Enable and start iptables service
+systemctl enable iptables
+systemctl start iptables
 
 # Disable source/destination check (already done in Terraform, but ensuring)
 # This is handled by Terraform: source_dest_check = false

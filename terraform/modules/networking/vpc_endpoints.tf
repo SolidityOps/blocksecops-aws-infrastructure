@@ -281,7 +281,7 @@ resource "aws_vpc_endpoint" "ssm" {
 
 # EKS Interface Endpoint
 resource "aws_vpc_endpoint" "eks" {
-  count = var.create_vpc_endpoints && var.create_eks_security_groups ? 1 : 0
+  count = var.create_vpc_endpoints ? 1 : 0
 
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.eks"
