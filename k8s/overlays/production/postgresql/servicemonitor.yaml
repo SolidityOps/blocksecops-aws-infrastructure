@@ -3,14 +3,14 @@ kind: ServiceMonitor
 metadata:
   name: postgresql-metrics
   labels:
-    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/name: postgresql-exporter
     monitoring: prometheus
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/name: postgresql-exporter
   endpoints:
-  - port: postgresql
+  - port: metrics
     interval: 30s
     path: /metrics
     scheme: http
