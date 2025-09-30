@@ -1,0 +1,59 @@
+# ClusterRole for Vault Kubernetes authentication
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vault-auth
+rules:
+- apiGroups: [""]
+  resources: ["serviceaccounts"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["serviceaccounts/token"]
+  verbs: ["create"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-auth
+subjects:
+- kind: ServiceAccount
+  name: vault
+  namespace: vault-staging  # Will be overridden by environment overlays
+- kind: ServiceAccount
+  name: vault
+  namespace: vault-production  # Will be overridden by environment overlays
+roleRef:
+  kind: ClusterRole
+  name: vault-auth
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for basic namespace operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault
+subjects:
+- kind: ServiceAccount
+  name: vault
+roleRef:
+  kind: Role
+  name: vault
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: vault-staging
+
+namespace: vault-staging
+
+labels:
+- pairs:
+    app.kubernetes.io/instance: staging-vault
+    environment: staging
+    team: devops
+
+resources:
+  - ../../../base/vault
+  - namespace.yaml
+  - externalsecret.yaml
+
+patches:
+- path: statefulset-patch.yaml
+- path: configmap-patch.yaml
+- path: serviceaccount-patch.yaml
+- target:
+    kind: StatefulSet
+    name: vault
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
