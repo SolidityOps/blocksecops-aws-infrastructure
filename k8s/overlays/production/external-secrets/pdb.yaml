@@ -1,0 +1,46 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: external-secrets-pdb
+  namespace: external-secrets-system
+  labels:
+    app.kubernetes.io/name: external-secrets
+    app.kubernetes.io/component: controller
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets
+      app.kubernetes.io/component: controller
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: external-secrets-webhook-pdb
+  namespace: external-secrets-system
+  labels:
+    app.kubernetes.io/name: external-secrets-webhook
+    app.kubernetes.io/component: webhook
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets-webhook
+      app.kubernetes.io/component: webhook
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: external-secrets-cert-controller-pdb
+  namespace: external-secrets-system
+  labels:
+    app.kubernetes.io/name: external-secrets-cert-controller
+    app.kubernetes.io/component: cert-controller
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets-cert-controller
+      app.kubernetes.io/component: cert-controller

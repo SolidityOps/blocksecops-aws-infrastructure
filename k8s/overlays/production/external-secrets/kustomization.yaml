@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: external-secrets-production
+
+namespace: external-secrets-production
+
+labels:
+- pairs:
+    app.kubernetes.io/instance: production-external-secrets
+    environment: production
+    team: devops
+
+resources:
+  - ../../../base/external-secrets
+  - namespace.yaml
+  - clusterrolebinding.yaml
+  - pdb.yaml
+  - servicemonitor.yaml
+
+patches:
+- path: deployment-patch.yaml
+- path: clustersecretstore-patch.yaml
+- path: serviceaccount-patch.yaml

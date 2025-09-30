@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: cert-manager-production
+
+namespace: cert-manager-production
+
+labels:
+- pairs:
+    app.kubernetes.io/instance: production-cert-manager
+    environment: production
+    team: devops
+
+resources:
+  - ../../../base/cert-manager
+  - namespace.yaml
+  - cloudflare-secret.yaml
+  - clusterrolebinding.yaml
+  - pdb.yaml
+  - servicemonitor.yaml
+
+patches:
+- path: deployment-patch.yaml
+- path: clusterissuer-patch.yaml

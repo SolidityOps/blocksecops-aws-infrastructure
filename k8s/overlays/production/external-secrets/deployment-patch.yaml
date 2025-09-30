@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-secrets
+  namespace: external-secrets-system
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: external-secrets
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: external-secrets
+                  app.kubernetes.io/component: controller
+              topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-secrets-webhook
+  namespace: external-secrets-system
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: webhook
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-secrets-cert-controller
+  namespace: external-secrets-system
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: cert-controller
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

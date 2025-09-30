@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: cert-manager-staging
+
+namespace: cert-manager-staging
+
+labels:
+- pairs:
+    app.kubernetes.io/instance: staging-cert-manager
+    environment: staging
+    team: devops
+
+resources:
+  - ../../../base/cert-manager
+  - namespace.yaml
+  - cloudflare-secret.yaml
+  - clusterrolebinding.yaml
+
+patches:
+- path: clusterissuer-patch.yaml

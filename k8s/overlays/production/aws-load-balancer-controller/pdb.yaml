@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: aws-load-balancer-controller-pdb
+  labels:
+    app.kubernetes.io/name: aws-load-balancer-controller
+    app.kubernetes.io/component: ingress-controller
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aws-load-balancer-controller
+      app.kubernetes.io/component: ingress-controller

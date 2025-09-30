@@ -1,0 +1,53 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-controller
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-controller
+subjects:
+- name: cert-manager
+  namespace: cert-manager-staging
+  kind: ServiceAccount
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-cainjector
+  labels:
+    app.kubernetes.io/name: cainjector
+    app.kubernetes.io/component: cainjector
+    app.kubernetes.io/instance: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-cainjector
+subjects:
+- name: cert-manager-cainjector
+  namespace: cert-manager-staging
+  kind: ServiceAccount
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-webhook:subjectaccessreviews
+  labels:
+    app.kubernetes.io/name: webhook
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-webhook:subjectaccessreviews
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: cert-manager-webhook
+  namespace: cert-manager-staging

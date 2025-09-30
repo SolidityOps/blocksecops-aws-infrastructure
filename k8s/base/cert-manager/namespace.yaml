@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager-staging
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: certificate-management
+    cert-manager.io/disable-validation: "true"
