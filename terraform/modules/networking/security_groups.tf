@@ -157,12 +157,15 @@ resource "aws_security_group" "postgresql" {
   description = "Security group for PostgreSQL database access"
 
   # PostgreSQL access from EKS nodes and application services
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = var.create_eks_security_groups ? [aws_security_group.eks_nodes[0].id] : []
-    description     = "PostgreSQL access from EKS nodes"
+  dynamic "ingress" {
+    for_each = var.create_eks_security_groups ? [aws_security_group.eks_nodes[0].id] : []
+    content {
+      from_port       = 5432
+      to_port         = 5432
+      protocol        = "tcp"
+      security_groups = [ingress.value]
+      description     = "PostgreSQL access from EKS nodes"
+    }
   }
 
   # PostgreSQL access from private subnets (for administrative access)
