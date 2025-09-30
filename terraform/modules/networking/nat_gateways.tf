@@ -21,7 +21,7 @@ resource "aws_nat_gateway" "main" {
 resource "aws_instance" "nat" {
   count = var.use_nat_instance && !var.enable_nat_gateway ? length(local.selected_azs) : 0
 
-  ami                         = var.nat_instance_ami != "" ? var.nat_instance_ami : one(data.aws_ami.nat_instance[*].id)
+  ami                         = var.nat_instance_ami != "" ? var.nat_instance_ami : try(data.aws_ami.nat_instance[0].id, null)
   instance_type               = var.nat_instance_type
   subnet_id                   = aws_subnet.public[count.index].id
   associate_public_ip_address = true

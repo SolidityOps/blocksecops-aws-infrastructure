@@ -12,10 +12,13 @@ yum update -y
 echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
 sysctl -p
 
-# Configure iptables for NAT
-iptables -t nat -A POSTROUTING -o eth0 -s ${vpc_cidr} -j MASQUERADE
-iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
+# Detect primary network interface (the one with default route)
+PRIMARY_INTERFACE=$(ip route | grep default | awk '{print $5}' | head -n1)
+
+# Configure iptables for NAT using the primary interface
+iptables -t nat -A POSTROUTING -o $PRIMARY_INTERFACE -s ${vpc_cidr} -j MASQUERADE
+iptables -A FORWARD -i $PRIMARY_INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -o $PRIMARY_INTERFACE -j ACCEPT
 
 # Save iptables rules
 iptables-save > /etc/sysconfig/iptables
