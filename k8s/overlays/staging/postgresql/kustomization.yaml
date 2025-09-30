@@ -18,7 +18,6 @@ resources:
 patchesStrategicMerge:
   - statefulset-patch.yaml
   - configmap-patch.yaml
-  - pvc-patch.yaml
 
 patches:
   - target:

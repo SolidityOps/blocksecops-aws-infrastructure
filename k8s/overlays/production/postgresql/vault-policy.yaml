@@ -41,9 +41,16 @@ data:
     # Create the policy
     vault policy write postgresql-production /tmp/policy.hcl
 
-    # Create the Kubernetes role
+    # Create the Kubernetes role for PostgreSQL
     vault write auth/kubernetes/role/postgresql-production \
       bound_service_account_names=postgresql \
+      bound_service_account_namespaces=postgresql-prod \
+      policies=postgresql-production \
+      ttl=24h
+
+    # Create the Kubernetes role for PostgreSQL exporter
+    vault write auth/kubernetes/role/postgresql-exporter-production \
+      bound_service_account_names=default \
       bound_service_account_namespaces=postgresql-prod \
       policies=postgresql-production \
       ttl=24h

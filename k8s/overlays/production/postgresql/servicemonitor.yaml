@@ -79,10 +79,33 @@ spec:
     app.kubernetes.io/name: postgresql-exporter
 
 ---
-apiVersion: v1
-kind: Secret
+# PostgreSQL Exporter secret managed by External Secrets Operator + Vault
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
-  name: postgresql-exporter-secret
-type: Opaque
-stringData:
-  DATA_SOURCE_NAME: "postgresql://postgres:changeme123@postgresql:5432/postgres?sslmode=disable"
+  name: postgresql-exporter-external-secret
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-secret-store
+    kind: SecretStore
+  target:
+    name: postgresql-exporter-secret
+    creationPolicy: Owner
+    template:
+      type: Opaque
+      data:
+        DATA_SOURCE_NAME: "postgresql://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@postgresql:5432/{{ .POSTGRES_DB }}?sslmode=disable"
+  data:
+  - secretKey: POSTGRES_USER
+    remoteRef:
+      key: database/postgresql/production
+      property: username
+  - secretKey: POSTGRES_PASSWORD
+    remoteRef:
+      key: database/postgresql/production
+      property: password
+  - secretKey: POSTGRES_DB
+    remoteRef:
+      key: database/postgresql/production
+      property: database
