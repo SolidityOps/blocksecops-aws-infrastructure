@@ -44,7 +44,7 @@ spec:
 
               # Try to backup from each available replica
               for i in $(seq 0 $((TOTAL_REPLICAS-1))); do
-                REPLICA_DIR="/${STATEFULSET_NAME}-data-${i}"
+                REPLICA_DIR="/vault-data-${i}"
                 if [ -d "$REPLICA_DIR" ] && [ "$(ls -A $REPLICA_DIR 2>/dev/null)" ]; then
                   echo "Backing up from replica ${STATEFULSET_NAME}-${i}"
 
