@@ -7,23 +7,4 @@ metadata:
     app.kubernetes.io/component: autoscaler
 data:
   AWS_REGION: "us-west-2"
-
-  # Cluster autoscaler configuration
-  SCALE_DOWN_DELAY_AFTER_ADD: "10m"
-  SCALE_DOWN_UNNEEDED_TIME: "10m"
-  SCALE_DOWN_UTILIZATION_THRESHOLD: "0.5"
-  SKIP_NODES_WITH_LOCAL_STORAGE: "false"
-  SKIP_NODES_WITH_SYSTEM_PODS: "false"
-
-  # Node group discovery configuration
-  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/CLUSTER_NAME"
-
-  # Scaling policies
-  MAX_NODE_PROVISION_TIME: "15m"
-  MAX_NODES_TOTAL: "100"
-  CORES_TOTAL: "0:320000"
-  MEMORY_TOTAL: "0:6400000"
-
-  # Logging and monitoring
-  LOG_LEVEL: "4"
-  METRICS_ADDRESS: "0.0.0.0:8085"
+  CLUSTER_NAME: "eks-cluster"

@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: metrics-server
     app.kubernetes.io/component: metrics
 spec:
-  minAvailable: 2
+  minAvailable: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: metrics-server

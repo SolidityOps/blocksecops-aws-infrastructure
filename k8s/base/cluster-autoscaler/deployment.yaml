@@ -38,7 +38,7 @@ spec:
         - --cloud-provider=aws
         - --skip-nodes-with-local-storage=false
         - --expander=least-waste
-        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/CLUSTER_NAME
+        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/$(CLUSTER_NAME)
         - --balance-similar-node-groups
         - --skip-nodes-with-system-pods=false
         ports:
@@ -80,6 +80,11 @@ spec:
             configMapKeyRef:
               name: cluster-autoscaler-config
               key: AWS_REGION
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-autoscaler-config
+              key: CLUSTER_NAME
         volumeMounts:
         - name: tmp
           mountPath: /tmp
