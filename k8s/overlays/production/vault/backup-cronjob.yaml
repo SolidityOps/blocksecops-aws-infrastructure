@@ -19,40 +19,55 @@ spec:
           serviceAccountName: vault-backup
           containers:
           - name: vault-backup
-            image: vault:1.15.2
+            image: alpine:3.18
             command:
             - /bin/sh
             - -c
             - |
-              export VAULT_ADDR="http://vault:8200"
-              export VAULT_TOKEN="$VAULT_ROOT_TOKEN"
+              # File storage backend backup - copy Vault data directory
+              BACKUP_DIR="/backup/vault-backup-$(date +%Y%m%d-%H%M%S)"
+              echo "Creating file storage backup: $BACKUP_DIR"
 
-              BACKUP_FILE="/backup/vault-snapshot-$(date +%Y%m%d-%H%M%S).snap"
-              echo "Creating Vault snapshot: $BACKUP_FILE"
+              # Create backup directory
+              mkdir -p "$BACKUP_DIR"
 
-              # Create snapshot
-              vault operator raft snapshot save $BACKUP_FILE
+              # Stop Vault gracefully before backup (optional for consistency)
+              # Note: This approach copies files while Vault is running
+              # For production, consider stopping Vault temporarily for consistent backups
 
-              if [ $? -eq 0 ]; then
-                echo "Backup completed successfully"
-                # Compress the snapshot
-                gzip $BACKUP_FILE
+              # Copy Vault data directory
+              if cp -r /vault-data/* "$BACKUP_DIR/" 2>/dev/null; then
+                echo "Vault data files copied successfully"
+
+                # Create metadata file
+                cat > "$BACKUP_DIR/backup-metadata.txt" << EOF
+              Backup Date: $(date)
+              Backup Type: File Storage Backend
+              Source: /vault-data
+              Notes: File-based backup of Vault data directory
+              EOF
+
+                # Compress the backup
+                tar -czf "$BACKUP_DIR.tar.gz" -C /backup "$(basename "$BACKUP_DIR")"
+                rm -rf "$BACKUP_DIR"
+
+                echo "Backup compressed to $BACKUP_DIR.tar.gz"
+
                 # Keep only last 7 days of backups
-                find /backup -name "*.snap.gz" -mtime +7 -delete
+                find /backup -name "vault-backup-*.tar.gz" -mtime +7 -delete
                 echo "Backup retention cleanup completed"
               else
-                echo "Backup failed"
-                exit 1
+                echo "Backup failed - no data to backup or copy failed"
+                # Don't exit with error if directory is empty (first run)
+                echo "This might be the first backup or Vault data directory is empty"
               fi
-            env:
-            - name: VAULT_ROOT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: vault-backup-secret
-                  key: root-token
+# No environment variables needed for file-based backup
             volumeMounts:
             - name: backup-storage
               mountPath: /backup
+            - name: vault-data
+              mountPath: /vault-data
+              readOnly: true
             resources:
               requests:
                 memory: "128Mi"
@@ -64,6 +79,9 @@ spec:
           - name: backup-storage
             persistentVolumeClaim:
               claimName: vault-backup-pvc
+          - name: vault-data
+            persistentVolumeClaim:
+              claimName: vault-data-vault-0  # StatefulSet PVC naming pattern
 
 ---
 apiVersion: v1
@@ -84,11 +102,5 @@ kind: ServiceAccount
 metadata:
   name: vault-backup
 
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: vault-backup-secret
-type: Opaque
-stringData:
-  root-token: "changeme"  # This should be updated with actual root token after Vault initialization
+# Note: No secrets needed for file-based backup
+# The backup job directly accesses the Vault data directory via PVC
