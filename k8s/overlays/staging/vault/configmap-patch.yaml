@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+data:
+  vault.hcl: |
+    # Vault Community Edition Configuration - Staging Environment
+
+    ui = true
+
+    # Listener configuration
+    listener "tcp" {
+      address = "[::]:8200"
+      cluster_address = "[::]:8201"
+      tls_disable = 1
+    }
+
+    # Storage backend - File storage for StatefulSet
+    storage "file" {
+      path = "/vault/data"
+    }
+
+    # Cluster configuration
+    cluster_addr = "http://POD_IP:8201"
+    api_addr = "http://POD_IP:8200"
+
+    # Disable mlock for containers
+    disable_mlock = true
+
+    # Logging - Debug level for staging
+    log_level = "debug"
+    log_format = "json"
+
+    # Telemetry
+    telemetry {
+      prometheus_retention_time = "30s"
+      disable_hostname = true
+    }
+
+    # Raw storage endpoint (for health checks)
+    raw_storage_endpoint = true
+
+    # Shorter lease TTLs for staging
+    default_lease_ttl = "24h"
+    max_lease_ttl = "168h"  # 1 week

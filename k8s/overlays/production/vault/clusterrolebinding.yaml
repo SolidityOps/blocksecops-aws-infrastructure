@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-auth-production
+subjects:
+- kind: ServiceAccount
+  name: vault
+  namespace: vault-production
+roleRef:
+  kind: ClusterRole
+  name: vault-auth
+  apiGroup: rbac.authorization.k8s.io

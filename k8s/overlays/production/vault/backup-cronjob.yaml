@@ -1,0 +1,149 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-backup
+  annotations:
+    description: "Multi-replica Vault backup with best-effort strategy"
+    replica-dependency: "Must match StatefulSet replica count (currently 2)"
+spec:
+  schedule: "0 3 * * *"  # Daily at 3 AM
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vault-backup
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: vault-backup
+          containers:
+          - name: vault-backup
+            image: alpine:3.18
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Multi-replica file storage backend backup
+              BACKUP_DIR="/backup/${STATEFULSET_NAME}-backup-$(date +%Y%m%d-%H%M%S)"
+              echo "Creating multi-replica file storage backup: $BACKUP_DIR"
+
+              # Create backup directory
+              mkdir -p "$BACKUP_DIR"
+
+              BACKUP_SUCCESS=false
+              # Configuration from ConfigMap
+              TOTAL_REPLICAS=${TOTAL_REPLICAS:-2}
+              STATEFULSET_NAME=${STATEFULSET_NAME:-vault}
+              RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
+
+              echo "Backup configuration: replicas=$TOTAL_REPLICAS, statefulset=$STATEFULSET_NAME, retention=$RETENTION_DAYS days"
+
+              # Try to backup from each available replica
+              for i in $(seq 0 $((TOTAL_REPLICAS-1))); do
+                REPLICA_DIR="/vault-data-${i}"
+                if [ -d "$REPLICA_DIR" ] && [ "$(ls -A $REPLICA_DIR 2>/dev/null)" ]; then
+                  echo "Backing up from replica ${STATEFULSET_NAME}-${i}"
+
+                  # Create replica-specific backup directory
+                  REPLICA_BACKUP_DIR="$BACKUP_DIR/replica-${i}"
+                  mkdir -p "$REPLICA_BACKUP_DIR"
+
+                  # Copy data from this replica
+                  if cp -r "$REPLICA_DIR"/* "$REPLICA_BACKUP_DIR/" 2>/dev/null; then
+                    echo "Successfully backed up replica ${STATEFULSET_NAME}-${i}"
+                    BACKUP_SUCCESS=true
+
+                    # Create metadata for this replica
+                    cat > "$REPLICA_BACKUP_DIR/replica-metadata.txt" << EOF
+              Replica: ${STATEFULSET_NAME}-${i}
+              Backup Date: $(date)
+              Source PVC: ${STATEFULSET_NAME}-data-${STATEFULSET_NAME}-${i}
+              Data Size: $(du -sh "$REPLICA_BACKUP_DIR" | cut -f1)
+              EOF
+                  else
+                    echo "Failed to backup replica ${STATEFULSET_NAME}-${i}"
+                  fi
+                else
+                  echo "Replica ${STATEFULSET_NAME}-${i} data directory not found or empty"
+                fi
+              done
+
+              if [ "$BACKUP_SUCCESS" = true ]; then
+                # Create overall backup metadata
+                cat > "$BACKUP_DIR/backup-metadata.txt" << EOF
+              Backup Date: $(date)
+              Backup Type: Multi-Replica File Storage Backend
+              Total Replicas: $TOTAL_REPLICAS
+              Backup Strategy: Best-effort from all available replicas
+              Notes: File-based backup from Vault StatefulSet replicas
+              EOF
+
+                # Compress the backup
+                tar -czf "$BACKUP_DIR.tar.gz" -C /backup "$(basename "$BACKUP_DIR")"
+                rm -rf "$BACKUP_DIR"
+
+                echo "Multi-replica backup compressed to $BACKUP_DIR.tar.gz"
+
+                # Keep only last N days of backups (configurable)
+                find /backup -name "${STATEFULSET_NAME}-backup-*.tar.gz" -mtime +${RETENTION_DAYS} -delete
+                echo "Backup retention cleanup completed"
+              else
+                echo "ERROR: No replicas were successfully backed up"
+                rm -rf "$BACKUP_DIR"
+                exit 1
+              fi
+            envFrom:
+            - configMapRef:
+                name: vault-backup-config
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            - name: vault-data-0
+              mountPath: /vault-data-0
+              readOnly: true
+            - name: vault-data-1
+              mountPath: /vault-data-1
+              readOnly: true
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: vault-backup-pvc
+          - name: vault-data-0
+            persistentVolumeClaim:
+              claimName: vault-data-vault-0  # StatefulSet PVC naming pattern: <volumeClaimTemplate>-<statefulset>-<index>
+          - name: vault-data-1
+            persistentVolumeClaim:
+              claimName: vault-data-vault-1  # StatefulSet PVC naming pattern: <volumeClaimTemplate>-<statefulset>-<index>
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vault-backup-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-backup
+
+# Note: No secrets needed for file-based backup
+# The backup job directly accesses the Vault data directory via PVC

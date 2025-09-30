@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-backup-config
+data:
+  TOTAL_REPLICAS: "2"
+  STATEFULSET_NAME: "vault"
+  BACKUP_RETENTION_DAYS: "7"
+  BACKUP_SCHEDULE: "0 3 * * *"

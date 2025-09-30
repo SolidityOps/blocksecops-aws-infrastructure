@@ -1,0 +1,107 @@
+# Vault Policies and Kubernetes Authentication Setup
+# This should be applied to Vault, not Kubernetes
+# Included here for documentation and deployment reference
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-policies-reference
+data:
+  external-secrets-policy.hcl: |
+    # External Secrets Operator Policy
+    path "secret/data/*" {
+      capabilities = ["read"]
+    }
+
+    path "secret/metadata/*" {
+      capabilities = ["read"]
+    }
+
+  postgresql-production-policy.hcl: |
+    # PostgreSQL Production Policy
+    path "secret/data/database/postgresql/production" {
+      capabilities = ["read"]
+    }
+
+    path "secret/metadata/database/postgresql/production" {
+      capabilities = ["read"]
+    }
+
+  service-policies.hcl: |
+    # Service-specific policies for all backend services
+
+    # API Service
+    path "secret/data/services/api-service/production" {
+      capabilities = ["read"]
+    }
+
+    # Tool Integration Service
+    path "secret/data/services/tool-integration/production" {
+      capabilities = ["read"]
+    }
+
+    # Data Service
+    path "secret/data/services/data-service/production" {
+      capabilities = ["read"]
+    }
+
+    # Orchestration Service
+    path "secret/data/services/orchestration/production" {
+      capabilities = ["read"]
+    }
+
+    # Intelligence Engine
+    path "secret/data/services/intelligence-engine/production" {
+      capabilities = ["read"]
+    }
+
+    # Notification Service
+    path "secret/data/services/notification/production" {
+      capabilities = ["read"]
+    }
+
+    # Contract Parser
+    path "secret/data/services/contract-parser/production" {
+      capabilities = ["read"]
+    }
+
+  setup-commands.sh: |
+    #!/bin/bash
+    # Run these commands in Vault to set up policies and authentication
+
+    # Enable Kubernetes authentication
+    vault auth enable kubernetes
+
+    # Configure Kubernetes authentication
+    vault write auth/kubernetes/config \
+      token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+      kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+    # Create policies
+    vault policy write external-secrets-operator /tmp/external-secrets-policy.hcl
+    vault policy write postgresql-production /tmp/postgresql-production-policy.hcl
+
+    # Create Kubernetes roles
+    vault write auth/kubernetes/role/external-secrets-operator \
+      bound_service_account_names=external-secrets-operator \
+      bound_service_account_namespaces=external-secrets-system \
+      policies=external-secrets-operator \
+      ttl=24h
+
+    vault write auth/kubernetes/role/postgresql-production \
+      bound_service_account_names=postgresql \
+      bound_service_account_namespaces=postgresql-prod \
+      policies=postgresql-production \
+      ttl=24h
+
+    vault write auth/kubernetes/role/postgresql-exporter-production \
+      bound_service_account_names=default \
+      bound_service_account_namespaces=postgresql-prod \
+      policies=postgresql-production \
+      ttl=24h
+
+    # Enable KV v2 secrets engine
+    vault secrets enable -path=secret kv-v2
+
+    echo "Vault authentication and policies configured successfully"

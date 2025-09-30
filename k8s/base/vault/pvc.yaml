@@ -1,0 +1,21 @@
+# Note: PVC is defined as volumeClaimTemplates in the StatefulSet
+# This file serves as documentation for the PVC configuration
+
+# The actual PVC is created automatically by the StatefulSet with these specifications:
+# - name: vault-data
+# - accessModes: ReadWriteOnce
+# - storage: 10Gi (base configuration)
+# - storageClassName: gp3
+
+# For reference, this would be the standalone PVC if not using StatefulSet:
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: vault-data
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
+#   storageClassName: gp3
