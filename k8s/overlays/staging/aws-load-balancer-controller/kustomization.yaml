@@ -4,7 +4,7 @@ kind: Kustomization
 metadata:
   name: aws-load-balancer-controller-staging
 
-namespace: kube-system
+namespace: aws-load-balancer-controller-staging
 
 labels:
 - pairs:
@@ -14,6 +14,8 @@ labels:
 
 resources:
   - ../../../base/aws-load-balancer-controller
+  - namespace.yaml
+  - clusterrolebinding.yaml
 
 patches:
 - path: deployment-patch.yaml

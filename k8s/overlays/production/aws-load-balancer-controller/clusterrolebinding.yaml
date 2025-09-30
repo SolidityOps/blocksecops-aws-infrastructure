@@ -1,10 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: aws-load-balancer-controller
+  name: aws-load-balancer-controller-production
   labels:
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/component: ingress-controller
+    app.kubernetes.io/component: rbac
+    environment: production
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -12,4 +13,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: aws-load-balancer-controller
-  namespace: kube-system
+  namespace: aws-load-balancer-controller-production
