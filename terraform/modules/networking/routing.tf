@@ -230,32 +230,12 @@ resource "aws_network_acl" "database" {
   vpc_id     = aws_vpc.main.id
   subnet_ids = aws_subnet.database[*].id
 
-  # Inbound rules - only allow traffic from private subnets
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = aws_subnet.private[0].cidr_block
-    from_port  = 5432
-    to_port    = 5432
-  }
-
-  # Redis port
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 110
-    action     = "allow"
-    cidr_block = aws_subnet.private[0].cidr_block
-    from_port  = 6379
-    to_port    = 6379
-  }
-
-  # Allow additional private subnets if multi-AZ
+  # Inbound rules - allow traffic from all private subnets
   dynamic "ingress" {
-    for_each = length(aws_subnet.private) > 1 ? [for i, subnet in aws_subnet.private : i if i > 0] : []
+    for_each = length(aws_subnet.private) > 0 ? [for i, subnet in aws_subnet.private : i] : []
     content {
       protocol   = "tcp"
-      rule_no    = 120 + (ingress.value * 10)
+      rule_no    = 100 + (ingress.value * 10)
       action     = "allow"
       cidr_block = aws_subnet.private[ingress.value].cidr_block
       from_port  = 5432
@@ -263,17 +243,19 @@ resource "aws_network_acl" "database" {
     }
   }
 
+  # Redis port - allow traffic from all private subnets
   dynamic "ingress" {
-    for_each = length(aws_subnet.private) > 1 ? [for i, subnet in aws_subnet.private : i if i > 0] : []
+    for_each = length(aws_subnet.private) > 0 ? [for i, subnet in aws_subnet.private : i] : []
     content {
       protocol   = "tcp"
-      rule_no    = 125 + (ingress.value * 10)
+      rule_no    = 150 + (ingress.value * 10)
       action     = "allow"
       cidr_block = aws_subnet.private[ingress.value].cidr_block
       from_port  = 6379
       to_port    = 6379
     }
   }
+
 
   # Ephemeral ports for return traffic
   ingress {

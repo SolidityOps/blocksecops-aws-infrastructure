@@ -153,7 +153,7 @@ cat > /etc/logrotate.d/nat-health-check << 'EOF'
 }
 EOF
 
-# Signal that user data script completed successfully
-/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource NATInstance --region ${AWS::Region} || true
+# Log successful completion for monitoring
+echo "$(date): NAT instance user data script completed successfully" >> /var/log/nat-setup.log
 
 echo "NAT instance configuration completed successfully"
