@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: ebs-csi-driver-production
+
+labels:
+- pairs:
+    app.kubernetes.io/instance: production-ebs-csi-driver
+    environment: production
+    team: devops
+
+resources:
+  - ../../../base/ebs-csi-driver
+
+patches:
+- path: serviceaccount-patch.yaml
