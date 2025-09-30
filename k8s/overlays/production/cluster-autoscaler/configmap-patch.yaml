@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-autoscaler-config
+data:
+  AWS_REGION: "us-west-2"
+  CLUSTER_NAME: "solidity-security-eks-production"
+
+  # Production scaling policies
+  SCALE_DOWN_DELAY_AFTER_ADD: "10m"
+  SCALE_DOWN_UNNEEDED_TIME: "10m"
+  SCALE_DOWN_UTILIZATION_THRESHOLD: "0.5"
+  SKIP_NODES_WITH_LOCAL_STORAGE: "false"
+  SKIP_NODES_WITH_SYSTEM_PODS: "false"
+
+  # Node group discovery for production
+  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/solidity-security-eks-production"
+
+  # Production scaling limits
+  MAX_NODE_PROVISION_TIME: "15m"
+  MAX_NODES_TOTAL: "100"
+  CORES_TOTAL: "0:320000"
+  MEMORY_TOTAL: "0:6400000"
+
+  # Production logging
+  LOG_LEVEL: "2"
+  METRICS_ADDRESS: "0.0.0.0:8085"

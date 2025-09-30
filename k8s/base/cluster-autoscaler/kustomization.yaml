@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: cluster-autoscaler-base
+
+labels:
+- pairs:
+    app.kubernetes.io/name: cluster-autoscaler
+    app.kubernetes.io/component: autoscaler
+    app.kubernetes.io/part-of: eks-cluster-management
+    app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - serviceaccount.yaml
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
+  - configmap.yaml

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-autoscaler-config
+data:
+  AWS_REGION: "us-west-2"
+  CLUSTER_NAME: "solidity-security-eks-staging"
+
+  # Staging-specific scaling policies
+  SCALE_DOWN_DELAY_AFTER_ADD: "5m"
+  SCALE_DOWN_UNNEEDED_TIME: "5m"
+  SCALE_DOWN_UTILIZATION_THRESHOLD: "0.3"
+  SKIP_NODES_WITH_LOCAL_STORAGE: "false"
+  SKIP_NODES_WITH_SYSTEM_PODS: "false"
+
+  # Node group discovery for staging
+  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/solidity-security-eks-staging"
+
+  # Relaxed scaling for staging
+  MAX_NODE_PROVISION_TIME: "10m"
+  MAX_NODES_TOTAL: "20"
+  CORES_TOTAL: "0:80"
+  MEMORY_TOTAL: "0:160000"
+
+  # Debug logging for staging
+  LOG_LEVEL: "4"
+  METRICS_ADDRESS: "0.0.0.0:8085"
