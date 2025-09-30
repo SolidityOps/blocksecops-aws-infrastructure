@@ -2,6 +2,9 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: vault-backup
+  annotations:
+    description: "Multi-replica Vault backup with best-effort strategy"
+    replica-dependency: "Must match StatefulSet replica count (currently 2)"
 spec:
   schedule: "0 3 * * *"  # Daily at 3 AM
   successfulJobsHistoryLimit: 3
@@ -24,49 +27,79 @@ spec:
             - /bin/sh
             - -c
             - |
-              # File storage backend backup - copy Vault data directory
+              # Multi-replica file storage backend backup
               BACKUP_DIR="/backup/vault-backup-$(date +%Y%m%d-%H%M%S)"
-              echo "Creating file storage backup: $BACKUP_DIR"
+              echo "Creating multi-replica file storage backup: $BACKUP_DIR"
 
               # Create backup directory
               mkdir -p "$BACKUP_DIR"
 
-              # Stop Vault gracefully before backup (optional for consistency)
-              # Note: This approach copies files while Vault is running
-              # For production, consider stopping Vault temporarily for consistent backups
+              BACKUP_SUCCESS=false
+              TOTAL_REPLICAS=2  # Should match StatefulSet replicas
 
-              # Copy Vault data directory
-              if cp -r /vault-data/* "$BACKUP_DIR/" 2>/dev/null; then
-                echo "Vault data files copied successfully"
+              # Try to backup from each available replica
+              for i in $(seq 0 $((TOTAL_REPLICAS-1))); do
+                REPLICA_DIR="/vault-data-${i}"
+                if [ -d "$REPLICA_DIR" ] && [ "$(ls -A $REPLICA_DIR 2>/dev/null)" ]; then
+                  echo "Backing up from replica vault-${i}"
 
-                # Create metadata file
+                  # Create replica-specific backup directory
+                  REPLICA_BACKUP_DIR="$BACKUP_DIR/replica-${i}"
+                  mkdir -p "$REPLICA_BACKUP_DIR"
+
+                  # Copy data from this replica
+                  if cp -r "$REPLICA_DIR"/* "$REPLICA_BACKUP_DIR/" 2>/dev/null; then
+                    echo "Successfully backed up replica vault-${i}"
+                    BACKUP_SUCCESS=true
+
+                    # Create metadata for this replica
+                    cat > "$REPLICA_BACKUP_DIR/replica-metadata.txt" << EOF
+              Replica: vault-${i}
+              Backup Date: $(date)
+              Source PVC: vault-data-vault-${i}
+              Data Size: $(du -sh "$REPLICA_BACKUP_DIR" | cut -f1)
+              EOF
+                  else
+                    echo "Failed to backup replica vault-${i}"
+                  fi
+                else
+                  echo "Replica vault-${i} data directory not found or empty"
+                fi
+              done
+
+              if [ "$BACKUP_SUCCESS" = true ]; then
+                # Create overall backup metadata
                 cat > "$BACKUP_DIR/backup-metadata.txt" << EOF
               Backup Date: $(date)
-              Backup Type: File Storage Backend
-              Source: /vault-data
-              Notes: File-based backup of Vault data directory
+              Backup Type: Multi-Replica File Storage Backend
+              Total Replicas: $TOTAL_REPLICAS
+              Backup Strategy: Best-effort from all available replicas
+              Notes: File-based backup from Vault StatefulSet replicas
               EOF
 
                 # Compress the backup
                 tar -czf "$BACKUP_DIR.tar.gz" -C /backup "$(basename "$BACKUP_DIR")"
                 rm -rf "$BACKUP_DIR"
 
-                echo "Backup compressed to $BACKUP_DIR.tar.gz"
+                echo "Multi-replica backup compressed to $BACKUP_DIR.tar.gz"
 
                 # Keep only last 7 days of backups
                 find /backup -name "vault-backup-*.tar.gz" -mtime +7 -delete
                 echo "Backup retention cleanup completed"
               else
-                echo "Backup failed - no data to backup or copy failed"
-                # Don't exit with error if directory is empty (first run)
-                echo "This might be the first backup or Vault data directory is empty"
+                echo "ERROR: No replicas were successfully backed up"
+                rm -rf "$BACKUP_DIR"
+                exit 1
               fi
 # No environment variables needed for file-based backup
             volumeMounts:
             - name: backup-storage
               mountPath: /backup
-            - name: vault-data
-              mountPath: /vault-data
+            - name: vault-data-0
+              mountPath: /vault-data-0
+              readOnly: true
+            - name: vault-data-1
+              mountPath: /vault-data-1
               readOnly: true
             resources:
               requests:
@@ -79,9 +112,12 @@ spec:
           - name: backup-storage
             persistentVolumeClaim:
               claimName: vault-backup-pvc
-          - name: vault-data
+          - name: vault-data-0
             persistentVolumeClaim:
               claimName: vault-data-vault-0  # StatefulSet PVC naming pattern
+          - name: vault-data-1
+            persistentVolumeClaim:
+              claimName: vault-data-vault-1  # StatefulSet PVC naming pattern
 
 ---
 apiVersion: v1
