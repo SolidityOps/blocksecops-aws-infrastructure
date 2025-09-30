@@ -1,4 +1,5 @@
 # ClusterRole for Vault Kubernetes authentication
+# ClusterRoleBinding is defined in environment overlays to avoid tight coupling
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -10,23 +11,6 @@ rules:
 - apiGroups: [""]
   resources: ["serviceaccounts/token"]
   verbs: ["create"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: vault-auth
-subjects:
-- kind: ServiceAccount
-  name: vault
-  namespace: vault-staging  # Will be overridden by environment overlays
-- kind: ServiceAccount
-  name: vault
-  namespace: vault-production  # Will be overridden by environment overlays
-roleRef:
-  kind: ClusterRole
-  name: vault-auth
-  apiGroup: rbac.authorization.k8s.io
 
 ---
 # Role for basic namespace operations

@@ -20,6 +20,7 @@ resources:
   - externalsecret.yaml
   - vault-policy.yaml
   - servicemonitor.yaml
+  - clusterrolebinding.yaml
 
 patches:
 - path: statefulset-patch.yaml

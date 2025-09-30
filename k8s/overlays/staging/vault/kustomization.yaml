@@ -16,6 +16,7 @@ resources:
   - ../../../base/vault
   - namespace.yaml
   - externalsecret.yaml
+  - clusterrolebinding.yaml
 
 patches:
 - path: statefulset-patch.yaml
