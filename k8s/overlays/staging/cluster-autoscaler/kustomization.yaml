@@ -12,6 +12,7 @@ labels:
 
 resources:
   - ../../../base/cluster-autoscaler
+  - servicemonitor.yaml
 
 patches:
 - path: deployment-patch.yaml

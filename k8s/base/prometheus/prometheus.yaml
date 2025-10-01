@@ -1,0 +1,65 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+spec:
+  replicas: 1
+  retention: 30d
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: gp3
+
+  # Service monitor selector - match ServiceMonitors across all namespaces
+  serviceMonitorSelector: {}
+
+  # Select ServiceMonitors from all namespaces
+  serviceMonitorNamespaceSelector: {}
+
+  # RBAC
+  serviceAccountName: prometheus
+
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    fsGroup: 65534
+
+  # Resource limits
+  resources:
+    requests:
+      memory: 400Mi
+      cpu: 100m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+  # Additional configuration
+  enableAdminAPI: false
+  logLevel: info
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9090
+    targetPort: web
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: prometheus
+    prometheus: prometheus

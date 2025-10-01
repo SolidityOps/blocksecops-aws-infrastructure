@@ -17,3 +17,6 @@ resources:
   - aws-load-balancer-controller/
   - cert-manager/
   - external-secrets/
+  - postgresql/
+  - vault/
+  - prometheus/
