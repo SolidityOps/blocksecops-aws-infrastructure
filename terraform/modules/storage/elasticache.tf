@@ -147,9 +147,9 @@ resource "aws_elasticache_replication_group" "redis" {
     }
   }
 
-  # Implicit dependency through the dynamic block - when logging is enabled,
-  # the reference to aws_cloudwatch_log_group.redis_slow_log[0].name
-  # automatically creates the dependency
+  # Implicit dependency: When var.enable_redis_logging is true, the dynamic block
+  # executes and the 'destination' attribute references aws_cloudwatch_log_group.redis_slow_log[0].name,
+  # which automatically creates the proper dependency ordering
 }
 
 # Random auth token for Redis
