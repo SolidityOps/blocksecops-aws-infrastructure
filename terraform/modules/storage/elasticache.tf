@@ -64,8 +64,10 @@ resource "aws_kms_alias" "elasticache" {
   target_key_id = aws_kms_key.elasticache[0].key_id
 }
 
-# ElastiCache Redis Replication Group
-resource "aws_elasticache_replication_group" "redis" {
+# ElastiCache Redis Replication Group (with logging)
+resource "aws_elasticache_replication_group" "redis_with_logging" {
+  count = var.enable_redis_logging ? 1 : 0
+
   replication_group_id = "${local.name_prefix}-redis"
   description          = "Redis cluster for ${var.environment} environment"
 
@@ -102,14 +104,11 @@ resource "aws_elasticache_replication_group" "redis" {
   auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
 
   # Logging
-  dynamic "log_delivery_configuration" {
-    for_each = var.enable_redis_logging ? [1] : []
-    content {
-      destination      = aws_cloudwatch_log_group.redis_slow_log[0].name
-      destination_type = "cloudwatch-logs"
-      log_format       = "text"
-      log_type         = "slow-log"
-    }
+  log_delivery_configuration {
+    destination      = aws_cloudwatch_log_group.redis_slow_log[0].name
+    destination_type = "cloudwatch-logs"
+    log_format       = "text"
+    log_type         = "slow-log"
   }
 
   tags = merge(local.common_tags, {
@@ -118,6 +117,53 @@ resource "aws_elasticache_replication_group" "redis" {
     Engine = "redis"
   })
 
+  depends_on = [aws_cloudwatch_log_group.redis_slow_log]
+}
+
+# ElastiCache Redis Replication Group (without logging)
+resource "aws_elasticache_replication_group" "redis_without_logging" {
+  count = var.enable_redis_logging ? 0 : 1
+
+  replication_group_id = "${local.name_prefix}-redis"
+  description          = "Redis cluster for ${var.environment} environment"
+
+  # Engine configuration
+  engine         = "redis"
+  engine_version = var.redis_engine_version
+  node_type      = var.redis_node_type
+  port           = var.redis_port
+
+  # Cluster configuration
+  num_cache_clusters = var.redis_num_cache_clusters
+
+  # Parameter group
+  parameter_group_name = aws_elasticache_parameter_group.redis.name
+
+  # Network configuration
+  subnet_group_name  = aws_elasticache_subnet_group.redis.name
+  security_group_ids = var.redis_security_group_ids
+
+  # Security configuration
+  at_rest_encryption_enabled = var.enable_encryption
+  transit_encryption_enabled = var.enable_encryption
+  auth_token                 = var.enable_encryption ? random_password.redis_auth_token[0].result : null
+  kms_key_id                 = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
+
+  # Backup configuration
+  automatic_failover_enabled = var.redis_automatic_failover_enabled
+  multi_az_enabled           = var.redis_multi_az_enabled
+  snapshot_retention_limit   = var.redis_snapshot_retention_limit
+  snapshot_window            = var.redis_snapshot_window
+
+  # Maintenance
+  maintenance_window         = var.redis_maintenance_window
+  auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
+
+  tags = merge(local.common_tags, {
+    Name   = "${local.name_prefix}-redis"
+    Type   = "elasticache-replication-group"
+    Engine = "redis"
+  })
 }
 
 # Random auth token for Redis
@@ -149,8 +195,8 @@ resource "aws_secretsmanager_secret_version" "redis_auth_token" {
   secret_string = jsonencode({
     auth_token = random_password.redis_auth_token[0].result
     engine     = "redis"
-    host       = aws_elasticache_replication_group.redis.primary_endpoint_address
-    port       = aws_elasticache_replication_group.redis.port
+    host       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].primary_endpoint_address : aws_elasticache_replication_group.redis_without_logging[0].primary_endpoint_address
+    port       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].port : aws_elasticache_replication_group.redis_without_logging[0].port
   })
 }
 

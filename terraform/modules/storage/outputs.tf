@@ -60,27 +60,27 @@ output "postgresql_kms_key_arn" {
 # Redis Outputs
 output "redis_replication_group_id" {
   description = "Redis replication group ID"
-  value       = aws_elasticache_replication_group.redis.id
+  value       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].id : aws_elasticache_replication_group.redis_without_logging[0].id
 }
 
 output "redis_replication_group_arn" {
   description = "Redis replication group ARN"
-  value       = aws_elasticache_replication_group.redis.arn
+  value       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].arn : aws_elasticache_replication_group.redis_without_logging[0].arn
 }
 
 output "redis_primary_endpoint_address" {
   description = "Redis primary endpoint address"
-  value       = aws_elasticache_replication_group.redis.primary_endpoint_address
+  value       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].primary_endpoint_address : aws_elasticache_replication_group.redis_without_logging[0].primary_endpoint_address
 }
 
 output "redis_reader_endpoint_address" {
   description = "Redis reader endpoint address"
-  value       = aws_elasticache_replication_group.redis.reader_endpoint_address
+  value       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].reader_endpoint_address : aws_elasticache_replication_group.redis_without_logging[0].reader_endpoint_address
 }
 
 output "redis_port" {
   description = "Redis port"
-  value       = aws_elasticache_replication_group.redis.port
+  value       = var.enable_redis_logging ? aws_elasticache_replication_group.redis_with_logging[0].port : aws_elasticache_replication_group.redis_without_logging[0].port
 }
 
 output "redis_auth_token_secret_arn" {
