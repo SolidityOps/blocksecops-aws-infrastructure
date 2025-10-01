@@ -22,10 +22,12 @@ cloudflare/
 
 ## Prerequisites
 
-1. **Cloudflare Account**: Domain must be added to Cloudflare with nameservers configured
-2. **Terraform**: Version 1.0+ installed
-3. **Cloudflare API Token**: With Zone:Edit permissions for the domain
-4. **AWS Load Balancer IPs**: Required for A record configuration
+1. **Domain Registration**: `advancedblockchainsecurity.com` must be registered and active
+2. **Cloudflare Account**: Domain added to Cloudflare with nameservers properly configured
+3. **Terraform**: Version 1.0+ installed locally
+4. **Cloudflare API Token**: With Zone:Edit permissions for the domain
+5. **AWS Infrastructure**: Load Balancer IPs from completed Tasks 1.2-1.6 deployment
+6. **AWS CLI**: Configured for retrieving Load Balancer information (optional)
 
 ## Environment Variables
 
@@ -84,42 +86,91 @@ export TF_VAR_production_lb_ip="PRODUCTION_ALB_IP"
 
 ## Deployment Instructions
 
-### 1. Initial Setup
+### Automated Deployment (Recommended)
+
+**⚠️ Important:** You must have AWS Load Balancer IPs before deploying DNS records.
 
 ```bash
-cd cloudflare/terraform
+cd cloudflare/
 
-# Initialize Terraform
-terraform init
+# Set required environment variables
+export CLOUDFLARE_API_TOKEN="your_cloudflare_api_token"
+export TF_VAR_staging_lb_ip="your-staging-alb-ip"
+export TF_VAR_production_lb_ip="your-production-alb-ip"
 
-# Review the plan
-terraform plan
+# Deploy DNS infrastructure using automated script
+./scripts/deploy-dns.sh
 ```
 
-### 2. Deploy DNS Infrastructure
+The automated script includes:
+- Environment validation
+- Cloudflare API access verification
+- Configuration backup
+- Terraform deployment
+- Post-deployment validation
+- Comprehensive logging
+
+### Manual Deployment (Advanced Users)
 
 ```bash
-# Apply the configuration
+cd cloudflare/terraform/
+
+# Set environment variables
+export CLOUDFLARE_API_TOKEN="your_cloudflare_api_token"
+export TF_VAR_staging_lb_ip="your-staging-alb-ip"
+export TF_VAR_production_lb_ip="your-production-alb-ip"
+
+# Initialize and deploy
+terraform init
+terraform plan
 terraform apply
 
 # Verify deployment
 terraform output
 ```
 
-### 3. Validate DNS Configuration
+### Deployment Options
+
+The automated script supports several options:
 
 ```bash
-# Run comprehensive DNS validation
-../scripts/validation/dns-validation.sh
+# Dry run (plan only)
+./scripts/deploy-dns.sh --dry-run
+
+# Force deployment (skip confirmations)
+./scripts/deploy-dns.sh --force
+
+# Help and usage
+./scripts/deploy-dns.sh --help
 ```
 
 ## Load Balancer IP Configuration
 
-Replace placeholder values in the following files with actual AWS ALB IPs:
+**Critical Requirement:** DNS deployment requires actual AWS Application Load Balancer IPs.
 
-1. **Terraform Variables**: Update `terraform.tfvars`
-2. **DNS Records**: Replace `PRODUCTION_LB_IP` and `STAGING_LB_IP`
-3. **Subdomain Configs**: Update IP values in JSON files
+### Getting Load Balancer IPs
+
+After deploying AWS infrastructure (Tasks 1.2-1.6), get the Load Balancer IPs:
+
+```bash
+# Get ALB DNS names from AWS
+aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName, `staging`)].DNSName' --output text
+aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName, `production`)].DNSName' --output text
+
+# Resolve to IP addresses
+nslookup staging-alb-dns-name.us-west-2.elb.amazonaws.com
+nslookup production-alb-dns-name.us-west-2.elb.amazonaws.com
+```
+
+### Setting Environment Variables
+
+```bash
+# Use the resolved IP addresses
+export TF_VAR_staging_lb_ip="198.51.100.1"  # Replace with actual staging ALB IP
+export TF_VAR_production_lb_ip="203.0.113.1"  # Replace with actual production ALB IP
+```
+
+**Note:** The Terraform configuration automatically uses these environment variables - no manual file editing required.
 
 ## SSL Certificate Management
 
