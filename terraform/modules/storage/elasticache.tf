@@ -118,7 +118,7 @@ resource "aws_elasticache_replication_group" "redis" {
     Engine = "redis"
   })
 
-  depends_on = var.enable_redis_logging ? [aws_cloudwatch_log_group.redis_slow_log[0]] : null
+  depends_on = var.enable_redis_logging ? [aws_cloudwatch_log_group.redis_slow_log] : []
 }
 
 # Random auth token for Redis

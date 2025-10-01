@@ -130,27 +130,22 @@ output "addons" {
   value = {
     coredns = var.enable_coredns_addon ? {
       arn           = aws_eks_addon.coredns[0].arn
-      status        = aws_eks_addon.coredns[0].status
       addon_version = aws_eks_addon.coredns[0].addon_version
     } : null
     kube_proxy = var.enable_kube_proxy_addon ? {
       arn           = aws_eks_addon.kube_proxy[0].arn
-      status        = aws_eks_addon.kube_proxy[0].status
       addon_version = aws_eks_addon.kube_proxy[0].addon_version
     } : null
     vpc_cni = var.enable_vpc_cni_addon ? {
       arn           = aws_eks_addon.vpc_cni[0].arn
-      status        = aws_eks_addon.vpc_cni[0].status
       addon_version = aws_eks_addon.vpc_cni[0].addon_version
     } : null
     ebs_csi_driver = var.enable_ebs_csi_addon ? {
       arn           = aws_eks_addon.ebs_csi_driver[0].arn
-      status        = aws_eks_addon.ebs_csi_driver[0].status
       addon_version = aws_eks_addon.ebs_csi_driver[0].addon_version
     } : null
     pod_identity_agent = var.enable_pod_identity_addon ? {
       arn           = aws_eks_addon.eks_pod_identity_agent[0].arn
-      status        = aws_eks_addon.eks_pod_identity_agent[0].status
       addon_version = aws_eks_addon.eks_pod_identity_agent[0].addon_version
     } : null
   }
