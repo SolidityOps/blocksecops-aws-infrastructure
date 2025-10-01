@@ -48,10 +48,10 @@ resource "aws_security_group" "eks_nodes" {
 
   # Self-referencing rule for node-to-node communication
   ingress {
-    from_port = 0
-    to_port   = 65535
-    protocol  = "tcp"
-    self      = true
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
     description = "Node-to-node communication"
   }
 
@@ -66,10 +66,10 @@ resource "aws_security_group" "eks_nodes" {
 
   # Kubelet API access
   ingress {
-    from_port = 10250
-    to_port   = 10250
-    protocol  = "tcp"
-    self      = true
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    self        = true
     description = "Kubelet API"
   }
 

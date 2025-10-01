@@ -74,14 +74,14 @@ module "networking" {
   nat_instance_type  = var.nat_instance_type
 
   # Subnet configuration
-  create_database_subnets        = var.create_database_subnets
+  create_database_subnets         = var.create_database_subnets
   database_subnet_internet_access = false
 
   # Security groups
   create_eks_security_groups      = var.create_eks_security_groups
-  create_alb_security_group      = var.create_alb_security_group
+  create_alb_security_group       = var.create_alb_security_group
   create_database_security_groups = var.create_database_security_groups
-  create_bastion_security_group  = var.create_bastion_security_group
+  create_bastion_security_group   = var.create_bastion_security_group
 
   # VPC endpoints - minimal for staging
   create_vpc_endpoints = var.create_vpc_endpoints
@@ -90,8 +90,8 @@ module "networking" {
   create_network_acls = var.create_network_acls
 
   # Monitoring
-  enable_vpc_flow_logs      = var.enable_vpc_flow_logs
-  flow_logs_retention_days  = var.flow_logs_retention_days
+  enable_vpc_flow_logs     = var.enable_vpc_flow_logs
+  flow_logs_retention_days = var.flow_logs_retention_days
 
   tags = merge(local.common_tags, var.additional_tags)
 }

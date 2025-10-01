@@ -8,7 +8,7 @@ resource "aws_vpc_endpoint" "s3" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
   vpc_endpoint_type = "Gateway"
-  route_table_ids   = concat(
+  route_table_ids = concat(
     aws_route_table.private[*].id,
     var.create_database_subnets ? aws_route_table.database[*].id : []
   )
@@ -17,7 +17,7 @@ resource "aws_vpc_endpoint" "s3" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "s3:GetObject",
@@ -34,8 +34,8 @@ resource "aws_vpc_endpoint" "s3" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-s3-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-s3-endpoint"
+    Type    = "vpc-endpoint"
     Service = "s3"
   })
 }
@@ -47,7 +47,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${data.aws_region.current.name}.dynamodb"
   vpc_endpoint_type = "Gateway"
-  route_table_ids   = concat(
+  route_table_ids = concat(
     aws_route_table.private[*].id,
     var.create_database_subnets ? aws_route_table.database[*].id : []
   )
@@ -56,7 +56,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "dynamodb:Query",
@@ -74,8 +74,8 @@ resource "aws_vpc_endpoint" "dynamodb" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-dynamodb-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-dynamodb-endpoint"
+    Type    = "vpc-endpoint"
     Service = "dynamodb"
   })
 }
@@ -95,7 +95,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "ecr:GetAuthorizationToken",
@@ -109,8 +109,8 @@ resource "aws_vpc_endpoint" "ecr_api" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ecr-api-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-ecr-api-endpoint"
+    Type    = "vpc-endpoint"
     Service = "ecr-api"
   })
 }
@@ -130,7 +130,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "ecr:BatchGetImage",
@@ -142,8 +142,8 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ecr-dkr-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-ecr-dkr-endpoint"
+    Type    = "vpc-endpoint"
     Service = "ecr-dkr"
   })
 }
@@ -163,7 +163,7 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "logs:CreateLogGroup",
@@ -178,8 +178,8 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-cloudwatch-logs-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-cloudwatch-logs-endpoint"
+    Type    = "vpc-endpoint"
     Service = "cloudwatch-logs"
   })
 }
@@ -199,7 +199,7 @@ resource "aws_vpc_endpoint" "cloudwatch_monitoring" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "cloudwatch:PutMetricData",
@@ -212,8 +212,8 @@ resource "aws_vpc_endpoint" "cloudwatch_monitoring" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-cloudwatch-monitoring-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-cloudwatch-monitoring-endpoint"
+    Type    = "vpc-endpoint"
     Service = "cloudwatch-monitoring"
   })
 }
@@ -233,7 +233,7 @@ resource "aws_vpc_endpoint" "secrets_manager" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "secretsmanager:GetSecretValue",
@@ -245,8 +245,8 @@ resource "aws_vpc_endpoint" "secrets_manager" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-secrets-manager-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-secrets-manager-endpoint"
+    Type    = "vpc-endpoint"
     Service = "secrets-manager"
   })
 }
@@ -266,7 +266,7 @@ resource "aws_vpc_endpoint" "ssm" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "ssm:GetParameter",
@@ -279,8 +279,8 @@ resource "aws_vpc_endpoint" "ssm" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ssm-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-ssm-endpoint"
+    Type    = "vpc-endpoint"
     Service = "ssm"
   })
 }
@@ -300,7 +300,7 @@ resource "aws_vpc_endpoint" "eks" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "eks:DescribeCluster",
@@ -312,8 +312,8 @@ resource "aws_vpc_endpoint" "eks" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-eks-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-eks-endpoint"
+    Type    = "vpc-endpoint"
     Service = "eks"
   })
 }
@@ -333,7 +333,7 @@ resource "aws_vpc_endpoint" "ec2" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
         Action = [
           "ec2:DescribeInstances",
@@ -355,8 +355,8 @@ resource "aws_vpc_endpoint" "ec2" {
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ec2-endpoint"
-    Type = "vpc-endpoint"
+    Name    = "${local.name_prefix}-ec2-endpoint"
+    Type    = "vpc-endpoint"
     Service = "ec2"
   })
 }

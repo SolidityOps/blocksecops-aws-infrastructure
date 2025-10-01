@@ -23,13 +23,13 @@ locals {
   name_prefix = "${var.project}-${var.environment}"
 
   common_tags = merge(var.tags, {
-    Environment   = var.environment
-    ManagedBy    = "terraform"
-    Service      = "networking"
-    Owner        = "devops"
-    Project      = var.project
-    Terraform    = "true"
-    Module       = "networking"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Service     = "networking"
+    Owner       = "devops"
+    Project     = var.project
+    Terraform   = "true"
+    Module      = "networking"
   })
 
   # AZ selection - single AZ for MVP, first available AZ
