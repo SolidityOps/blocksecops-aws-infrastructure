@@ -158,9 +158,9 @@ variable "enable_performance_insights" {
 }
 
 variable "performance_insights_retention_period" {
-  description = "Performance Insights retention period - extended for production"
+  description = "Performance Insights retention period - 7 days (free) or 731 days (paid)"
   type        = number
-  default     = 31
+  default     = 731
 }
 
 variable "enable_redis_logging" {

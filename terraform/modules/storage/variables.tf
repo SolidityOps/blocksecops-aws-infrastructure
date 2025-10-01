@@ -264,9 +264,13 @@ variable "enable_performance_insights" {
 }
 
 variable "performance_insights_retention_period" {
-  description = "Performance Insights retention period (days)"
+  description = "Performance Insights retention period (days) - 7 (free) or 731 (paid)"
   type        = number
   default     = 7
+  validation {
+    condition     = contains([7, 731], var.performance_insights_retention_period)
+    error_message = "Performance Insights retention period must be either 7 days (free tier) or 731 days (paid tier)."
+  }
 }
 
 variable "enable_redis_logging" {

@@ -124,7 +124,7 @@ resource "aws_db_instance" "postgresql" {
   # Security
   deletion_protection       = var.environment == "production"
   skip_final_snapshot       = var.environment != "production"
-  final_snapshot_identifier = var.environment == "production" ? "${local.name_prefix}-postgresql-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}" : null
+  final_snapshot_identifier = var.environment == "production" ? "${local.name_prefix}-postgresql-final-snapshot" : null
 
   # Auto minor version upgrade
   auto_minor_version_upgrade = var.postgresql_auto_minor_version_upgrade
