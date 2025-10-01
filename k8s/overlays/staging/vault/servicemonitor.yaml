@@ -18,4 +18,4 @@ spec:
       format: ['prometheus']
   namespaceSelector:
     matchNames:
-    - vault-production
+    - vault-staging

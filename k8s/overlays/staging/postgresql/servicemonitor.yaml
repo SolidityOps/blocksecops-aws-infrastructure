@@ -16,7 +16,7 @@ spec:
     scheme: http
   namespaceSelector:
     matchNames:
-    - postgresql-prod
+    - postgresql-staging
 
 ---
 # PostgreSQL Exporter for metrics
@@ -87,7 +87,7 @@ metadata:
 spec:
   refreshInterval: 1h
   secretStoreRef:
-    name: vault-production-cluster-secret-store
+    name: vault-staging-cluster-secret-store
     kind: ClusterSecretStore
   target:
     name: postgresql-exporter-secret
@@ -99,13 +99,13 @@ spec:
   data:
   - secretKey: POSTGRES_USER
     remoteRef:
-      key: database/postgresql/production
+      key: database/postgresql/staging
       property: username
   - secretKey: POSTGRES_PASSWORD
     remoteRef:
-      key: database/postgresql/production
+      key: database/postgresql/staging
       property: password
   - secretKey: POSTGRES_DB
     remoteRef:
-      key: database/postgresql/production
+      key: database/postgresql/staging
       property: database
