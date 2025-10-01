@@ -42,12 +42,7 @@ output "cluster_certificate_authority_data" {
 }
 
 output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
-  value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
-}
-
-output "cluster_primary_security_group_id" {
-  description = "The cluster primary security group ID created by EKS"
+  description = "The cluster primary security group ID created by EKS (controls communication between cluster and nodes)"
   value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
 }
 
