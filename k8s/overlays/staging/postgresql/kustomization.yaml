@@ -15,17 +15,15 @@ labels:
 resources:
   - ../../../base/postgresql
   - namespace.yaml
-
-
-patchesStrategicMerge:
-  - statefulset-patch.yaml
-  - configmap-patch.yaml
+  - servicemonitor.yaml
 
 patches:
-  - target:
-      kind: StatefulSet
-      name: postgresql
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
+- path: statefulset-patch.yaml
+- path: configmap-patch.yaml
+- target:
+    kind: StatefulSet
+    name: postgresql
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
