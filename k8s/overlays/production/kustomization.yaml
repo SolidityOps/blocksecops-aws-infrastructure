@@ -4,8 +4,6 @@ kind: Kustomization
 metadata:
   name: eks-production
 
-namespace: kube-system
-
 labels:
 - pairs:
     app.kubernetes.io/instance: production-eks
