@@ -40,8 +40,8 @@ resource "aws_route_table" "private" {
   dynamic "route" {
     for_each = var.use_nat_instance && !var.enable_nat_gateway ? [1] : []
     content {
-      cidr_block  = "0.0.0.0/0"
-      instance_id = aws_instance.nat[count.index].id
+      cidr_block           = "0.0.0.0/0"
+      network_interface_id = aws_instance.nat[count.index].primary_network_interface_id
     }
   }
 
@@ -78,8 +78,8 @@ resource "aws_route_table" "database" {
   dynamic "route" {
     for_each = var.use_nat_instance && !var.enable_nat_gateway && var.database_subnet_internet_access ? [1] : []
     content {
-      cidr_block  = "0.0.0.0/0"
-      instance_id = aws_instance.nat[count.index].id
+      cidr_block           = "0.0.0.0/0"
+      network_interface_id = aws_instance.nat[count.index].primary_network_interface_id
     }
   }
 

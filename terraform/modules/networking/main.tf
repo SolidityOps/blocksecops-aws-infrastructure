@@ -1,16 +1,6 @@
 # VPC and Networking Infrastructure Module for Task 1.2
 # Provides secure foundation for EKS, PostgreSQL, and ElastiCache
 
-terraform {
-  required_version = ">= 1.5"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 # Data sources for availability zones and current region
 data "aws_availability_zones" "available" {
   state = "available"

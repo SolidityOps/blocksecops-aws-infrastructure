@@ -7,7 +7,8 @@ resource "aws_eks_addon" "coredns" {
   cluster_name         = aws_eks_cluster.main.name
   addon_name           = "coredns"
   addon_version        = var.coredns_version
-  resolve_conflicts    = "OVERWRITE"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
   preserve             = false
   configuration_values = var.coredns_configuration
 
@@ -28,7 +29,8 @@ resource "aws_eks_addon" "kube_proxy" {
   cluster_name         = aws_eks_cluster.main.name
   addon_name           = "kube-proxy"
   addon_version        = var.kube_proxy_version
-  resolve_conflicts    = "OVERWRITE"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
   preserve             = false
   configuration_values = var.kube_proxy_configuration
 
@@ -49,7 +51,8 @@ resource "aws_eks_addon" "vpc_cni" {
   cluster_name         = aws_eks_cluster.main.name
   addon_name           = "vpc-cni"
   addon_version        = var.vpc_cni_version
-  resolve_conflicts    = "OVERWRITE"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
   preserve             = false
   configuration_values = var.vpc_cni_configuration
 
@@ -70,7 +73,8 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.main.name
   addon_name               = "aws-ebs-csi-driver"
   addon_version            = var.ebs_csi_version
-  resolve_conflicts        = "OVERWRITE"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
   preserve                 = false
   service_account_role_arn = aws_iam_role.ebs_csi_driver[0].arn
   configuration_values     = var.ebs_csi_configuration
@@ -128,7 +132,8 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
   cluster_name         = aws_eks_cluster.main.name
   addon_name           = "eks-pod-identity-agent"
   addon_version        = var.pod_identity_version
-  resolve_conflicts    = "OVERWRITE"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
   preserve             = false
   configuration_values = var.pod_identity_configuration
 

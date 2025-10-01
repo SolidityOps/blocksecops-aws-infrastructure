@@ -125,7 +125,7 @@ TEST_HOSTS=(
 
 HEALTH_STATUS=0
 
-for host in "${TEST_HOSTS[@]}"; do
+for host in "$${TEST_HOSTS[@]}"; do
     if ! ping -c 1 -W 5 "$host" >/dev/null 2>&1; then
         echo "Failed to reach $host" >&2
         HEALTH_STATUS=1
