@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: prometheus-staging
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/component: monitoring
-    environment: staging

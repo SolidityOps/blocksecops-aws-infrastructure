@@ -21,7 +21,6 @@ resources:
   - limitrange.yaml
   - externalsecret.yaml
   - vault-policy.yaml
-  - servicemonitor.yaml
   - networkpolicy.yaml
 
 patches:

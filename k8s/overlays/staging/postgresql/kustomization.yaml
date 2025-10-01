@@ -15,7 +15,6 @@ labels:
 resources:
   - ../../../base/postgresql
   - namespace.yaml
-  - servicemonitor.yaml
 
 patches:
 - path: statefulset-patch.yaml

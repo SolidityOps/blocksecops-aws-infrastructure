@@ -20,7 +20,6 @@ resources:
   - backup-configmap.yaml
   - externalsecret.yaml
   - vault-policy.yaml
-  - servicemonitor.yaml
   - clusterrolebinding.yaml
 
 patches:
