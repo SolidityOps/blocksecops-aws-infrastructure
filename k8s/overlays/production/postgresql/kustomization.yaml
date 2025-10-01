@@ -24,15 +24,13 @@ resources:
   - servicemonitor.yaml
   - networkpolicy.yaml
 
-patchesStrategicMerge:
-  - statefulset-patch.yaml
-  - configmap-patch.yaml
-
 patches:
-  - target:
-      kind: StatefulSet
-      name: postgresql
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 2
+- path: statefulset-patch.yaml
+- path: configmap-patch.yaml
+- target:
+    kind: StatefulSet
+    name: postgresql
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2

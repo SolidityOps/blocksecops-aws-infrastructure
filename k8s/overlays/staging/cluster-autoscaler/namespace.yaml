@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cluster-autoscaler-staging
+  labels:
+    app.kubernetes.io/name: cluster-autoscaler
+    app.kubernetes.io/instance: staging-cluster-autoscaler
+    app.kubernetes.io/component: autoscaling
+    app.kubernetes.io/part-of: solidity-security-platform
+    environment: staging
+    team: devops
