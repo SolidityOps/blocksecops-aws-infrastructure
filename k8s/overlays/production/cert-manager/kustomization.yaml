@@ -19,7 +19,6 @@ resources:
   - clusterrolebinding.yaml
   - rolebinding.yaml
   - pdb.yaml
-  - servicemonitor.yaml
 
 patches:
 - path: deployment-patch.yaml

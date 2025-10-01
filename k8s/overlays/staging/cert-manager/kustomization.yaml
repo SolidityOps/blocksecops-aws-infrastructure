@@ -18,7 +18,6 @@ resources:
   - cloudflare-secret.yaml
   - clusterrolebinding.yaml
   - rolebinding.yaml
-  - servicemonitor.yaml
 
 patches:
 - path: clusterissuer-patch.yaml

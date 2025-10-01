@@ -16,7 +16,6 @@ resources:
   - ../../../base/cluster-autoscaler
   - namespace.yaml
   - pdb.yaml
-  - servicemonitor.yaml
 
 patches:
 - path: deployment-patch.yaml
