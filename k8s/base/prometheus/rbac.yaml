@@ -22,6 +22,7 @@ rules:
   - services
   - endpoints
   - pods
+  - namespaces
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources:
@@ -31,6 +32,12 @@ rules:
   - networking.k8s.io
   resources:
   - ingresses
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  - prometheusrules
   verbs: ["get", "list", "watch"]
 - nonResourceURLs: ["/metrics"]
   verbs: ["get"]
@@ -50,4 +57,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prometheus
-  namespace: prometheus
+  namespace: prometheus-staging
+- kind: ServiceAccount
+  name: prometheus
+  namespace: prometheus-prod

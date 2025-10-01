@@ -15,3 +15,6 @@ spec:
     interval: 30s
     path: /metrics
     scheme: http
+  namespaceSelector:
+    matchNames:
+    - aws-load-balancer-controller-staging
