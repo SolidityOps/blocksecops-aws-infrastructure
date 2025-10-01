@@ -16,6 +16,7 @@ resources:
   - ../../../base/external-secrets
   - namespace.yaml
   - clusterrolebinding.yaml
+  - servicemonitor.yaml
 
 patches:
 - path: clustersecretstore-patch.yaml

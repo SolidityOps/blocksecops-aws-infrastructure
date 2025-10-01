@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-secrets
+  labels:
+    app.kubernetes.io/name: external-secrets
+    app.kubernetes.io/component: controller
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets
+      app.kubernetes.io/component: controller
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    scheme: http
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-secrets-cert-controller
+  labels:
+    app.kubernetes.io/name: external-secrets-cert-controller
+    app.kubernetes.io/component: cert-controller
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets-cert-controller
+      app.kubernetes.io/component: cert-controller
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    scheme: http

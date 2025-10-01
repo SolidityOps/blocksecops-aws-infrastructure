@@ -14,6 +14,7 @@ commonLabels:
 resources:
   - ../../../base/postgresql
   - namespace.yaml
+  - servicemonitor.yaml
 
 patchesStrategicMerge:
   - statefulset-patch.yaml
