@@ -115,10 +115,10 @@ variable "additional_tags" {
   description = "Additional tags for production resources"
   type        = map(string)
   default = {
-    Purpose       = "production"
+    Purpose          = "production"
     HighAvailability = "required"
-    Monitoring    = "enhanced"
-    Compliance    = "required"
-    DataClass     = "confidential"
+    Monitoring       = "enhanced"
+    Compliance       = "required"
+    DataClass        = "confidential"
   }
 }

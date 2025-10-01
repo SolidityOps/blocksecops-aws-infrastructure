@@ -46,16 +46,15 @@ locals {
   account_id  = data.aws_caller_identity.current.account_id
 
   common_tags = {
-    Environment     = local.environment
-    Region          = local.region
-    AccountId       = local.account_id
-    DeployedBy      = "terraform"
-    LastUpdated     = timestamp()
-    BackupPolicy    = "daily"
-    Schedule        = "24x7"
+    Environment      = local.environment
+    Region           = local.region
+    AccountId        = local.account_id
+    DeployedBy       = "terraform"
+    BackupPolicy     = "daily"
+    Schedule         = "24x7"
     HighAvailability = "true"
-    Compliance      = "required"
-    DataClass       = "sensitive"
+    Compliance       = "required"
+    DataClass        = "sensitive"
   }
 }
 
@@ -83,34 +82,34 @@ module "storage" {
   redis_security_group_ids      = [data.terraform_remote_state.networking.outputs.elasticache_security_group_id]
 
   # PostgreSQL configuration - production optimized
-  postgresql_engine_version       = var.postgresql_engine_version
-  postgresql_instance_class       = var.postgresql_instance_class
-  postgresql_allocated_storage    = var.postgresql_allocated_storage
-  postgresql_max_allocated_storage = var.postgresql_max_allocated_storage
-  postgresql_storage_type         = var.postgresql_storage_type
-  postgresql_multi_az            = var.postgresql_multi_az
+  postgresql_engine_version          = var.postgresql_engine_version
+  postgresql_instance_class          = var.postgresql_instance_class
+  postgresql_allocated_storage       = var.postgresql_allocated_storage
+  postgresql_max_allocated_storage   = var.postgresql_max_allocated_storage
+  postgresql_storage_type            = var.postgresql_storage_type
+  postgresql_multi_az                = var.postgresql_multi_az
   postgresql_backup_retention_period = var.postgresql_backup_retention_period
 
   # PostgreSQL monitoring - enhanced for production
-  enable_enhanced_monitoring     = var.enable_enhanced_monitoring
-  enable_performance_insights    = var.enable_performance_insights
+  enable_enhanced_monitoring            = var.enable_enhanced_monitoring
+  enable_performance_insights           = var.enable_performance_insights
   performance_insights_retention_period = var.performance_insights_retention_period
 
   # Read replica - enabled for production
-  create_read_replica                     = var.create_read_replica
-  postgresql_read_replica_instance_class  = var.postgresql_read_replica_instance_class
+  create_read_replica                    = var.create_read_replica
+  postgresql_read_replica_instance_class = var.postgresql_read_replica_instance_class
 
   # Redis configuration - production optimized
-  redis_engine_version           = var.redis_engine_version
-  redis_node_type               = var.redis_node_type
-  redis_num_cache_clusters      = var.redis_num_cache_clusters
+  redis_engine_version             = var.redis_engine_version
+  redis_node_type                  = var.redis_node_type
+  redis_num_cache_clusters         = var.redis_num_cache_clusters
   redis_automatic_failover_enabled = var.redis_automatic_failover_enabled
-  redis_multi_az_enabled        = var.redis_multi_az_enabled
-  redis_snapshot_retention_limit = var.redis_snapshot_retention_limit
+  redis_multi_az_enabled           = var.redis_multi_az_enabled
+  redis_snapshot_retention_limit   = var.redis_snapshot_retention_limit
 
   # Session store - enabled for production
-  create_session_store          = var.create_session_store
-  redis_session_node_type       = var.redis_session_node_type
+  create_session_store             = var.create_session_store
+  redis_session_node_type          = var.redis_session_node_type
   redis_session_num_cache_clusters = var.redis_session_num_cache_clusters
 
   # Security - full encryption for production

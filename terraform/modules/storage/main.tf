@@ -1,20 +1,6 @@
 # Storage Infrastructure Module for Task 1.3
 # Provides PostgreSQL RDS and ElastiCache Redis for the Solidity Security Platform
 
-terraform {
-  required_version = ">= 1.5"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.1"
-    }
-  }
-}
-
 # Data sources
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}

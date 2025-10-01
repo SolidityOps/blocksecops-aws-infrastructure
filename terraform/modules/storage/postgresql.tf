@@ -85,7 +85,7 @@ resource "aws_db_instance" "postgresql" {
   max_allocated_storage = var.postgresql_max_allocated_storage
   storage_type          = var.postgresql_storage_type
   storage_encrypted     = var.enable_encryption
-  kms_key_id           = var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
+  kms_key_id            = var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
 
   # Database configuration
   db_name  = var.postgresql_database_name
@@ -103,35 +103,35 @@ resource "aws_db_instance" "postgresql" {
   option_group_name    = aws_db_option_group.postgresql.name
 
   # Backup configuration
-  backup_retention_period = var.postgresql_backup_retention_period
-  backup_window          = var.postgresql_backup_window
-  maintenance_window     = var.postgresql_maintenance_window
-  copy_tags_to_snapshot  = true
+  backup_retention_period  = var.postgresql_backup_retention_period
+  backup_window            = var.postgresql_backup_window
+  maintenance_window       = var.postgresql_maintenance_window
+  copy_tags_to_snapshot    = true
   delete_automated_backups = var.environment != "production"
 
   # Monitoring and logging
   monitoring_interval = var.enable_enhanced_monitoring ? 60 : 0
   monitoring_role_arn = var.enable_enhanced_monitoring ? aws_iam_role.rds_enhanced_monitoring[0].arn : null
 
-  enabled_cloudwatch_logs_exports = var.postgresql_enabled_logs
-  performance_insights_enabled    = var.enable_performance_insights
-  performance_insights_kms_key_id = var.enable_performance_insights && var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
+  enabled_cloudwatch_logs_exports       = var.postgresql_enabled_logs
+  performance_insights_enabled          = var.enable_performance_insights
+  performance_insights_kms_key_id       = var.enable_performance_insights && var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
   performance_insights_retention_period = var.enable_performance_insights ? var.performance_insights_retention_period : null
 
   # High availability
   multi_az = var.postgresql_multi_az
 
   # Security
-  deletion_protection = var.environment == "production"
-  skip_final_snapshot = var.environment != "production"
+  deletion_protection       = var.environment == "production"
+  skip_final_snapshot       = var.environment != "production"
   final_snapshot_identifier = var.environment == "production" ? "${local.name_prefix}-postgresql-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}" : null
 
   # Auto minor version upgrade
   auto_minor_version_upgrade = var.postgresql_auto_minor_version_upgrade
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-postgresql"
-    Type = "database"
+    Name   = "${local.name_prefix}-postgresql"
+    Type   = "database"
     Engine = "postgresql"
   })
 
@@ -159,8 +159,8 @@ resource "aws_db_instance" "postgresql_read_replica" {
   monitoring_interval = var.enable_enhanced_monitoring ? 60 : 0
   monitoring_role_arn = var.enable_enhanced_monitoring ? aws_iam_role.rds_enhanced_monitoring[0].arn : null
 
-  performance_insights_enabled = var.enable_performance_insights
-  performance_insights_kms_key_id = var.enable_performance_insights && var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
+  performance_insights_enabled          = var.enable_performance_insights
+  performance_insights_kms_key_id       = var.enable_performance_insights && var.enable_encryption ? aws_kms_key.postgresql[0].arn : null
   performance_insights_retention_period = var.enable_performance_insights ? var.performance_insights_retention_period : null
 
   # Auto minor version upgrade
@@ -170,8 +170,8 @@ resource "aws_db_instance" "postgresql_read_replica" {
   skip_final_snapshot = true
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-postgresql-read-replica"
-    Type = "database-read-replica"
+    Name   = "${local.name_prefix}-postgresql-read-replica"
+    Type   = "database-read-replica"
     Engine = "postgresql"
   })
 }

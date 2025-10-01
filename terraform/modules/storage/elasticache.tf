@@ -66,14 +66,14 @@ resource "aws_kms_alias" "elasticache" {
 
 # ElastiCache Redis Replication Group
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id         = "${local.name_prefix}-redis"
-  description                  = "Redis cluster for ${var.environment} environment"
+  replication_group_id = "${local.name_prefix}-redis"
+  description          = "Redis cluster for ${var.environment} environment"
 
   # Engine configuration
-  engine               = "redis"
-  engine_version       = var.redis_engine_version
-  node_type           = var.redis_node_type
-  port                = var.redis_port
+  engine         = "redis"
+  engine_version = var.redis_engine_version
+  node_type      = var.redis_node_type
+  port           = var.redis_port
 
   # Cluster configuration
   num_cache_clusters = var.redis_num_cache_clusters
@@ -89,35 +89,38 @@ resource "aws_elasticache_replication_group" "redis" {
   at_rest_encryption_enabled = var.enable_encryption
   transit_encryption_enabled = var.enable_encryption
   auth_token                 = var.enable_encryption ? random_password.redis_auth_token[0].result : null
-  kms_key_id                = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
+  kms_key_id                 = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
 
   # Backup configuration
   automatic_failover_enabled = var.redis_automatic_failover_enabled
-  multi_az_enabled          = var.redis_multi_az_enabled
-  snapshot_retention_limit  = var.redis_snapshot_retention_limit
-  snapshot_window           = var.redis_snapshot_window
+  multi_az_enabled           = var.redis_multi_az_enabled
+  snapshot_retention_limit   = var.redis_snapshot_retention_limit
+  snapshot_window            = var.redis_snapshot_window
 
   # Maintenance
   maintenance_window         = var.redis_maintenance_window
   auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
 
   # Logging
-  log_delivery_configuration {
-    destination      = aws_cloudwatch_log_group.redis_slow_log[0].name
-    destination_type = "cloudwatch-logs"
-    log_format       = "text"
-    log_type         = "slow-log"
+  dynamic "log_delivery_configuration" {
+    for_each = var.enable_redis_logging ? [1] : []
+    content {
+      destination      = aws_cloudwatch_log_group.redis_slow_log[0].name
+      destination_type = "cloudwatch-logs"
+      log_format       = "text"
+      log_type         = "slow-log"
+    }
   }
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-redis"
-    Type = "elasticache-replication-group"
+    Name   = "${local.name_prefix}-redis"
+    Type   = "elasticache-replication-group"
     Engine = "redis"
   })
 
-  depends_on = [
-    aws_cloudwatch_log_group.redis_slow_log
-  ]
+  depends_on = var.enable_redis_logging ? [
+    aws_cloudwatch_log_group.redis_slow_log[0]
+  ] : []
 }
 
 # Random auth token for Redis
@@ -162,10 +165,10 @@ resource "aws_cloudwatch_log_group" "redis_slow_log" {
   retention_in_days = var.log_retention_days
 
   tags = merge(local.common_tags, {
-    Name     = "${local.name_prefix}-redis-slow-log"
-    Type     = "cache-logs"
-    Cache    = "redis"
-    LogType  = "slow-log"
+    Name    = "${local.name_prefix}-redis-slow-log"
+    Type    = "cache-logs"
+    Cache   = "redis"
+    LogType = "slow-log"
   })
 }
 
@@ -180,7 +183,7 @@ resource "aws_elasticache_replication_group" "redis_sessions" {
   engine         = "redis"
   engine_version = var.redis_engine_version
   node_type      = var.redis_session_node_type
-  port          = var.redis_port
+  port           = var.redis_port
 
   # Cluster configuration
   num_cache_clusters = var.redis_session_num_cache_clusters
@@ -196,22 +199,22 @@ resource "aws_elasticache_replication_group" "redis_sessions" {
   at_rest_encryption_enabled = var.enable_encryption
   transit_encryption_enabled = var.enable_encryption
   auth_token                 = var.enable_encryption ? random_password.redis_sessions_auth_token[0].result : null
-  kms_key_id                = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
+  kms_key_id                 = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
 
   # Backup configuration - minimal for session store
   automatic_failover_enabled = false
-  multi_az_enabled          = false
-  snapshot_retention_limit  = 1
-  snapshot_window           = var.redis_snapshot_window
+  multi_az_enabled           = false
+  snapshot_retention_limit   = 1
+  snapshot_window            = var.redis_snapshot_window
 
   # Maintenance
   maintenance_window         = var.redis_maintenance_window
   auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
 
   tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-redis-sessions"
-    Type = "elasticache-session-store"
-    Engine = "redis"
+    Name    = "${local.name_prefix}-redis-sessions"
+    Type    = "elasticache-session-store"
+    Engine  = "redis"
     Purpose = "session-storage"
   })
 }

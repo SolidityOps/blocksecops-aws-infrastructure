@@ -88,21 +88,21 @@ output "database_connection_info" {
   description = "Database connection information for applications"
   value = {
     postgresql = {
-      primary_endpoint           = module.storage.postgresql_endpoint
-      read_replica_endpoint     = module.storage.postgresql_read_replica_endpoint
-      port                      = module.storage.postgresql_port
-      database_name            = module.storage.postgresql_database_name
-      credentials_secret_arn   = module.storage.postgresql_credentials_secret_arn
+      primary_endpoint       = module.storage.postgresql_endpoint
+      read_replica_endpoint  = module.storage.postgresql_read_replica_endpoint
+      port                   = module.storage.postgresql_port
+      database_name          = module.storage.postgresql_database_name
+      credentials_secret_arn = module.storage.postgresql_credentials_secret_arn
     }
     redis = {
-      primary_endpoint         = module.storage.redis_primary_endpoint_address
-      reader_endpoint         = module.storage.redis_reader_endpoint_address
-      port                    = module.storage.redis_port
-      auth_token_secret_arn  = module.storage.redis_auth_token_secret_arn
+      primary_endpoint      = module.storage.redis_primary_endpoint_address
+      reader_endpoint       = module.storage.redis_reader_endpoint_address
+      port                  = module.storage.redis_port
+      auth_token_secret_arn = module.storage.redis_auth_token_secret_arn
     }
     redis_sessions = {
-      primary_endpoint        = module.storage.redis_sessions_primary_endpoint_address
-      port                   = module.storage.redis_port
+      primary_endpoint      = module.storage.redis_sessions_primary_endpoint_address
+      port                  = module.storage.redis_port
       auth_token_secret_arn = module.storage.redis_sessions_auth_token_secret_arn
     }
   }
@@ -113,10 +113,10 @@ output "database_connection_info" {
 output "high_availability_status" {
   description = "High availability configuration status"
   value = {
-    postgresql_multi_az                = true
-    postgresql_read_replica_enabled    = true
-    redis_multi_az_enabled            = true
-    redis_automatic_failover_enabled  = true
-    session_store_enabled             = true
+    postgresql_multi_az              = true
+    postgresql_read_replica_enabled  = true
+    redis_multi_az_enabled           = true
+    redis_automatic_failover_enabled = true
+    session_store_enabled            = true
   }
 }

@@ -62,14 +62,14 @@ output "database_connection_info" {
   description = "Database connection information for applications"
   value = {
     postgresql = {
-      endpoint                = module.storage.postgresql_endpoint
-      port                    = module.storage.postgresql_port
+      endpoint               = module.storage.postgresql_endpoint
+      port                   = module.storage.postgresql_port
       database_name          = module.storage.postgresql_database_name
       credentials_secret_arn = module.storage.postgresql_credentials_secret_arn
     }
     redis = {
-      endpoint               = module.storage.redis_primary_endpoint_address
-      port                   = module.storage.redis_port
+      endpoint              = module.storage.redis_primary_endpoint_address
+      port                  = module.storage.redis_port
       auth_token_secret_arn = module.storage.redis_auth_token_secret_arn
     }
   }

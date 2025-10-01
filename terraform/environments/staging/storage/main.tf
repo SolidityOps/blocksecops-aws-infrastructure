@@ -49,7 +49,6 @@ locals {
     Region        = local.region
     AccountId     = local.account_id
     DeployedBy    = "terraform"
-    LastUpdated   = timestamp()
     BackupPolicy  = "daily"
     Schedule      = "business-hours"
     CostOptimized = "true"
@@ -80,33 +79,33 @@ module "storage" {
   redis_security_group_ids      = [data.terraform_remote_state.networking.outputs.elasticache_security_group_id]
 
   # PostgreSQL configuration - minimal for staging
-  postgresql_engine_version       = var.postgresql_engine_version
-  postgresql_instance_class       = var.postgresql_instance_class
-  postgresql_allocated_storage    = var.postgresql_allocated_storage
-  postgresql_max_allocated_storage = var.postgresql_max_allocated_storage
-  postgresql_storage_type         = var.postgresql_storage_type
-  postgresql_multi_az            = var.postgresql_multi_az
+  postgresql_engine_version          = var.postgresql_engine_version
+  postgresql_instance_class          = var.postgresql_instance_class
+  postgresql_allocated_storage       = var.postgresql_allocated_storage
+  postgresql_max_allocated_storage   = var.postgresql_max_allocated_storage
+  postgresql_storage_type            = var.postgresql_storage_type
+  postgresql_multi_az                = var.postgresql_multi_az
   postgresql_backup_retention_period = var.postgresql_backup_retention_period
 
   # PostgreSQL monitoring - basic for staging
-  enable_enhanced_monitoring     = var.enable_enhanced_monitoring
-  enable_performance_insights    = var.enable_performance_insights
+  enable_enhanced_monitoring            = var.enable_enhanced_monitoring
+  enable_performance_insights           = var.enable_performance_insights
   performance_insights_retention_period = var.performance_insights_retention_period
 
   # Read replica - disabled for staging cost optimization
   create_read_replica = var.create_read_replica
 
   # Redis configuration - minimal for staging
-  redis_engine_version           = var.redis_engine_version
-  redis_node_type               = var.redis_node_type
-  redis_num_cache_clusters      = var.redis_num_cache_clusters
+  redis_engine_version             = var.redis_engine_version
+  redis_node_type                  = var.redis_node_type
+  redis_num_cache_clusters         = var.redis_num_cache_clusters
   redis_automatic_failover_enabled = var.redis_automatic_failover_enabled
-  redis_multi_az_enabled        = var.redis_multi_az_enabled
-  redis_snapshot_retention_limit = var.redis_snapshot_retention_limit
+  redis_multi_az_enabled           = var.redis_multi_az_enabled
+  redis_snapshot_retention_limit   = var.redis_snapshot_retention_limit
 
   # Session store - optional for staging
-  create_session_store          = var.create_session_store
-  redis_session_node_type       = var.redis_session_node_type
+  create_session_store    = var.create_session_store
+  redis_session_node_type = var.redis_session_node_type
 
   # Security - encryption enabled for all environments
   enable_encryption = var.enable_encryption
