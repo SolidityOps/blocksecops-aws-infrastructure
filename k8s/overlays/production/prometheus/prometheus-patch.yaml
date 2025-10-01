@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+spec:
+  # Production scale resources
+  replicas: 2
+  retention: 30d
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: gp3
+
+  resources:
+    requests:
+      memory: 800Mi
+      cpu: 200m
+    limits:
+      memory: 4Gi
+      cpu: 2000m
+
+  # High availability settings
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+          topologyKey: kubernetes.io/hostname
