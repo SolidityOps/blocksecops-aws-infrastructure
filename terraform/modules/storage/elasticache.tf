@@ -64,44 +64,79 @@ resource "aws_kms_alias" "elasticache" {
   target_key_id = aws_kms_key.elasticache[0].key_id
 }
 
+# Local values for Redis configuration
+locals {
+  redis_common_config = {
+    replication_group_id = "${local.name_prefix}-redis"
+    description          = "Redis cluster for ${var.environment} environment"
+
+    # Engine configuration
+    engine         = "redis"
+    engine_version = var.redis_engine_version
+    node_type      = var.redis_node_type
+    port           = var.redis_port
+
+    # Cluster configuration
+    num_cache_clusters = var.redis_num_cache_clusters
+
+    # Parameter group
+    parameter_group_name = aws_elasticache_parameter_group.redis.name
+
+    # Network configuration
+    subnet_group_name  = aws_elasticache_subnet_group.redis.name
+    security_group_ids = var.redis_security_group_ids
+
+    # Security configuration
+    at_rest_encryption_enabled = var.enable_encryption
+    transit_encryption_enabled = var.enable_encryption
+    auth_token                 = var.enable_encryption ? random_password.redis_auth_token[0].result : null
+    kms_key_id                 = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
+
+    # Backup configuration
+    automatic_failover_enabled = var.redis_automatic_failover_enabled
+    multi_az_enabled           = var.redis_multi_az_enabled
+    snapshot_retention_limit   = var.redis_snapshot_retention_limit
+    snapshot_window            = var.redis_snapshot_window
+
+    # Maintenance
+    maintenance_window         = var.redis_maintenance_window
+    auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
+
+    # Tags
+    tags = merge(local.common_tags, {
+      Name   = "${local.name_prefix}-redis"
+      Type   = "elasticache-replication-group"
+      Engine = "redis"
+    })
+  }
+}
+
 # ElastiCache Redis Replication Group
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id = "${local.name_prefix}-redis"
-  description          = "Redis cluster for ${var.environment} environment"
+  # Apply all common configuration
+  replication_group_id       = local.redis_common_config.replication_group_id
+  description                = local.redis_common_config.description
+  engine                     = local.redis_common_config.engine
+  engine_version             = local.redis_common_config.engine_version
+  node_type                  = local.redis_common_config.node_type
+  port                       = local.redis_common_config.port
+  num_cache_clusters         = local.redis_common_config.num_cache_clusters
+  parameter_group_name       = local.redis_common_config.parameter_group_name
+  subnet_group_name          = local.redis_common_config.subnet_group_name
+  security_group_ids         = local.redis_common_config.security_group_ids
+  at_rest_encryption_enabled = local.redis_common_config.at_rest_encryption_enabled
+  transit_encryption_enabled = local.redis_common_config.transit_encryption_enabled
+  auth_token                 = local.redis_common_config.auth_token
+  kms_key_id                 = local.redis_common_config.kms_key_id
+  automatic_failover_enabled = local.redis_common_config.automatic_failover_enabled
+  multi_az_enabled           = local.redis_common_config.multi_az_enabled
+  snapshot_retention_limit   = local.redis_common_config.snapshot_retention_limit
+  snapshot_window            = local.redis_common_config.snapshot_window
+  maintenance_window         = local.redis_common_config.maintenance_window
+  auto_minor_version_upgrade = local.redis_common_config.auto_minor_version_upgrade
+  tags                       = local.redis_common_config.tags
 
-  # Engine configuration
-  engine         = "redis"
-  engine_version = var.redis_engine_version
-  node_type      = var.redis_node_type
-  port           = var.redis_port
-
-  # Cluster configuration
-  num_cache_clusters = var.redis_num_cache_clusters
-
-  # Parameter group
-  parameter_group_name = aws_elasticache_parameter_group.redis.name
-
-  # Network configuration
-  subnet_group_name  = aws_elasticache_subnet_group.redis.name
-  security_group_ids = var.redis_security_group_ids
-
-  # Security configuration
-  at_rest_encryption_enabled = var.enable_encryption
-  transit_encryption_enabled = var.enable_encryption
-  auth_token                 = var.enable_encryption ? random_password.redis_auth_token[0].result : null
-  kms_key_id                 = var.enable_encryption ? aws_kms_key.elasticache[0].arn : null
-
-  # Backup configuration
-  automatic_failover_enabled = var.redis_automatic_failover_enabled
-  multi_az_enabled           = var.redis_multi_az_enabled
-  snapshot_retention_limit   = var.redis_snapshot_retention_limit
-  snapshot_window            = var.redis_snapshot_window
-
-  # Maintenance
-  maintenance_window         = var.redis_maintenance_window
-  auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
-
-  # Logging
+  # Conditional logging configuration
   dynamic "log_delivery_configuration" {
     for_each = var.enable_redis_logging ? [1] : []
     content {
@@ -112,13 +147,9 @@ resource "aws_elasticache_replication_group" "redis" {
     }
   }
 
-  tags = merge(local.common_tags, {
-    Name   = "${local.name_prefix}-redis"
-    Type   = "elasticache-replication-group"
-    Engine = "redis"
-  })
-
-  depends_on = var.enable_redis_logging ? [aws_cloudwatch_log_group.redis_slow_log] : []
+  # Implicit dependency: When var.enable_redis_logging is true, the dynamic block
+  # executes and the 'destination' attribute references aws_cloudwatch_log_group.redis_slow_log[0].name,
+  # which automatically creates the proper dependency ordering
 }
 
 # Random auth token for Redis
