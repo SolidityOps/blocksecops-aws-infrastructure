@@ -74,7 +74,7 @@ variable "enable_lock_ttl" {
 variable "enable_monitoring" {
   description = "Enable CloudWatch monitoring and alarms for state backend"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "sns_topic_arn" {
