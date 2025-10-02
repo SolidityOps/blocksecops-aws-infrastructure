@@ -33,15 +33,15 @@ variable "postgresql_engine_version" {
 }
 
 variable "postgresql_instance_class" {
-  description = "PostgreSQL instance class - cost optimized for staging"
+  description = "PostgreSQL instance class - cost optimized for staging (Phase 1: db.t3.micro)"
   type        = string
-  default     = "db.t3.micro"
+  default     = "db.t3.micro"  # Phase 1: $13/month vs db.t3.medium $56/month
 }
 
 variable "postgresql_allocated_storage" {
-  description = "Initial allocated storage for PostgreSQL (GB) - minimal for staging"
+  description = "Initial allocated storage for PostgreSQL (GB) - minimal for staging (Phase 1: 20GB)"
   type        = number
-  default     = 20
+  default     = 20  # Phase 1: 20GB, Phase 2: Scale to match production (100GB+)
 }
 
 variable "postgresql_max_allocated_storage" {
@@ -83,15 +83,15 @@ variable "redis_engine_version" {
 }
 
 variable "redis_node_type" {
-  description = "Redis node type - cost optimized for staging"
+  description = "Redis node type - cost optimized for staging (Phase 1: cache.t3.micro)"
   type        = string
-  default     = "cache.t3.micro"
+  default     = "cache.t3.micro"  # Phase 1: $13/month vs cache.m6g.large $84/month
 }
 
 variable "redis_num_cache_clusters" {
-  description = "Number of cache clusters - single node for staging"
+  description = "Number of cache clusters - single node for staging (Phase 1: no clustering)"
   type        = number
-  default     = 1
+  default     = 1  # Phase 1: Single node, Phase 2: Scale to 2+ for clustering
 }
 
 variable "redis_automatic_failover_enabled" {

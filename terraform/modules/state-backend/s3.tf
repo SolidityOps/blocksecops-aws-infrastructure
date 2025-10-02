@@ -17,9 +17,9 @@ resource "aws_s3_bucket" "terraform_state" {
     Component   = "state-backend"
   })
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # S3 bucket versioning configuration

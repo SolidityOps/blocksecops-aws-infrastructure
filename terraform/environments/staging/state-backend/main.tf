@@ -75,9 +75,9 @@ module "state_backend" {
   enable_point_in_time_recovery = var.enable_point_in_time_recovery
   enable_lock_ttl               = var.enable_lock_ttl
 
-  # Monitoring Configuration
-  enable_monitoring = var.enable_monitoring
-  sns_topic_arn    = var.sns_topic_arn
+  # Monitoring Configuration - disabled per requirements
+  enable_monitoring = false
+  sns_topic_arn    = ""
 
   # Security Configuration
   enable_kms_encryption = var.enable_kms_encryption

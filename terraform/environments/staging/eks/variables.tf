@@ -99,10 +99,11 @@ variable "node_groups" {
   }))
   default = {
     default = {
-      instance_types    = ["t3.medium"]
+      # Phase 1 Cost Optimization: t3.small instead of t3.medium
+      instance_types    = ["t3.small"]
       desired_size      = 1
       min_size          = 1
-      max_size          = 3
+      max_size          = 2  # Reduced from 3 for cost optimization
       disk_size         = 30
       capacity_type     = "ON_DEMAND"
       enable_monitoring = false
