@@ -61,6 +61,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "terraform_state" {
     id     = "terraform_state_lifecycle"
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
+
     # Keep current versions
     expiration {
       days = 0
@@ -133,8 +137,5 @@ resource "aws_s3_bucket_notification" "terraform_state" {
   count  = var.enable_notifications ? 1 : 0
   bucket = aws_s3_bucket.terraform_state.id
 
-  cloudwatch_configuration {
-    cloudwatch_configuration_id = "terraform-state-changes"
-    events                      = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
-  }
+  eventbridge = true
 }
