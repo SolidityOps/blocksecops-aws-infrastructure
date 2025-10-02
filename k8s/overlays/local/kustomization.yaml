@@ -1,0 +1,48 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Vault and External Secrets for Local Development
+resources:
+- vault-namespace.yaml
+- external-secrets-namespace.yaml
+- ../../base/vault/
+- ../../base/external-secrets/
+
+patches:
+# Vault patches
+- path: vault-statefulset-patch.yaml
+  target:
+    kind: StatefulSet
+    name: vault
+    namespace: vault-local
+- path: vault-configmap-patch.yaml
+  target:
+    kind: ConfigMap
+    name: vault-config
+    namespace: vault-local
+
+# External Secrets patches
+- path: external-secrets-deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: external-secrets-operator
+    namespace: external-secrets-system
+- path: clustersecretstore-patch.yaml
+  target:
+    kind: ClusterSecretStore
+    name: vault-backend
+
+images:
+- name: vault
+  newTag: 1.15.2
+- name: external-secrets
+  newTag: v0.9.0
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/component: infrastructure-secrets
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize
+    environment: local
+    team: infrastructure

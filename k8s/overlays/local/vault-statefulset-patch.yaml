@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vault
+  namespace: vault-local
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: vault
+        image: vault:1.15.2
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        env:
+        - name: VAULT_DEV_ROOT_TOKEN_ID
+          value: "local-dev-token"
+        - name: VAULT_DEV_LISTEN_ADDRESS
+          value: "0.0.0.0:8200"
+        - name: VAULT_LOCAL
+          value: "true"
+        - name: VAULT_LOG_LEVEL
+          value: "debug"
+        command:
+        - "vault"
+        args:
+        - "server"
+        - "-dev"
+        - "-dev-listen-address=0.0.0.0:8200"
+        - "-dev-root-token-id=local-dev-token"
+        ports:
+        - containerPort: 8200
+          name: http
+        - containerPort: 8201
+          name: cluster
+        readinessProbe:
+          httpGet:
+            path: /v1/sys/health
+            port: 8200
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /v1/sys/health
+            port: 8200
+          initialDelaySeconds: 30
+          periodSeconds: 10
