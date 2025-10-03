@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  labels:
+    app.kubernetes.io/name: argocd-rbac-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  policy.default: role:readonly
+  policy.csv: |
+    # Default policy for all users
+    p, role:readonly, applications, get, */*, allow
+    p, role:readonly, applications, action/*, get, */*, allow
+    p, role:readonly, clusters, get, *, allow
+    p, role:readonly, repositories, get, *, allow
+    p, role:readonly, logs, get, */*, allow
+    p, role:readonly, exec, create, */*, deny
+
+    # Admin policy
+    p, role:admin, applications, *, */*, allow
+    p, role:admin, applicationsets, *, */*, allow
+    p, role:admin, clusters, *, *, allow
+    p, role:admin, repositories, *, *, allow
+    p, role:admin, certificates, *, *, allow
+    p, role:admin, accounts, *, *, allow
+    p, role:admin, gpgkeys, *, *, allow
+    p, role:admin, logs, *, */*, allow
+    p, role:admin, exec, *, */*, allow
+
+    # Developer policy
+    p, role:developer, applications, get, */*, allow
+    p, role:developer, applications, create, */*, allow
+    p, role:developer, applications, update, */*, allow
+    p, role:developer, applications, delete, */*, allow
+    p, role:developer, applications, sync, */*, allow
+    p, role:developer, applications, action/*, *, */*, allow
+    p, role:developer, applicationsets, get, */*, allow
+    p, role:developer, clusters, get, *, allow
+    p, role:developer, repositories, get, *, allow
+    p, role:developer, logs, get, */*, allow
+
+    # Local development - assign admin role to all users
+    g, system:serviceaccount:argocd-local:argocd-server, role:admin
+    g, system:serviceaccount:argocd-local:argocd-application-controller, role:admin
