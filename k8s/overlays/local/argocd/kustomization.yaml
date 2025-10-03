@@ -6,7 +6,7 @@ namespace: argocd-local
 
 resources:
 - argocd-namespace.yaml
-- ../../base/
+- ../../../base/argocd/
 
 patchesStrategicMerge:
 - argocd-configmap-patch.yaml
