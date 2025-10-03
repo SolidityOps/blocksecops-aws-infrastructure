@@ -49,6 +49,12 @@ spec:
             port: 8200
           initialDelaySeconds: 30
           periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
   volumeClaimTemplates:
   - metadata:
       name: vault-data

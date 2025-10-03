@@ -14,7 +14,7 @@ patchesStrategicMerge:
 
 images:
 - name: vault
-  newTag: 1.15.4
+  newTag: "1.12.1"
 
 labels:
 - includeSelectors: true
