@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: vault
-  namespace: vault-local
 spec:
   replicas: 1
   template:
@@ -50,3 +49,13 @@ spec:
             port: 8200
           initialDelaySeconds: 30
           periodSeconds: 10
+  volumeClaimTemplates:
+  - metadata:
+      name: vault-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
