@@ -9,6 +9,8 @@ spec:
       containers:
       - name: cert-manager-cainjector
         image: quay.io/jetstack/cert-manager-cainjector:v1.13.2
+        args:
+        - --leader-elect=false
         resources:
           requests:
             cpu: 50m

@@ -19,5 +19,5 @@ spec:
         args:
         - --v=2
         - --cluster-resource-namespace=$(POD_NAMESPACE)
-        - --leader-election-namespace=kube-system
+        - --leader-elect=false
         - --enable-certificate-owner-ref=true

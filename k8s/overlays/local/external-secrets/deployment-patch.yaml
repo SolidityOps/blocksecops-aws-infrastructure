@@ -17,6 +17,5 @@ spec:
             memory: 64Mi
         args:
         - --concurrent=1
-        - --enable-leader-election
         - --metrics-addr=:8080
         - --loglevel=debug
