@@ -6,6 +6,7 @@ resources:
 - ../../../base/postgresql/
 - ingress.yaml
 - certificate.yaml
+- externalsecret.yaml
 
 namespace: postgresql-local
 

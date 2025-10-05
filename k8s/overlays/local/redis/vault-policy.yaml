@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-vault-policy
+  namespace: vault-local
+data:
+  redis-policy.hcl: |
+    # Redis service policy
+    path "secret/data/redis" {
+      capabilities = ["read"]
+    }
+
+    path "secret/metadata/redis" {
+      capabilities = ["read", "list"]
+    }
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-policy-redis
+  namespace: vault-local
+spec:
+  template:
+    spec:
+      serviceAccountName: vault
+      containers:
+      - name: vault-policy
+        image: vault:1.15.0
+        env:
+        - name: VAULT_ADDR
+          value: "http://vault.vault-local.svc.cluster.local:8200"
+        - name: VAULT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: vault-root-token
+              key: token
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Wait for vault to be ready
+          until vault status; do sleep 2; done
+
+          # Create policy
+          vault policy write redis-policy - <<EOF
+          path "secret/data/redis" {
+            capabilities = ["read"]
+          }
+          path "secret/metadata/redis" {
+            capabilities = ["read", "list"]
+          }
+          EOF
+
+          # Create Kubernetes auth role
+          vault write auth/kubernetes/role/redis-role \
+            bound_service_account_names=redis \
+            bound_service_account_namespaces=redis-local \
+            policies=redis-policy \
+            ttl=1h
+
+          # Store Redis password in vault
+          vault kv put secret/redis password=dev-redis-password
+      restartPolicy: OnFailure

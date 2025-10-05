@@ -6,6 +6,8 @@ resources:
 - ../../../base/redis/
 - ingress.yaml
 - certificate.yaml
+- externalsecret.yaml
+- vault-policy.yaml
 
 namespace: redis-local
 

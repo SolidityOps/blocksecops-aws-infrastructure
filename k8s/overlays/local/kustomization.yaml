@@ -1,25 +1,28 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Vault for Local Development
-namespace: vault-local
+# Local Development Environment - All Services
+metadata:
+  name: local-environment
 
 resources:
-- vault-namespace.yaml
-- ../../base/vault/
+# Core Infrastructure
+- vault/
+- external-secrets/
+- cert-manager/
+- nginx-ingress-controller/
+- metrics-server/
+- network-policies/
 
-patchesStrategicMerge:
-- vault-statefulset-patch.yaml
-- vault-configmap-patch.yaml
-
-images:
-- name: vault
-  newTag: "1.12.1"
+# Application Services
+- redis/
+- postgresql/
+- harbor/
+- argocd/
 
 labels:
 - includeSelectors: true
   pairs:
-    app.kubernetes.io/component: infrastructure-secrets
     app.kubernetes.io/part-of: solidity-security-platform
     app.kubernetes.io/managed-by: kustomize
     environment: local

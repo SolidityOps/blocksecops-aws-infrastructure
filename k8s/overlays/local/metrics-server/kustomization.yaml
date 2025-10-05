@@ -7,8 +7,8 @@ namespace: kube-system
 resources:
 - ../../../base/metrics-server/
 
-patchesStrategicMerge:
-- deployment-patch.yaml
+patches:
+- path: deployment-patch.yaml
 
 labels:
 - includeSelectors: true

@@ -5,12 +5,13 @@ kind: Kustomization
 namespace: argocd-local
 
 resources:
-- argocd-namespace.yaml
+- namespace.yaml
 - ../../../base/argocd/
+- externalsecret.yaml
 
-patchesStrategicMerge:
-- argocd-configmap-patch.yaml
-- argocd-rbac-configmap-patch.yaml
+patches:
+- path: argocd-configmap-patch.yaml
+- path: argocd-rbac-configmap-patch.yaml
 
 # Use specific ArgoCD version for local development
 images:
@@ -18,9 +19,11 @@ images:
   newTag: v2.8.4
 
 # Labels for local environment
-commonLabels:
-  app.kubernetes.io/component: gitops-controller
-  app.kubernetes.io/part-of: solidity-security-platform
-  app.kubernetes.io/managed-by: kustomize
-  environment: local
-  team: platform
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/component: gitops-controller
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize
+    environment: local
+    team: platform

@@ -11,6 +11,15 @@ data:
 
     [prod]
     httpport = 8080
+
+    [cache]
+    adapter = redis
+    conn = redis.redis-local.svc.cluster.local:6379
+    database = 0
+    password =
+    maxidle = 100
+    maxactive = 1000
+    idletimeout = 180s
 ---
 apiVersion: v1
 kind: ConfigMap

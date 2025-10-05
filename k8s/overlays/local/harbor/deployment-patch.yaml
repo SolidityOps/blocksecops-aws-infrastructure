@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harbor-core
+spec:
+  template:
+    spec:
+      containers:
+      - name: core
+        env:
+        - name: CORE_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: secretKey
+              name: harbor-core-secret
+        - name: HARBOR_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: HARBOR_ADMIN_PASSWORD
+              name: harbor-core-secret
+        - name: DATABASE_TYPE
+          value: postgresql
+        - name: POSTGRESQL_HOST
+          value: harbor-database
+        - name: POSTGRESQL_PORT
+          value: "5432"
+        - name: POSTGRESQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_USER
+              name: harbor-database-secret
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: harbor-database-secret
+        - name: POSTGRESQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_DB
+              name: harbor-database-secret
+        - name: REGISTRY_URL
+          value: http://harbor-registry:5000
+        - name: _REDIS_URL_CORE
+          value: "redis://:$(REDIS_PASSWORD)@redis.redis-local.svc.cluster.local:6379/0"
+        - name: _REDIS_URL_REG
+          value: "redis://:$(REDIS_PASSWORD)@redis.redis-local.svc.cluster.local:6379/1"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: harbor-redis-secret
+              key: password
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi

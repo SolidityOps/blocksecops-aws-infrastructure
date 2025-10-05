@@ -7,12 +7,23 @@ namespace: external-secrets-local
 resources:
 - namespace.yaml
 - ../../../base/external-secrets/
+- install-crds.yaml
 
 patches:
 - path: deployment-patch.yaml
   target:
     kind: Deployment
     name: external-secrets
+- target:
+    kind: ClusterSecretStore
+    name: vault-backend
+  patch: |-
+    - op: replace
+      path: /spec/provider/vault/server
+      value: "http://vault.vault-local.svc.cluster.local:8200"
+    - op: replace
+      path: /spec/provider/vault/auth/kubernetes/serviceAccountRef/namespace
+      value: "external-secrets-local"
 
 labels:
 - includeSelectors: true
