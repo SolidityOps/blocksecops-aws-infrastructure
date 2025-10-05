@@ -24,6 +24,27 @@ patches:
   target:
     kind: Deployment
     name: cert-manager-webhook
+- target:
+    kind: ClusterRoleBinding
+    name: cert-manager-controller
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "cert-manager-local"
+- target:
+    kind: ClusterRoleBinding
+    name: cert-manager-cainjector
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "cert-manager-local"
+- target:
+    kind: ClusterRoleBinding
+    name: cert-manager-webhook:subjectaccessreviews
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "cert-manager-local"
 
 labels:
 - includeSelectors: true
