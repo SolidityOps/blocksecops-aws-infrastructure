@@ -8,8 +8,13 @@ resources:
 - ../../../base/harbor/
 - ingress.yaml
 - certificate.yaml
+- externalsecret.yaml
 
 patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: harbor-core
 - target:
     kind: Deployment
     name: harbor-database
@@ -26,19 +31,6 @@ patches:
 - target:
     kind: Deployment
     name: harbor-registry
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/resources
-      value:
-        requests:
-          cpu: 50m
-          memory: 128Mi
-        limits:
-          cpu: 100m
-          memory: 256Mi
-- target:
-    kind: Deployment
-    name: harbor-core
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/resources

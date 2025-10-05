@@ -148,6 +148,10 @@ spec:
               key: POSTGRES_DB
         - name: REGISTRY_URL
           value: "http://harbor-registry:5000"
+        - name: _REDIS_URL_CORE
+          value: "redis://:dev-redis-password@redis.redis-local.svc.cluster.local:6379/0"
+        - name: _REDIS_URL_REG
+          value: "redis://:dev-redis-password@redis.redis-local.svc.cluster.local:6379/1"
         ports:
         - containerPort: 8080
           name: http

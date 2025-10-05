@@ -8,7 +8,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - configmap.yaml
-- secret.yaml
+# - secret.yaml  # DEPRECATED: Use ExternalSecret in overlays
 - serviceaccount.yaml
 
 labels:

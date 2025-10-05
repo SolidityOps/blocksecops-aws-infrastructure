@@ -18,7 +18,7 @@ resources:
   - service.yaml
   - configmap.yaml
   - pvc.yaml
-  - secret.yaml
+  # - secret.yaml  # DEPRECATED: Use ExternalSecret in overlays
   - serviceaccount.yaml
   - rbac.yaml
 

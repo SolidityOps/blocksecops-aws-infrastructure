@@ -10,8 +10,13 @@ spec:
       - name: external-secrets
         resources:
           requests:
+            cpu: 5m
+            memory: 16Mi
+          limits:
             cpu: 50m
             memory: 64Mi
-          limits:
-            cpu: 100m
-            memory: 128Mi
+        args:
+        - --concurrent=1
+        - --enable-leader-election
+        - --metrics-addr=:8080
+        - --loglevel=debug

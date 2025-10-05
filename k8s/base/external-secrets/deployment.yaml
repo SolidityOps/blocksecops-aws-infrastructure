@@ -26,9 +26,7 @@ spec:
         args:
         - --concurrent=1
         - --enable-leader-election
-        - --leader-election-id=external-secrets-controller
         - --metrics-addr=:8080
-        - --healthz-addr=:8081
         ports:
         - name: metrics
           containerPort: 8080
