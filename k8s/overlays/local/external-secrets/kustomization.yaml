@@ -24,6 +24,27 @@ patches:
     - op: replace
       path: /spec/provider/vault/auth/kubernetes/serviceAccountRef/namespace
       value: "external-secrets-local"
+- target:
+    kind: ClusterRoleBinding
+    name: external-secrets-controller
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "external-secrets-local"
+- target:
+    kind: ClusterRoleBinding
+    name: external-secrets-webhook
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "external-secrets-local"
+- target:
+    kind: ClusterRoleBinding
+    name: external-secrets-cert-controller
+  patch: |-
+    - op: replace
+      path: /subjects/0/namespace
+      value: "external-secrets-local"
 
 labels:
 - includeSelectors: true

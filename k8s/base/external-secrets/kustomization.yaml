@@ -18,6 +18,7 @@ resources:
   - service.yaml
   - serviceaccount.yaml
   - clusterrole.yaml
+  - clusterrolebinding.yaml
   - role.yaml
   - rolebinding.yaml
   - clustersecretstore.yaml
