@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harbor-database
+  namespace: harbor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: harbor-database
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: harbor-database
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:13.3
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        volumeMounts:
+        - name: database-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+      volumes:
+      - name: database-storage
+        persistentVolumeClaim:
+          claimName: harbor-database-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harbor-registry
+  namespace: harbor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: harbor-registry
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: harbor-registry
+        app.kubernetes.io/component: registry
+    spec:
+      containers:
+      - name: registry
+        image: goharbor/registry-photon:v2.9.0
+        ports:
+        - containerPort: 5000
+          name: registry
+        - containerPort: 5001
+          name: debug
+        volumeMounts:
+        - name: registry-storage
+          mountPath: /storage
+        - name: registry-config
+          mountPath: /etc/registry
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: harbor-registry-pvc
+      - name: registry-config
+        configMap:
+          name: harbor-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harbor-core
+  namespace: harbor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: harbor-core
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: harbor-core
+        app.kubernetes.io/component: core
+    spec:
+      containers:
+      - name: core
+        image: goharbor/harbor-core:v2.9.0
+        env:
+        - name: CORE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: harbor-core-secret
+              key: secretKey
+        - name: HARBOR_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: harbor-core-secret
+              key: HARBOR_ADMIN_PASSWORD
+        - name: DATABASE_TYPE
+          value: "postgresql"
+        - name: POSTGRESQL_HOST
+          value: "harbor-database"
+        - name: POSTGRESQL_PORT
+          value: "5432"
+        - name: POSTGRESQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_USER
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRESQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: harbor-database-secret
+              key: POSTGRES_DB
+        - name: REGISTRY_URL
+          value: "http://harbor-registry:5000"
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi

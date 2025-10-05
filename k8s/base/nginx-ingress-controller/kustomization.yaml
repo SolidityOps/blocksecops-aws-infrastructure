@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# NGINX Ingress Controller Base Configuration
+# For local development environments using minikube
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- configmap.yaml
+- rbac.yaml
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/name: nginx-ingress-controller
+    app.kubernetes.io/component: ingress-controller
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize

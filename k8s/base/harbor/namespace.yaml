@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: harbor
+  labels:
+    app.kubernetes.io/name: harbor
+    app.kubernetes.io/component: image-registry
+    app.kubernetes.io/part-of: solidity-security-platform
