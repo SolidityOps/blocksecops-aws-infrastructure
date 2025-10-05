@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis-local
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/component: infrastructure-cache
+    app.kubernetes.io/part-of: solidity-security-platform
+    environment: local
+    team: infrastructure

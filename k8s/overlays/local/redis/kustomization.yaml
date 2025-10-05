@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- ../../../base/redis/
+
+namespace: redis-local
+
+patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: redis
+
+images:
+- name: redis
+  newTag: 7.2-alpine
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: local-redis
+    app.kubernetes.io/version: 7.2-alpine
+    app.kubernetes.io/component: infrastructure-cache
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize
+    environment: local
+    team: infrastructure
