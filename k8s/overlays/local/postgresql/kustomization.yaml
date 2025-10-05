@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - ../../../base/postgresql/
+- ingress.yaml
+- certificate.yaml
 
 namespace: postgresql-local
 
