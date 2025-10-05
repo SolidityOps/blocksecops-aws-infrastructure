@@ -21,7 +21,7 @@ spec:
       serviceAccountName: external-secrets-webhook
       containers:
       - name: webhook
-        image: ghcr.io/external-secrets/external-secrets:v0.9.11
+        image: ghcr.io/external-secrets/external-secrets:v0.20.2
         imagePullPolicy: IfNotPresent
         args:
         - webhook
@@ -39,7 +39,7 @@ spec:
           containerPort: 8080
           protocol: TCP
         - name: healthz
-          containerPort: 8081
+          containerPort: 8082
           protocol: TCP
         livenessProbe:
           httpGet:
