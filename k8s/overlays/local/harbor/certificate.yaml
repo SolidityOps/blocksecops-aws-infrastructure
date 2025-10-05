@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-certificate
+  namespace: harbor-local
+spec:
+  secretName: harbor-tls
+  issuerRef:
+    name: local-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - harbor.local
+  - registry.harbor.local
+  - core.harbor.local

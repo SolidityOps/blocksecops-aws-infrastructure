@@ -9,6 +9,7 @@ resources:
 - namespace.yaml
 - ../../../base/cert-manager/
 - self-signed-issuer.yaml
+- local-wildcard-certificate.yaml
 
 patches:
 - path: cert-manager-patch.yaml

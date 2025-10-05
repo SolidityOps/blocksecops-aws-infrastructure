@@ -1,0 +1,31 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-wildcard-certificate
+  namespace: cert-manager-local
+spec:
+  secretName: local-wildcard-tls
+  issuerRef:
+    name: local-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - "*.local"
+  - "localhost"
+  - "127.0.0.1"
+  # Specific service domains
+  - harbor.local
+  - registry.harbor.local
+  - core.harbor.local
+  - postgres.local
+  - db.local
+  - redis.local
+  - cache.local
+  - vault.local
+  - monitoring.local
+  - grafana.local
+  - prometheus.local
+  - api.local
+  - dashboard.local
+  - findings.local
+  - analysis.local

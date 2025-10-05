@@ -6,6 +6,8 @@ namespace: harbor-local
 
 resources:
 - ../../../base/harbor/
+- ingress.yaml
+- certificate.yaml
 
 patches:
 - target:

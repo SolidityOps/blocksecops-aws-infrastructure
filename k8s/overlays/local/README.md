@@ -70,18 +70,37 @@ kubectl get svc -A
 
 # Check ingress
 kubectl get ingress -A
+
+# Check certificates
+kubectl get certificate -A
+
+# Check ClusterIssuers
+kubectl get clusterissuer
 ```
 
 ## Local Access
 
 ### Harbor Registry
-- **Web UI**: http://$(minikube ip):30880
+- **Web UI (HTTPS)**: https://harbor.local (via Ingress)
+- **Web UI (HTTP)**: http://$(minikube ip):30880 (NodePort)
 - **Credentials**: admin / Harbor12345
 - **Registry**: harbor-core.harbor-local.svc.cluster.local
+
+### Database Services
+- **PostgreSQL (HTTPS)**: https://postgres.local (via Ingress)
+- **Redis (HTTPS)**: https://redis.local (via Ingress)
 
 ### NGINX Ingress
 - **HTTP**: http://$(minikube ip):30080
 - **HTTPS**: https://$(minikube ip):30443
+
+### Local Domains Setup
+Add these entries to your `/etc/hosts` file for HTTPS access:
+```
+$(minikube ip) harbor.local
+$(minikube ip) postgres.local
+$(minikube ip) redis.local
+```
 
 ## Resource Configuration
 
