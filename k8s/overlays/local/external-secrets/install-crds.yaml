@@ -1,0 +1,27 @@
+# External Secrets Operator CRD Installation
+# Run this command to install external-secrets CRDs:
+# kubectl apply -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml
+#
+# Or use this file to install locally:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-secrets-crd-install
+  namespace: external-secrets-local
+data:
+  install-command: |
+    #!/bin/bash
+    echo "Installing external-secrets CRDs..."
+    kubectl apply -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml
+    echo "External-secrets CRDs installed successfully!"
+
+  verify-command: |
+    #!/bin/bash
+    echo "Verifying external-secrets CRDs..."
+    kubectl get crd | grep external-secrets || echo "CRDs not found"
+
+  uninstall-command: |
+    #!/bin/bash
+    echo "Uninstalling external-secrets CRDs..."
+    kubectl delete -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml
+    echo "External-secrets CRDs uninstalled!"

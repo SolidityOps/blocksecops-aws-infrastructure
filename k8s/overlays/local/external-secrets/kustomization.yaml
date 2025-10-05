@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# External Secrets Operator for Local Development
+namespace: external-secrets-local
+
+resources:
+- namespace.yaml
+- ../../../base/external-secrets/
+
+patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: external-secrets
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/component: secret-management
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize
+    environment: local
+    team: infrastructure
