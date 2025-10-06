@@ -15,6 +15,25 @@ patches:
     kind: Deployment
     name: external-secrets
 - target:
+    kind: Deployment
+    name: external-secrets-webhook
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/volumes/0
+      value:
+        name: certs
+        secret:
+          secretName: external-secrets-webhook
+    - op: replace
+      path: /spec/template/spec/containers/0/ports/2
+      value:
+        containerPort: 8081
+        name: healthz
+        protocol: TCP
+    - op: replace
+      path: /spec/template/spec/containers/0/readinessProbe/httpGet/path
+      value: /healthz
+- target:
     kind: ClusterSecretStore
     name: vault-backend
   patch: |-
