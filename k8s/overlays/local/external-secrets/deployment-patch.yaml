@@ -19,3 +19,9 @@ spec:
         - --concurrent=1
         - --metrics-addr=:8080
         - --loglevel=debug
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: healthz
+          initialDelaySeconds: 5
+          periodSeconds: 10
