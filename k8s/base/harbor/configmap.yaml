@@ -43,9 +43,3 @@ data:
       secret: placeholder
       debug:
         addr: :5001
-    auth:
-      token:
-        issuer: harbor-token-issuer
-        realm: http://harbor-core:80/service/token
-        rootcertbundle: /etc/registry/root.crt
-        service: harbor-registry

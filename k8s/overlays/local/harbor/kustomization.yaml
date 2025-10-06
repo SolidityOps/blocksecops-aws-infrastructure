@@ -60,7 +60,7 @@ patches:
       value: 30880
 
 labels:
-- includeSelectors: true
+- includeSelectors: false
   pairs:
     app.kubernetes.io/component: image-registry
     app.kubernetes.io/part-of: solidity-security-platform

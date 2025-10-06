@@ -13,7 +13,7 @@ resources:
 - pvc.yaml
 
 labels:
-- includeSelectors: true
+- includeSelectors: false
   pairs:
     app.kubernetes.io/name: harbor
     app.kubernetes.io/component: image-registry
