@@ -16,9 +16,10 @@ resources:
 - https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/namespace-install.yaml
 
 # Common labels for all resources
-commonLabels:
-  app.kubernetes.io/part-of: solidity-security-platform
-  app.kubernetes.io/managed-by: kustomize
+labels:
+- pairs:
+    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/managed-by: kustomize
 
 # Namespace for ArgoCD resources (will be overridden in overlays)
 namespace: argocd
@@ -26,4 +27,4 @@ namespace: argocd
 # Images
 images:
 - name: quay.io/argoproj/argocd
-  newTag: v2.8.4
+    newTag: v2.8.4
