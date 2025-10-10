@@ -4,12 +4,28 @@ metadata:
   name: redis-config
 data:
   redis.conf: |
-    # Redis Configuration for Local Development
+    # Redis Configuration for Local Development with TLS
     bind 0.0.0.0
-    port 6379
 
-    # Enable password authentication (password set via env var)
-    # requirepass will be set via command line
+    # Disable non-TLS port
+    port 0
+
+    # Enable TLS on standard port
+    tls-port 6379
+
+    # TLS Configuration
+    tls-cert-file /etc/redis/certs/tls.crt
+    tls-key-file /etc/redis/certs/tls.key
+    tls-ca-cert-file /etc/redis/certs/ca.crt
+
+    # Don't require client certificates (password auth is enough)
+    tls-auth-clients no
+    tls-protocols "TLSv1.2 TLSv1.3"
+    tls-ciphers DEFAULT:!MEDIUM:!LOW:!aNULL:!eNULL:!NULL:!RC4:!MD5:!3DES
+    tls-ciphersuites TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
+    tls-prefer-server-ciphers yes
+
+    # Enable password authentication via command line
 
     # Memory management
     maxmemory 200mb

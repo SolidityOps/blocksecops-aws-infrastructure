@@ -10,5 +10,12 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
   dnsNames:
-  - redis.local
-  - cache.local
+  - redis-master.redis-local.svc.cluster.local
+  - redis-master.redis-local.svc
+  - redis-master.redis-local
+  - redis-master
+  - redis.redis-local.svc.cluster.local
+  - redis.redis-local.svc
+  - redis.redis-local
+  - redis
+  - localhost

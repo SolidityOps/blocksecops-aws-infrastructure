@@ -52,6 +52,9 @@ spec:
           exec:
             command:
             - redis-cli
+            - --tls
+            - --cacert
+            - /etc/redis/certs/ca.crt
             - ping
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -62,6 +65,9 @@ spec:
           exec:
             command:
             - redis-cli
+            - --tls
+            - --cacert
+            - /etc/redis/certs/ca.crt
             - ping
           initialDelaySeconds: 5
           periodSeconds: 10
@@ -72,6 +78,9 @@ spec:
           exec:
             command:
             - redis-cli
+            - --tls
+            - --cacert
+            - /etc/redis/certs/ca.crt
             - ping
           initialDelaySeconds: 10
           periodSeconds: 5
@@ -93,6 +102,9 @@ spec:
           mountPath: /data
         - name: tmp
           mountPath: /tmp
+        - name: tls-certs
+          mountPath: /etc/redis/certs
+          readOnly: true
       volumes:
       - name: redis-config
         configMap:
@@ -101,3 +113,7 @@ spec:
         emptyDir: {}
       - name: tmp
         emptyDir: {}
+      - name: tls-certs
+        secret:
+          secretName: redis-tls
+          defaultMode: 0600
