@@ -26,6 +26,12 @@ spec:
       - name: postgresql
         image: postgres:15-alpine
         imagePullPolicy: IfNotPresent
+        command:
+        - postgres
+        - -c
+        - config_file=/etc/postgresql/postgresql.conf
+        - -c
+        - hba_file=/etc/postgresql/pg_hba.conf
         ports:
         - name: postgresql
           containerPort: 5432
@@ -63,6 +69,9 @@ spec:
           mountPath: /tmp
         - name: run
           mountPath: /var/run/postgresql
+        - name: tls-certs
+          mountPath: /etc/postgresql/certs
+          readOnly: true
         resources:
           requests:
             memory: "256Mi"
@@ -114,6 +123,10 @@ spec:
         emptyDir: {}
       - name: run
         emptyDir: {}
+      - name: tls-certs
+        secret:
+          secretName: postgresql-tls
+          defaultMode: 0600
   volumeClaimTemplates:
   - metadata:
       name: postgresql-data

@@ -42,7 +42,13 @@ data:
     log_temp_files = 0
 
     # Security
-    ssl = off
+    ssl = on
+    ssl_cert_file = '/etc/postgresql/certs/tls.crt'
+    ssl_key_file = '/etc/postgresql/certs/tls.key'
+    ssl_ca_file = '/etc/postgresql/certs/ca.crt'
+    ssl_prefer_server_ciphers = on
+    ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
+    ssl_min_protocol_version = 'TLSv1.2'
     password_encryption = scram-sha-256
 
     # Performance monitoring
@@ -71,7 +77,10 @@ data:
     host    replication     all             127.0.0.1/32            scram-sha-256
     host    replication     all             ::1/128                 scram-sha-256
 
-    # Kubernetes cluster connections
-    host    all             all             10.0.0.0/8              scram-sha-256
-    host    all             all             172.16.0.0/12           scram-sha-256
-    host    all             all             192.168.0.0/16          scram-sha-256
+    # Kubernetes cluster connections (require SSL)
+    hostssl all             all             10.0.0.0/8              scram-sha-256
+    hostssl all             all             172.16.0.0/12           scram-sha-256
+    hostssl all             all             192.168.0.0/16          scram-sha-256
+
+    # Reject non-SSL connections from network
+    hostnossl all           all             0.0.0.0/0               reject

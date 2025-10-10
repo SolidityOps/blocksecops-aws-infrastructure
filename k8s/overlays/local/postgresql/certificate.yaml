@@ -10,5 +10,8 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
   dnsNames:
-  - postgres.local
-  - db.local
+  - postgresql.postgresql-local.svc.cluster.local
+  - postgresql.postgresql-local.svc
+  - postgresql.postgresql-local
+  - postgresql
+  - localhost
