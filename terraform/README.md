@@ -1,6 +1,6 @@
-# Terraform Infrastructure for Solidity Security Platform
+# Terraform Infrastructure for BlockSecOps Platform
 
-This repository contains Terraform Infrastructure as Code (IaC) for the Solidity Security Platform AWS infrastructure, following the architecture templates and implementing Task 1.2 networking requirements.
+This repository contains Terraform Infrastructure as Code (IaC) for the BlockSecOps Platform AWS infrastructure, following the architecture templates and implementing Task 1.2 networking requirements.
 
 ## Architecture Overview
 
@@ -66,16 +66,16 @@ First, create the S3 bucket and DynamoDB table for Terraform state:
 
 ```bash
 # Create S3 bucket for state storage
-aws s3 mb s3://solidity-security-terraform-state --region us-west-2
+aws s3 mb s3://blocksecops-terraform-state --region us-west-2
 
 # Enable versioning
 aws s3api put-bucket-versioning \
-  --bucket solidity-security-terraform-state \
+  --bucket blocksecops-terraform-state \
   --versioning-configuration Status=Enabled
 
 # Create DynamoDB table for state locking
 aws dynamodb create-table \
-  --table-name solidity-security-terraform-locks \
+  --table-name blocksecops-terraform-locks \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
@@ -333,4 +333,4 @@ For issues with this infrastructure:
 
 ## License
 
-This infrastructure code is proprietary to the Solidity Security Platform project.
+This infrastructure code is proprietary to the BlockSecOps Platform project.

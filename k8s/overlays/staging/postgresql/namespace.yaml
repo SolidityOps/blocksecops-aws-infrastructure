@@ -6,6 +6,6 @@ metadata:
     app.kubernetes.io/name: postgresql
     app.kubernetes.io/instance: staging-postgresql
     app.kubernetes.io/component: database
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     environment: staging
     team: devops

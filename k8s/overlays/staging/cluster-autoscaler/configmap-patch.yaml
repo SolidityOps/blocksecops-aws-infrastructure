@@ -4,7 +4,7 @@ metadata:
   name: cluster-autoscaler-config
 data:
   AWS_REGION: "us-west-2"
-  CLUSTER_NAME: "solidity-security-eks-staging"
+  CLUSTER_NAME: "blocksecops-eks-staging"
 
   # Staging-specific scaling policies
   SCALE_DOWN_DELAY_AFTER_ADD: "5m"
@@ -14,7 +14,7 @@ data:
   SKIP_NODES_WITH_SYSTEM_PODS: "false"
 
   # Node group discovery for staging
-  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/solidity-security-eks-staging"
+  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/blocksecops-eks-staging"
 
   # Relaxed scaling for staging
   MAX_NODE_PROVISION_TIME: "10m"

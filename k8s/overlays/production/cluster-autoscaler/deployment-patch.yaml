@@ -10,7 +10,7 @@ spec:
       - name: cluster-autoscaler
         env:
         - name: CLUSTER_NAME
-          value: "solidity-security-eks-production"
+          value: "blocksecops-eks-production"
         command:
         - sh
         - -c

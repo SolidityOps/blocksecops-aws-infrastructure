@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: vault
     app.kubernetes.io/instance: production-vault
     app.kubernetes.io/component: secrets-management
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     environment: production
     team: devops
   annotations:

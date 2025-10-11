@@ -10,7 +10,7 @@ labels:
     app.kubernetes.io/instance: base-vault
     app.kubernetes.io/version: "1.15.2"
     app.kubernetes.io/component: secrets-management
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     app.kubernetes.io/managed-by: kustomize
 
 resources:

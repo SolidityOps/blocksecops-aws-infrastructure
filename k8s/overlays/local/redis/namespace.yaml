@@ -5,6 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/name: redis
     app.kubernetes.io/component: infrastructure-cache
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     environment: local
     team: infrastructure

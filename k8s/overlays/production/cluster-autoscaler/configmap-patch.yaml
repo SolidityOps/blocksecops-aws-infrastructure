@@ -4,7 +4,7 @@ metadata:
   name: cluster-autoscaler-config
 data:
   AWS_REGION: "us-west-2"
-  CLUSTER_NAME: "solidity-security-eks-production"
+  CLUSTER_NAME: "blocksecops-eks-production"
 
   # Production scaling policies
   SCALE_DOWN_DELAY_AFTER_ADD: "10m"
@@ -14,7 +14,7 @@ data:
   SKIP_NODES_WITH_SYSTEM_PODS: "false"
 
   # Node group discovery for production
-  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/solidity-security-eks-production"
+  NODE_GROUP_AUTO_DISCOVERY: "asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/blocksecops-eks-production"
 
   # Production scaling limits
   MAX_NODE_PROVISION_TIME: "15m"

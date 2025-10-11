@@ -32,7 +32,7 @@ labels:
     app.kubernetes.io/instance: local-redis
     app.kubernetes.io/version: 7.2-alpine
     app.kubernetes.io/component: infrastructure-cache
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     app.kubernetes.io/managed-by: kustomize
     environment: local
     team: infrastructure

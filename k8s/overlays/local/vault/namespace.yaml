@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: vault
     app.kubernetes.io/instance: local-vault
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     environment: local
     team: infrastructure
   annotations:

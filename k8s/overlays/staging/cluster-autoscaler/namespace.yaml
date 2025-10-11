@@ -6,6 +6,6 @@ metadata:
     app.kubernetes.io/name: cluster-autoscaler
     app.kubernetes.io/instance: staging-cluster-autoscaler
     app.kubernetes.io/component: autoscaling
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     environment: staging
     team: devops

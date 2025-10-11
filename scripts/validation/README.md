@@ -4,7 +4,7 @@ This directory contains comprehensive DNS validation scripts for Task 1.1 domain
 
 ## Overview
 
-These scripts validate the DNS infrastructure established in Task 1.1, ensuring proper domain registration, DNS zone configuration, subdomain setup, and SSL certificate preparation for the Solidity Security Platform.
+These scripts validate the DNS infrastructure established in Task 1.1, ensuring proper domain registration, DNS zone configuration, subdomain setup, and SSL certificate preparation for the BlockSecOps Platform.
 
 ## Scripts
 

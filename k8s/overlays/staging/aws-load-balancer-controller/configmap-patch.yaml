@@ -4,5 +4,5 @@ metadata:
   name: aws-load-balancer-controller-config
 data:
   AWS_REGION: "us-west-2"
-  CLUSTER_NAME: "solidity-security-eks-staging"
+  CLUSTER_NAME: "blocksecops-eks-staging"
   VPC_ID: "vpc-staging"

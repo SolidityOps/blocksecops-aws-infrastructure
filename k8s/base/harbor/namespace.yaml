@@ -5,4 +5,4 @@ metadata:
   labels:
     app.kubernetes.io/name: harbor
     app.kubernetes.io/component: image-registry
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform

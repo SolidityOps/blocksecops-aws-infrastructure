@@ -10,7 +10,7 @@ labels:
     app.kubernetes.io/instance: base-postgresql
     app.kubernetes.io/version: "15.4"
     app.kubernetes.io/component: database
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     app.kubernetes.io/managed-by: kustomize
 
 resources:

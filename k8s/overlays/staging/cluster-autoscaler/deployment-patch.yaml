@@ -9,7 +9,7 @@ spec:
       - name: cluster-autoscaler
         env:
         - name: CLUSTER_NAME
-          value: "solidity-security-eks-staging"
+          value: "blocksecops-eks-staging"
         command:
         - /bin/sh
         - -c

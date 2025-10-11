@@ -5,4 +5,4 @@ metadata:
   labels:
     app.kubernetes.io/name: nginx-ingress-controller
     app.kubernetes.io/component: ingress-controller
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform

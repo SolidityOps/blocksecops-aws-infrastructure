@@ -17,7 +17,7 @@ spec:
           environment: staging
     - podSelector:
         matchLabels:
-          app.kubernetes.io/part-of: solidity-security-platform
+          app.kubernetes.io/part-of: blocksecops-platform
     ports:
     - protocol: TCP
       port: 5432

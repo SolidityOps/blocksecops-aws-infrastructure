@@ -16,7 +16,7 @@ labels:
   pairs:
     app.kubernetes.io/name: redis
     app.kubernetes.io/component: cache
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     app.kubernetes.io/managed-by: kustomize
 
 images:

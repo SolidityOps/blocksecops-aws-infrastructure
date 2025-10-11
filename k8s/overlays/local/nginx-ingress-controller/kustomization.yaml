@@ -25,7 +25,7 @@ labels:
 - includeSelectors: true
   pairs:
     app.kubernetes.io/component: ingress-controller
-    app.kubernetes.io/part-of: solidity-security-platform
+    app.kubernetes.io/part-of: blocksecops-platform
     app.kubernetes.io/managed-by: kustomize
     environment: local
     team: infrastructure
