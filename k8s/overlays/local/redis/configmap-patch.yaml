@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis.conf: |
+    # Redis Configuration for Local Development (NO TLS)
+    bind 0.0.0.0
+
+    # Enable standard port (no TLS for local development)
+    port 6379
+
+    # Memory management
+    maxmemory 200mb
+    maxmemory-policy allkeys-lru
+
+    # Persistence (disabled for local development)
+    save ""
+
+    # Logging
+    loglevel notice
+
+    # Security
+    protected-mode no
+
+    # Performance
+    tcp-keepalive 300
+    timeout 0
+
+    # Enable keyspace notifications for session management
+    notify-keyspace-events Ex

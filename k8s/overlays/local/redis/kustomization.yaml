@@ -16,6 +16,10 @@ patches:
   target:
     kind: Deployment
     name: redis
+- path: configmap-patch.yaml
+  target:
+    kind: ConfigMap
+    name: redis-config
 
 images:
 - name: redis
