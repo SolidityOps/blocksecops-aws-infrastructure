@@ -4,3 +4,67 @@ metadata:
   name: postgresql-config
 data:
   database-name: "soliditysecurity"
+  # Local development pg_hba.conf - NO SSL REQUIRED
+  # Security Hardening (SSL) is disabled for local dev environment
+  # Production overlays will override this with SSL-required configuration
+  pg_hba.conf: |-
+    # PostgreSQL Client Authentication Configuration File (LOCAL DEV)
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     trust
+
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            scram-sha-256
+
+    # IPv6 local connections:
+    host    all             all             ::1/128                 scram-sha-256
+
+    # Allow replication connections from localhost
+    local   replication     all                                     trust
+    host    replication     all             127.0.0.1/32            scram-sha-256
+    host    replication     all             ::1/128                 scram-sha-256
+
+    # LOCAL DEV: Allow Kubernetes cluster connections WITHOUT SSL
+    # This overrides the base SSL requirement for local development
+    # Using trust for local dev to simplify initial setup (password-less)
+    host    all             all             10.0.0.0/8              trust
+    host    all             all             172.16.0.0/12           trust
+    host    all             all             192.168.0.0/16          trust
+
+    # LOCAL DEV: Allow all other connections (for development flexibility)
+    host    all             all             0.0.0.0/0               trust
+  # Local development postgresql.conf - SSL DISABLED
+  # Security Hardening (SSL) is disabled for local dev environment
+  postgresql.conf: |
+    # PostgreSQL configuration file (LOCAL DEV - SSL DISABLED)
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 100
+    shared_buffers = 128MB
+    effective_cache_size = 256MB
+    maintenance_work_mem = 64MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    work_mem = 4MB
+    min_wal_size = 1GB
+    max_wal_size = 4GB
+    max_worker_processes = 8
+    max_parallel_workers_per_gather = 2
+    max_parallel_workers = 8
+    max_parallel_maintenance_workers = 2
+
+    # Logging
+    log_destination = 'stderr'
+    logging_collector = off
+    log_min_duration_statement = 1000
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    log_connections = on
+    log_disconnections = on
+
+    # LOCAL DEV: SSL DISABLED (production overlays will enable SSL)
+    ssl = off
+    password_encryption = scram-sha-256
