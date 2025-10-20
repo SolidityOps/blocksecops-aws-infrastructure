@@ -10,6 +10,7 @@ resources:
 - ../../../base/cert-manager/
 - self-signed-issuer.yaml
 - local-wildcard-certificate.yaml
+- rolebinding.yaml
 
 patches:
 - path: cert-manager-patch.yaml

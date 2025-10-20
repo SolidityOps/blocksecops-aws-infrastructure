@@ -16,6 +16,15 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /livez
+            port: http-healthz
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
         args:
         - --v=2
         - --cluster-resource-namespace=$(POD_NAMESPACE)
